@@ -1,0 +1,19 @@
+{
+  "name": "framework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.9.1",
+    "@types/papaparse": "^5.3.16",
+    "dotenv": "^17.2.3",
+    "papaparse": "^5.5.3",
+    "xlsx": "^0.18.5"
+  }
+}
