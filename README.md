@@ -100,3 +100,46 @@ screenshots/
 
 ---
 
+
+
+## 🧱 Example Test
+
+```typescript
+import { test, expect } from '@playwright/test';
+import { LoginPage } from '../src/pages/LoginPage';
+
+test('Verify valid user login', async ({ page }) => {
+  const login = new LoginPage(page);
+  await login.navigate();
+  await login.login('user@example.com', 'password123');
+  await expect(page).toHaveURL(/dashboard/);
+});
+
+```
+
+---
+
+### 🧍‍♂️ Author & Contributions
+
+## 👤 Author
+Developed by **Prasad**, Software Test Engineer, passionate about test automation and framework design.
+
+
+```
+
+---
+
+## 🤝 Contributions
+Pull requests are welcome. For major changes, open an issue first to discuss what you’d like to improve.
+
+```
+
+---
+
+## 🔗 Resources
+- [Playwright Docs](https://playwright.dev/docs/intro)
+- [TypeScript Docs](https://www.typescriptlang.org/docs/)
+- [Node.js](https://nodejs.org/en/docs/)
+```
+
+---
