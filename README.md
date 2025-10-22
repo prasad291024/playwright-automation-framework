@@ -117,9 +117,7 @@ test('Verify valid user login', async ({ page }) => {
 
 ```
 
----
 
-### 🧍‍♂️ Author & Contributions
 
 ## 👤 Author
 Developed by **Prasad**, Software Test Engineer, passionate about test automation and framework design.
@@ -127,14 +125,14 @@ Developed by **Prasad**, Software Test Engineer, passionate about test automatio
 
 ```
 
----
+
 
 ## 🤝 Contributions
 Pull requests are welcome. For major changes, open an issue first to discuss what you’d like to improve.
 
 ```
 
----
+
 
 ## 🔗 Resources
 - [Playwright Docs](https://playwright.dev/docs/intro)
@@ -142,4 +140,4 @@ Pull requests are welcome. For major changes, open an issue first to discuss wha
 - [Node.js](https://nodejs.org/en/docs/)
 ```
 
----
+
