@@ -129,6 +129,9 @@ Developed by **Prasad**, Software Test Engineer, passionate about test automatio
 
 
 
+```
+
+---
 
 ## 🔗 Resources
 - [Playwright Docs](https://playwright.dev/docs/intro)
