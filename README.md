@@ -100,4 +100,3 @@ screenshots/
 
 ---
 
-> This README serves as a professional and informative landing page for your Playwright Automation Framework repository.
