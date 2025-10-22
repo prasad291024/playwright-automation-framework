@@ -114,23 +114,19 @@ test('Verify valid user login', async ({ page }) => {
   await login.login('user@example.com', 'password123');
   await expect(page).toHaveURL(/dashboard/);
 });
-
 ```
+
+---
 
 
 
 ## 👤 Author
 Developed by **Prasad**, Software Test Engineer, passionate about test automation and framework design.
-
-
 ```
 
+---
 
 
-## 🤝 Contributions
-Pull requests are welcome. For major changes, open an issue first to discuss what you’d like to improve.
-
-```
 
 
 
@@ -139,5 +135,7 @@ Pull requests are welcome. For major changes, open an issue first to discuss wha
 - [TypeScript Docs](https://www.typescriptlang.org/docs/)
 - [Node.js](https://nodejs.org/en/docs/)
 ```
+
+---
 
 
