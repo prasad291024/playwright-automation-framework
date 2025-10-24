@@ -1,8 +1,14 @@
 import { test } from '@playwright/test';
 import { LoginPage } from '../../src/pages/LoginPage';
 import { getEnv } from '../../src/utils/envHelper';
-import testUsers from './testData/login.testUsers.json';
-import envLogin from './testData/login.env.json';
+import testUsers from '../testData/login.testUsers.json';
+import envLogin from '../testData/login.env.json';
+
+import { SELECTORS } from '../../src/utils/selectors';
+import {
+  assertLoginSuccess,
+  assertLoginFailure
+} from '../../src/utils/assertions';
 
 // 🔐 Test with .env or fallback to envLogin.json
 test('Login with environment credentials', async ({ page }) => {
@@ -13,7 +19,7 @@ test('Login with environment credentials', async ({ page }) => {
   const password = getEnv('PASSWORD') || envLogin.password;
 
   await loginPage.login(username, password);
-  await loginPage.assertLoginSuccess();
+  await assertLoginSuccess(page); // ✅ centralized assertion
 });
 
 // ✅ Data-driven tests for valid users
@@ -22,7 +28,7 @@ for (const user of testUsers.validUsers) {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
     await loginPage.login(user.username, user.password);
-    await loginPage.assertLoginSuccess();
+    await assertLoginSuccess(page); // ✅ centralized assertion
   });
 }
 
@@ -32,6 +38,6 @@ for (const user of testUsers.invalidUsers) {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
     await loginPage.login(user.username, user.password);
-    await loginPage.assertLoginFailure(); // Define this in LoginPage
+    await assertLoginFailure(page); // ✅ centralized assertion
   });
 }

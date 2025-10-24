@@ -8,5 +8,15 @@ export const SELECTORS = {
   dashboard: {
     welcomeHeader: 'h1.welcome',
     profileLink: '#profile-link'
-  }
+  },
+  search: {
+    input: 'input[placeholder="Search"]',
+    results: 'article',
+    noResults: '.no-results' // adjust if needed
+  },
+  profile: {
+    nameInput: '#name-input',
+    saveButton: '#save-button',
+    nameDisplay: '#name-display'
+  },
 };

@@ -1,4 +1,5 @@
 import { Page, expect } from '@playwright/test';
+import { SELECTORS } from '../utils/selectors';
 
 export class DashboardPage {
   constructor(private page: Page) {}
@@ -12,6 +13,13 @@ export class DashboardPage {
   async verifyWelcomeMessage() {
     await expect(this.welcomeMessage).toBeVisible();
   }
+  async assertProfileLinkVisible() {
+    await expect(this.page.locator(SELECTORS.dashboard.profileLink)).toBeVisible();
+  }
+  async assertWelcomeMessage() {
+  await expect(this.page.locator(SELECTORS.dashboard.welcomeHeader)).toBeVisible();
+}
+
 
   async navigateToProfile() {
     await this.profileLink.click();
@@ -22,6 +30,9 @@ export class DashboardPage {
   }
   async verifyWelcomeSection() {
   await expect(this.page.locator('h1.welcome')).toBeVisible(); // adjust selector as needed
+  }
+  async goto() {
+    await this.page.goto('https://your-app.com/dashboard'); // adjust URL if needed
   }
 
 }
