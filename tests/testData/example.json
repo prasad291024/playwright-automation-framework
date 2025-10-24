@@ -1,0 +1,12 @@
+{
+  "pages": [
+    {
+      "url": "https://playwright.dev/",
+      "expectedTitle": "Playwright"
+    },
+    {
+      "url": "https://playwright.dev/docs/intro",
+      "expectedTitle": "Getting started"
+    }
+  ]
+}

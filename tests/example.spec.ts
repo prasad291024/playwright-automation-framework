@@ -1,18 +1,17 @@
 import { test, expect } from '@playwright/test';
+import testData from './testData/example.json';
 
-test('has title', async ({ page }) => {
+// Data-driven title check
+for (const pageData of testData.pages) {
+  test(`Page title contains "${pageData.expectedTitle}"`, async ({ page }) => {
+    await page.goto(pageData.url);
+    await expect(page).toHaveTitle(new RegExp(pageData.expectedTitle, 'i'));
+  });
+}
+
+// Static interaction test
+test('Get started link navigates to Installation section', async ({ page }) => {
   await page.goto('https://playwright.dev/');
-
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
-
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
-
-  // Click the get started link.
   await page.getByRole('link', { name: 'Get started' }).click();
-
-  // Expects page to have a heading with the name of Installation.
   await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
 });

@@ -20,4 +20,8 @@ export class DashboardPage {
   async navigateToSettings() {
     await this.settingsLink.click();
   }
+  async verifyWelcomeSection() {
+  await expect(this.page.locator('h1.welcome')).toBeVisible(); // adjust selector as needed
+  }
+
 }
