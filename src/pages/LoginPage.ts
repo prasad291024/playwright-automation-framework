@@ -22,4 +22,8 @@ export class LoginPage {
   async assertLoginSuccess() {
     await expect(this.page.locator('text=Welcome')).toBeVisible();
   }
+  async assertLoginFailure() {
+  await expect(this.page.locator('.error-message')).toBeVisible(); // Adjust selector as needed
+}
+
 }

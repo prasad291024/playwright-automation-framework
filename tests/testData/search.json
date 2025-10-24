@@ -1,0 +1,4 @@
+{
+  "validTerms": ["locator", "assertions", "page object"],
+  "invalidTerms": ["asdfghjkl", "123!@#", "🚀🧃🐙"]
+}
