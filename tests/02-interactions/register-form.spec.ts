@@ -1,19 +1,19 @@
 import { test, expect } from '@playwright/test';
+import { RegisterPage } from '@pages/RegisterPage';
 
-test('Fill out registration form', async ({ page }) => {
-  await page.goto('https://demo.automationtesting.in/Register.html');
+test('Fill out registration form using POM', async ({ page }) => {
+  const registerPage = new RegisterPage(page);
 
-  await page.fill('input[placeholder="First Name"]', 'Prasad');
-  await page.fill('input[placeholder="Last Name"]', 'Tester');
-  await page.fill('textarea[ng-model="Adress"]', '123 Automation Lane');
-  await page.fill('input[type="email"]', 'prasad@example.com');
-  await page.fill('input[type="tel"]', '9876543210');
-
-  await page.check('input[value="Male"]');
-  await page.check('input[value="Cricket"]');
-
-  await page.selectOption('#Skills', 'Java');
-  await page.selectOption('#countries', 'India');
+  await registerPage.goto();
+  await registerPage.fillFirstName('Prasad');
+  await registerPage.fillLastName('Tester');
+  await registerPage.fillAddress('123 Automation Lane');
+  await registerPage.fillEmail('prasad@example.com');
+  await registerPage.fillPhone('9876543210');
+  await registerPage.selectGender('Male');
+  await registerPage.selectHobby('Cricket');
+  await registerPage.selectSkill('Java');
+  await registerPage.selectCountry('India');
 
   await expect(page.locator('input[placeholder="First Name"]')).toHaveValue('Prasad');
 });

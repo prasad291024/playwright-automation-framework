@@ -11,7 +11,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": ["node", "@playwright/test"]
+    "types": ["node", "@playwright/test"],
+    "baseUrl": "./",
+    "paths": {
+      "@pages/*": ["src/pages/*"],
+      "@tests/*": ["src/tests/*"]
+    }
   },
   "include": ["src/**/*", "tests/**/*", "globals/**/*"],
   "exclude": ["node_modules"]
