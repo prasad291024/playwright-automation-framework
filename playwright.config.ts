@@ -13,6 +13,8 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  /* Global test timeout (ms) */
+  timeout: 30_000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -41,6 +43,11 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     baseURL: process.env.BASE_URL || 'https://your-app-url.com',
+    /* Action and navigation timeouts (ms) */
+    actionTimeout: Number(process.env.ACTION_TIMEOUT) || 5000,
+    navigationTimeout: Number(process.env.NAVIGATION_TIMEOUT) || 15000,
+    /* Optionally re-use a pre-saved storage state for authenticated tests */
+    storageState: process.env.STORAGE_STATE || 'storage-state/storageState.json',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',
