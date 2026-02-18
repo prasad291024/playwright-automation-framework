@@ -17,7 +17,6 @@ export class SearchPage {
     await expect(this.page.locator('article')).toContainText(text);
   }
   async assertNoResults() {
-  await expect(this.page.locator('article')).toHaveCount(0); // Adjust selector if needed
-}
-
+    await expect(this.page.locator('article')).toHaveCount(0); // Adjust selector if needed
+  }
 }

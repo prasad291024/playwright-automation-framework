@@ -5,7 +5,6 @@ import { getEnv } from '../../src/utils/envHelper';
 import { waitForElement } from '../../src/utils/waitForElement';
 import { getProfileLink } from '../../src/utils/envUtils';
 
-
 test('Dashboard loads and links are visible', async ({ page }) => {
   const loginPage = new LoginPage(page);
   const dashboardPage = new DashboardPage(page);

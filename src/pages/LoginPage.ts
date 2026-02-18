@@ -23,7 +23,6 @@ export class LoginPage {
     await expect(this.page.locator('text=Welcome')).toBeVisible();
   }
   async assertLoginFailure() {
-  await expect(this.page.locator('.error-message')).toBeVisible(); // Adjust selector as needed
-}
-
+    await expect(this.page.locator('.error-message')).toBeVisible(); // Adjust selector as needed
+  }
 }

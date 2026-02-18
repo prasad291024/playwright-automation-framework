@@ -13,8 +13,8 @@ test('POST create new user', async ({ request }) => {
     data: {
       name: 'Prasad Tester',
       email: 'prasad@example.com',
-      username: 'prasad123'
-    }
+      username: 'prasad123',
+    },
   });
 
   expect(response.status()).toBe(201);

@@ -6,14 +6,14 @@ A hybrid end-to-end testing framework built with **Playwright** and **TypeScript
 
 ## 🚀 Features
 
-- ✅ Page Object Model for clean UI abstraction  
-- ✅ Data-driven test execution using external JSON files  
-- ✅ Modular folder structure for scalability  
-- ✅ Multi-browser support (Chromium, Firefox, WebKit)  
-- ✅ Environment-based configuration via `.env`  
-- ✅ Global setup and teardown for session management  
-- ✅ HTML, JSON, and list reporters  
-- ✅ CI-ready structure  
+- ✅ Page Object Model for clean UI abstraction
+- ✅ Data-driven test execution using external JSON files
+- ✅ Modular folder structure for scalability
+- ✅ Multi-browser support (Chromium, Firefox, WebKit)
+- ✅ Environment-based configuration via `.env`
+- ✅ Global setup and teardown for session management
+- ✅ HTML, JSON, and list reporters
+- ✅ CI-ready structure
 
 ---
 
@@ -79,9 +79,9 @@ npm run format     # Format code (if configured)
 
 ## 📸 Reporting
 
-- **HTML report:** `playwright-report/`  
-- **JSON report:** `test-results/results.json`  
-- **Screenshots/videos:** captured automatically on failure  
+- **HTML report:** `playwright-report/`
+- **JSON report:** `test-results/results.json`
+- **Screenshots/videos:** captured automatically on failure
 
 ---
 
@@ -100,8 +100,6 @@ screenshots/
 
 ---
 
-
-
 ## 🧱 Example Test
 
 ```typescript
@@ -118,10 +116,10 @@ test('Verify valid user login', async ({ page }) => {
 
 ---
 
-
-
 ## 👤 Author
+
 Developed by **Prasad**, Software Test Engineer, passionate about test automation and framework design.
+
 ```
 
 ---
@@ -134,11 +132,14 @@ Developed by **Prasad**, Software Test Engineer, passionate about test automatio
 ---
 
 ## 🔗 Resources
+
 - [Playwright Docs](https://playwright.dev/docs/intro)
 - [TypeScript Docs](https://www.typescriptlang.org/docs/)
 - [Node.js](https://nodejs.org/en/docs/)
+
 ```
 
 ---
 
 
+```

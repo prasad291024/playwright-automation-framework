@@ -4,11 +4,7 @@ import { getEnv } from '../../src/utils/envHelper';
 import testUsers from '../testData/login.testUsers.json';
 import envLogin from '../testData/login.env.json';
 
-import { SELECTORS } from '../../src/utils/selectors';
-import {
-  assertLoginSuccess,
-  assertLoginFailure
-} from '../../src/utils/assertions';
+import { assertLoginSuccess, assertLoginFailure } from '../../src/utils/assertions';
 
 // 🔐 Test with .env or fallback to envLogin.json
 test('Login with environment credentials', async ({ page }) => {
