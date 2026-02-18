@@ -1,8 +1,8 @@
 import { test } from '@playwright/test';
 import { LoginPage } from '../../src/pages/LoginPage';
 import { getEnv } from '../../src/utils/envHelper';
-import testUsers from '../testData/login.testUsers.json';
-import envLogin from '../testData/login.env.json';
+import testUsers from '../../test-data/fixtures/login.testUsers.json';
+import envLogin from '../../test-data/fixtures/login.env.json';
 
 import { assertLoginSuccess, assertLoginFailure } from '../../src/utils/assertions';
 

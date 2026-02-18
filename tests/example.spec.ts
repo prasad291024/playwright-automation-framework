@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import testData from './testData/example.json';
+import testData from '../test-data/fixtures/example.json';
 
 // Data-driven title check
 for (const pageData of testData.pages) {

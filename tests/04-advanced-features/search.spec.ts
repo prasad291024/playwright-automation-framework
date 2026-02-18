@@ -1,6 +1,6 @@
 import { test } from '@playwright/test';
 import { SearchPage } from '../../src/pages/SearchPage';
-import searchData from '../testData/search.json';
+import searchData from '../../test-data/fixtures/search.json';
 
 test('Search for "locator" shows relevant results', async ({ page }) => {
   const searchPage = new SearchPage(page);
