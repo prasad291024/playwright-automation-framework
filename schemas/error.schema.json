@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Error Response Schema",
+  "description": "JSON Schema for API error responses",
+  "type": "object",
+  "required": ["statusCode", "message"],
+  "properties": {
+    "statusCode": {
+      "type": "integer",
+      "description": "HTTP status code"
+    },
+    "message": {
+      "type": "string",
+      "description": "Error message"
+    },
+    "error": {
+      "type": "string",
+      "description": "Error type or category"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the error occurred"
+    },
+    "details": {
+      "type": "array",
+      "description": "Additional error details",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

@@ -17,18 +17,20 @@
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.56.1",
+    "@types/ajv": "^0.0.5",
     "@types/node": "^24.9.1",
     "@types/papaparse": "^5.3.16",
-    "dotenv": "^17.2.3",
-    "papaparse": "^5.5.3",
-    "ts-node": "^10.9.2",
-    "xlsx": "^0.18.5",
-    "eslint": "^8.50.0",
-    "prettier": "^3.0.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-prettier": "^5.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "eslint-plugin-playwright": "^0.5.1"
+    "ajv": "^8.18.0",
+    "dotenv": "^17.2.3",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-playwright": "^0.5.1",
+    "eslint-plugin-prettier": "^5.0.0",
+    "papaparse": "^5.5.3",
+    "prettier": "^3.0.0",
+    "ts-node": "^10.9.2",
+    "xlsx": "^0.18.5"
   }
 }
