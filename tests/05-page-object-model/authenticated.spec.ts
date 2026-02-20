@@ -1,18 +1,14 @@
-import { test } from '../fixture/auth.fixture';
+import { test } from '@playwright/test';
 
 test.describe('Authenticated Tests', () => {
   test('should load dashboard with authenticated session', async () => {
-    // TODO: uncomment and use authenticatedPage fixture when your app URL is configured
-    // const { authenticatedPage } = await testContext;
-    // authenticatedPage is pre-loaded with storage state from global-setup
-    // await authenticatedPage.goto('/dashboard');
-    // Verify authenticated state (e.g., user is logged in)
-    // Example: check for logout button or user profile
-    // await expect(authenticatedPage.locator('button:has-text("Logout")')).toBeVisible();
+    // TODO: Update with your app's actual URLs and logic
+    // This test demonstrates how to use authenticated sessions
+    // See src/fixture/auth.fixture.ts for custom authenticated fixtures
   });
 
   test('should access protected resource as authenticated user', async () => {
-    // TODO: Another authenticated test
-    // Reuses the same storage state across tests in the same worker
+    // TODO: Add authenticated user tests here
+    // Reuses session state from global-setup if configured
   });
 });

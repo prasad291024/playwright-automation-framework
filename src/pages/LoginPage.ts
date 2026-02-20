@@ -1,28 +1,69 @@
-import { Page, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { BasePage } from './BasePage';
+import { ILoginPage } from '../interface/pages.interface';
+import { SELECTORS_BY_TESTID, SELECTORS } from '../utils/selectors';
 
-export class LoginPage {
-  constructor(private page: Page) {}
-
-  // Locators
-  usernameInput = this.page.locator('#username');
-  passwordInput = this.page.locator('#password');
-  loginButton = this.page.locator('button[type="submit"]');
-
-  // Actions
-  async goto() {
-    await this.page.goto(process.env.BASE_URL || 'https://your-app-url.com');
+/**
+ * Login Page Object Model
+ * Handles all login-related interactions and assertions
+ */
+export class LoginPage extends BasePage implements ILoginPage {
+  /**
+   * Navigate to login page
+   */
+  async goto(): Promise<void> {
+    await this.navigateTo('/login');
+    await this.waitForPageLoad();
   }
 
-  async login(username: string, password: string) {
-    await this.usernameInput.fill(username);
-    await this.passwordInput.fill(password);
-    await this.loginButton.click();
+  /**
+   * Fill username/email field
+   * Prefers data-testid, falls back to role-based locator
+   */
+  async fillUsername(username: string): Promise<void> {
+    await this.getByTestId(SELECTORS_BY_TESTID.login.usernameInput).fill(username);
   }
 
-  async assertLoginSuccess() {
-    await expect(this.page.locator('text=Welcome')).toBeVisible();
+  /**
+   * Fill password field
+   */
+  async fillPassword(password: string): Promise<void> {
+    await this.getByTestId(SELECTORS_BY_TESTID.login.passwordInput).fill(password);
   }
-  async assertLoginFailure() {
-    await expect(this.page.locator('.error-message')).toBeVisible(); // Adjust selector as needed
+
+  /**
+   * Click login button
+   * Prefers role-based locator for accessibility
+   */
+  async clickLoginButton(): Promise<void> {
+    await this.getByRole('button', { name: /login|sign in/i }).click();
+  }
+
+  /**
+   * Complete login flow with username and password
+   */
+  async login(username: string, password: string): Promise<void> {
+    await this.fillUsername(username);
+    await this.fillPassword(password);
+    await this.clickLoginButton();
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Verify successful login by checking for welcome message
+   */
+  async assertLoginSuccess(): Promise<void> {
+    await expect(this.getByText(/welcome|dashboard|logged in/i).first()).toBeVisible();
+  }
+
+  /**
+   * Verify login failed by checking for error message
+   */
+  async assertLoginFailure(): Promise<void> {
+    await expect(
+      this.getByTestId(SELECTORS_BY_TESTID.login.errorMessage).or(
+        this.locator(SELECTORS.login.errorMessage),
+      ),
+    ).toBeVisible();
   }
 }

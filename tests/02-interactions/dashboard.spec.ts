@@ -14,7 +14,7 @@ test('Dashboard loads and links are visible', async ({ page }) => {
 
   await loginPage.goto();
   await loginPage.login(username, password);
-  await dashboardPage.verifyWelcomeSection();
+  await dashboardPage.verifyWelcomeMessage();
 
   await waitForElement(page, getProfileLink());
   await dashboardPage.navigateToProfile();

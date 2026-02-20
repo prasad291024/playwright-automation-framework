@@ -1,22 +1,46 @@
-import { Page, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { BasePage } from './BasePage';
+import { ISearchPage } from '../interface/pages.interface';
+import { SELECTORS_BY_TESTID, SELECTORS } from '../utils/selectors';
 
-export class SearchPage {
-  constructor(private page: Page) {}
-
-  async goto() {
+/**
+ * Search Page Object Model
+ * Handles search interactions and result assertions
+ */
+export class SearchPage extends BasePage implements ISearchPage {
+  /**
+   * Navigate to search page (homepage with search feature)
+   */
+  async goto(): Promise<void> {
     await this.page.goto('https://playwright.dev/');
+    await this.waitForPageLoad();
   }
 
-  async searchFor(term: string) {
-    await this.page.getByPlaceholder('Search').click();
-    await this.page.getByPlaceholder('Search').fill(term);
+  /**
+   * Perform search for a term
+   */
+  async searchFor(term: string): Promise<void> {
+    // Use getByRole for searchbox - most accessible
+    await this.getByRole('searchbox').fill(term);
     await this.page.keyboard.press('Enter');
+    await this.page.waitForLoadState('networkidle');
   }
 
-  async assertResultsContain(text: string) {
-    await expect(this.page.locator('article')).toContainText(text);
+  /**
+   * Assert search results contain specific text
+   */
+  async assertResultsContain(text: string): Promise<void> {
+    await expect(this.locator(SELECTORS.search.results)).toContainText(text);
   }
-  async assertNoResults() {
-    await expect(this.page.locator('article')).toHaveCount(0); // Adjust selector if needed
+
+  /**
+   * Assert no search results are displayed
+   */
+  async assertNoResults(): Promise<void> {
+    await expect(
+      this.getByTestId(SELECTORS_BY_TESTID.search.noResults).or(
+        this.locator(SELECTORS.search.noResults),
+      ),
+    ).toBeVisible();
   }
 }
