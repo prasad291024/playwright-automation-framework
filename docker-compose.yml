@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: playwright-tests
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - ./screenshots:/app/screenshots
+    environment:
+      - CI=true
+      - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+    networks:
+      - playwright-network
+
+  test-headed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: playwright-tests-headed
+    command: npm run test:headed
+    volumes:
+      - ./test-results:/app/test-results
+      - ./playwright-report:/app/playwright-report
+      - ./screenshots:/app/screenshots
+    environment:
+      - CI=false
+      - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+    networks:
+      - playwright-network
+    profiles:
+      - headed
+
+networks:
+  playwright-network:
+    driver: bridge
