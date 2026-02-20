@@ -67,12 +67,101 @@ PASSWORD=your_password
 
 ---
 
+## 🔒 Code Quality
+
+This framework enforces code quality through **ESLint**, **Prettier**, and **Type Checking**:
+
+```bash
+# Check for linting issues
+npm run lint
+
+# Auto-fix linting issues
+npm run lint:fix
+
+# Format code to style standards
+npm run format
+
+# Validate TypeScript types
+npm run typecheck
+```
+
+### Pre-commit Hooks
+
+**Husky** + **lint-staged** automatically run code quality checks before committing:
+
+- ESLint fixes on `*.ts` files
+- Prettier formats code and JSON/Markdown files
+- Commits are rejected if checks fail
+
+No configuration needed—hooks run automatically on `git commit`.
+
+---
+
+## 🤖 Continuous Integration
+
+GitHub Actions runs automated tests on every push and PR:
+
+- **Multi-browser testing:** Chromium, Firefox, WebKit
+- **Multi-platform:** Ubuntu, Windows, macOS
+- **Code quality gates:** ESLint, Prettier, TypeScript
+- **Automated reports:** HTML test reports as artifacts
+
+View workflow definitions in [`.github/workflows/`](.github/workflows/)
+
+---
+
+## 🐳 Docker Support
+
+Run tests in a containerized environment for consistency across machines:
+
+### Using Docker Compose
+
+```bash
+# Run tests in Docker
+docker-compose up test
+
+# Run tests with headed browser (requires X11/display support)
+docker-compose --profile headed up test-headed
+
+# Build Docker image only
+docker-compose build
+```
+
+### Manual Docker Commands
+
+```bash
+# Build the image
+docker build -t playwright-tests .
+
+# Run tests
+docker run --rm -v $(pwd)/test-results:/app/test-results playwright-tests
+
+# Run with specific browser
+docker run --rm playwright-tests npm test -- --project=chromium
+```
+
+### Dockerfile Features
+
+- Playwright pre-installed with all browsers and dependencies
+- Node.js 18 environment
+- Automatic browser download disabled (`PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`)
+- Volume mounts for test results and reports
+- CI mode environment variables pre-configured
+
+---
+
 ## 📦 Scripts
 
 ```bash
-npm run test       # Run all tests
-npm run lint       # Lint code (if configured)
-npm run format     # Format code (if configured)
+# Testing
+npm run test           # Run all tests (headless)
+npm run test:headed    # Run tests with browser UI visible
+
+# Code Quality
+npm run lint           # Check code style with ESLint
+npm run lint:fix       # Auto-fix linting issues
+npm run format         # Format code with Prettier
+npm run typecheck      # Validate TypeScript types
 ```
 
 ---
