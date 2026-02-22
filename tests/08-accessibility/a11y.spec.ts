@@ -1,38 +1,23 @@
 import { test, expect } from '@playwright/test';
-import { injectAxe, checkA11y } from 'axe-playwright';
 
 /**
  * Accessibility Testing Templates (a11y)
  *
- * Use axe-core testing library to scan for accessibility issues.
+ * Test for accessibility issues without external dependencies.
  * Helps ensure your app is usable by people with disabilities.
- *
- * Install: npm install -D axe-playwright
  *
  * Common issues checked:
  * - Missing alt text on images
  * - Improper heading hierarchy
- * - Low color contrast
- * - Missing ARIA labels
- * - Keyboard navigation issues
+ * - Keyboard navigation
+ * - Semantic HTML usage
+ *
+ * For automated WCAG scanning, consider adding:
+ * - npm install -D axe-playwright
+ * - https://www.npmjs.com/package/axe-playwright
  */
 
-test.describe('Accessibility: WCAG Compliance', () => {
-  test('Playwright.dev homepage passes accessibility scan', async ({ page }) => {
-    await page.goto('https://playwright.dev/');
-
-    // Inject axe core library
-    await injectAxe(page);
-
-    // Run accessibility check and allow violations to be logged
-    await checkA11y(page, null, {
-      detailedReport: true,
-      detailedReportOptions: {
-        html: true,
-      },
-    });
-  });
-
+test.describe('Accessibility: Semantic HTML & Headings', () => {
   test('Form inputs have proper labels', async ({ page }) => {
     // Example: Create a test page with a form or use a real form
     await page.goto('https://playwright.dev/');
