@@ -1,0 +1,14 @@
+{
+  "vwo": {
+    "baseUrl": "https://app.vwo.com/#/login",
+    "storageState": ""
+  },
+  "orangehrm": {
+    "baseUrl": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
+    "storageState": ""
+  },
+  "local": {
+    "baseUrl": "http://localhost:3000",
+    "storageState": "storage-state/storageState.json"
+  }
+}
