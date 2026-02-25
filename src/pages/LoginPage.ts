@@ -21,14 +21,52 @@ export class LoginPage extends BasePage implements ILoginPage {
    * Prefers data-testid, falls back to role-based locator
    */
   async fillUsername(username: string): Promise<void> {
-    await this.getByTestId(SELECTORS_BY_TESTID.login.usernameInput).fill(username);
+    const candidates = [
+      this.getByTestId(SELECTORS_BY_TESTID.login.usernameInput),
+      this.getByPlaceholder('username'),
+      this.getByPlaceholder('email'),
+      // label-based (e.g., <label for="username">Username</label>)
+      this.page.getByLabel(/username|email/i),
+      // role-based textbox with label/name
+      this.getByRole('textbox', { name: /username|email/i }),
+      // name attribute fallbacks
+      this.locator('input[name="username"], input[name="email"]'),
+      // common input types
+      this.locator('input[type="email"], input[type="text"]'),
+    ];
+
+    for (const c of candidates) {
+      try {
+        if ((await c.count()) > 0) {
+          await c.fill(username, { timeout: 8000 });
+          return;
+        }
+      } catch (e) {
+        // ignore and continue to next candidate
+      }
+    }
+
+    // If nothing matched, throw a helpful error
+    throw new Error('Unable to find username input using any of the configured selectors');
   }
 
   /**
    * Fill password field
    */
   async fillPassword(password: string): Promise<void> {
-    await this.getByTestId(SELECTORS_BY_TESTID.login.passwordInput).fill(password);
+    const byTestId = this.getByTestId(SELECTORS_BY_TESTID.login.passwordInput);
+    if ((await byTestId.count()) > 0) {
+      await byTestId.fill(password);
+      return;
+    }
+
+    const byPlaceholder = this.getByPlaceholder('password').first();
+    if ((await byPlaceholder.count()) > 0) {
+      await byPlaceholder.fill(password);
+      return;
+    }
+
+    await this.locator(SELECTORS.login.passwordInput).fill(password);
   }
 
   /**
@@ -36,7 +74,19 @@ export class LoginPage extends BasePage implements ILoginPage {
    * Prefers role-based locator for accessibility
    */
   async clickLoginButton(): Promise<void> {
-    await this.getByRole('button', { name: /login|sign in/i }).click();
+    const byRole = this.getByRole('button', { name: /login|sign in/i });
+    if ((await byRole.count()) > 0) {
+      await byRole.click();
+      return;
+    }
+
+    const byTestId = this.getByTestId(SELECTORS_BY_TESTID.login.submitButton);
+    if ((await byTestId.count()) > 0) {
+      await byTestId.click();
+      return;
+    }
+
+    await this.locator(SELECTORS.login.submitButton).click();
   }
 
   /**
