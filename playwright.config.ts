@@ -6,7 +6,28 @@ import { defineConfig, devices } from '@playwright/test';
  */
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+// Load app config mapping (optional)
+const appsPath = path.resolve(__dirname, 'config', 'apps.json');
+let apps: Record<string, any> = {};
+if (fs.existsSync(appsPath)) {
+  try {
+    apps = JSON.parse(fs.readFileSync(appsPath, 'utf8'));
+  } catch (e) {
+    // ignore malformed apps.json
+    console.warn('Unable to parse config/apps.json, ignoring');
+    apps = {};
+  }
+}
+
+const selectedApp = process.env.APP || process.env.PLAYWRIGHT_APP || 'local';
+const appConfig = apps[selectedApp] || {};
+
+// Propagate app-specific settings into environment so framework BasePage and others pick them up
+if (appConfig.baseUrl) process.env.BASE_URL = appConfig.baseUrl;
+if (appConfig.storageState) process.env.STORAGE_STATE = appConfig.storageState;
 
 /**
  * See https://playwright.dev/docs/test-configuration.
