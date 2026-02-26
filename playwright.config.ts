@@ -11,10 +11,18 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Load app config mapping (optional)
 const appsPath = path.resolve(__dirname, 'config', 'apps.json');
-let apps: Record<string, any> = {};
+type AppConfig = {
+  baseUrl?: string;
+  storageState?: string;
+};
+
+let apps: Record<string, AppConfig> = {};
 if (fs.existsSync(appsPath)) {
   try {
-    apps = JSON.parse(fs.readFileSync(appsPath, 'utf8'));
+    const parsed = JSON.parse(fs.readFileSync(appsPath, 'utf8')) as unknown;
+    if (parsed && typeof parsed === 'object') {
+      apps = parsed as Record<string, AppConfig>;
+    }
   } catch (e) {
     // ignore malformed apps.json
     console.warn('Unable to parse config/apps.json, ignoring');
