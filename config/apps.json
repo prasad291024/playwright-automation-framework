@@ -1,10 +1,14 @@
 {
   "vwo": {
-    "baseUrl": "https://app.vwo.com/#/login",
+    "baseUrl": "https://app.vwo.com",
     "storageState": ""
   },
   "orangehrm": {
     "baseUrl": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
+    "storageState": ""
+  },
+  "cura": {
+    "baseUrl": "https://katalon-demo-cura.herokuapp.com",
     "storageState": ""
   },
   "local": {

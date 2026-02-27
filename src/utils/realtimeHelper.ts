@@ -11,9 +11,9 @@ import { getEnv } from './envHelper';
 
 export async function emitRealtimeEvent(
   request: APIRequestContext,
-  payload: Record<string, any>,
+  payload: Record<string, unknown>,
   path?: string,
-): Promise<any> {
+): Promise<{ status: number; body: string }> {
   // Path may be passed explicitly by tests or taken from env
   const emitPath = path || getEnv('REALTIME_EMIT_PATH') || '/api/realtime/emit';
   const base = getEnv('BASE_API_URL') || getEnv('API_BASE_URL') || '';
