@@ -1,5 +1,5 @@
 import { expect, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { BasePage } from '../../BasePage';
 
 /**
  * VWO login page object.
@@ -7,7 +7,7 @@ import { BasePage } from './BasePage';
  */
 export class VwoLoginPage extends BasePage {
   async goto(): Promise<void> {
-    await this.page.goto(`${this.baseUrl}/#/login`);
+    await this.page.goto(this.resolveLoginUrl());
     await expect(this.emailInput()).toBeVisible();
   }
 
@@ -34,12 +34,11 @@ export class VwoLoginPage extends BasePage {
   }
 
   async assertInvalidLoginError(): Promise<void> {
-    const errorMessage = this.page
-      .locator('[role="alert"], .error, .error-message, .toast-message, .notification-error')
-      .filter({ hasText: /invalid|incorrect|wrong|failed|try again/i })
-      .first();
-
-    await expect(errorMessage).toBeVisible();
+    await expect(
+      this.page.getByText(
+        /did not match|invalid|incorrect|wrong|failed|try again|email, password, IP address/i,
+      ),
+    ).toBeVisible();
     await expect(this.page).toHaveURL(/#\/login/);
   }
 
@@ -69,6 +68,16 @@ export class VwoLoginPage extends BasePage {
   }
 
   private signInButton(): Locator {
-    return this.page.getByRole('button', { name: /sign in/i });
+    return this.page.getByRole('button', { name: 'Sign in', exact: true });
+  }
+
+  private resolveLoginUrl(): string {
+    const configuredBase = process.env.VWO_BASE_URL || 'https://app.vwo.com';
+
+    if (/#\/login\/?$/i.test(configuredBase)) {
+      return configuredBase;
+    }
+
+    return `${configuredBase.replace(/\/$/, '')}/#/login`;
   }
 }

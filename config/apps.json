@@ -1,6 +1,6 @@
 {
   "vwo": {
-    "baseUrl": "https://app.vwo.com/#/login",
+    "baseUrl": "https://app.vwo.com",
     "storageState": ""
   },
   "orangehrm": {
