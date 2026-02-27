@@ -7,6 +7,10 @@
     "baseUrl": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
     "storageState": ""
   },
+  "cura": {
+    "baseUrl": "https://katalon-demo-cura.herokuapp.com",
+    "storageState": ""
+  },
   "local": {
     "baseUrl": "http://localhost:3000",
     "storageState": "storage-state/storageState.json"

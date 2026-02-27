@@ -6,6 +6,8 @@
   "scripts": {
     "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
+    "test:performance": "playwright test tests/08-performance-testing/",
+    "test:a11y": "playwright test tests/09-accessibility-testing/",
     "test:headed": "playwright test --headed",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
