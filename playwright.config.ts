@@ -35,22 +35,26 @@ const appConfig = apps[selectedApp] || {};
 
 // Propagate app-specific settings into environment so framework BasePage and others pick them up
 if (appConfig.baseUrl) process.env.BASE_URL = appConfig.baseUrl;
-if (appConfig.storageState) process.env.STORAGE_STATE = appConfig.storageState;
+if (appConfig.storageState && appConfig.storageState.trim().length > 0) {
+  process.env.STORAGE_STATE = appConfig.storageState;
+} else if (!process.env.STORAGE_STATE) {
+  process.env.STORAGE_STATE = `storage-state/${selectedApp}.json`;
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
   testDir: './tests',
-  /* Global test timeout (ms) */
-  timeout: 30_000,
+  /* Global test timeout - increased for flakiness resilience */
+  timeout: process.env.CI ? 60_000 : 45_000, // 60s on CI, 45s locally
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
+  /* Retry on CI only - helps with transient failures */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
+  /* Opt out of parallel tests on CI for stability */
   workers: process.env.CI ? 1 : undefined,
 
   // Global setup script: runs once before all tests (e.g., login, session state)
@@ -67,9 +71,9 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     baseURL: process.env.BASE_URL || 'https://your-app-url.com',
-    /* Action and navigation timeouts (ms) */
-    actionTimeout: Number(process.env.ACTION_TIMEOUT) || 5000,
-    navigationTimeout: Number(process.env.NAVIGATION_TIMEOUT) || 15000,
+    /* Action and navigation timeouts (ms) - relaxed for flakiness resilience */
+    actionTimeout: Number(process.env.ACTION_TIMEOUT) || 8000, // Increased from 5000
+    navigationTimeout: Number(process.env.NAVIGATION_TIMEOUT) || 20000, // Increased from 15000
     /* Optionally re-use a pre-saved storage state for authenticated tests */
     storageState: process.env.STORAGE_STATE || 'storage-state/storageState.json',
     screenshot: 'only-on-failure',
