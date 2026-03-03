@@ -10,115 +10,126 @@ jobs:
   smoke_gate:
     name: Smoke Gate
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    name: Playwright Tests
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: npm
+    on:
+      push:
+        branches: [main, develop]
+      pull_request:
+        branches: [main, develop]
 
-      - name: Install dependencies
-        run: npm ci
+    jobs:
+      smoke_gate:
+        name: Smoke Gate
+        runs-on: ubuntu-latest
+        if: github.event_name == 'pull_request'
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
 
-      - name: Install Playwright browsers
-        run: npx playwright install chromium
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: '18'
+              cache: 'npm'
 
-      - name: Install Linux dependencies
-        if: ${{ runner.os == 'Linux' }}
-        run: npx playwright install-deps chromium
+          - name: Install dependencies
+            run: npm ci
 
-      - name: Run smoke tests
-        run: npm run test:smoke
-        env:
-          CI: "true"
+          - name: Install Playwright browsers
+            run: npx playwright install --with-deps chromium
 
-  test:
-    name: Test on ${{ matrix.os }} - ${{ matrix.browser }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        browser: [chromium, firefox, webkit]
-        exclude:
-          # Reduce matrix size while preserving useful coverage.
-          - os: windows-latest
-            browser: webkit
-          - os: macos-latest
-            browser: firefox
+          - name: Install Linux dependencies (native deps)
+            if: runner.os == 'Linux'
+            run: npx playwright install-deps chromium
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+          - name: Run smoke tests
+            run: npm run test:smoke
+            env:
+              CI: 'true'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: npm
+      test:
+        name: Test on ${{ matrix.os }} - ${{ matrix.browser }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+          fail-fast: false
+          matrix:
+            os: [ubuntu-latest, windows-latest, macos-latest]
+            browser: [chromium, firefox, webkit]
+            exclude:
+              - os: windows-latest
+                browser: webkit
+              - os: macos-latest
+                browser: firefox
 
-      - name: Install dependencies
-        run: npm ci
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
 
-      - name: Install Playwright browsers
-        run: npx playwright install ${{ matrix.browser }}
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: '18'
+              cache: 'npm'
 
-      - name: Install Linux dependencies
-        if: ${{ runner.os == 'Linux' }}
-        run: npx playwright install-deps ${{ matrix.browser }}
+          - name: Install dependencies
+            run: npm ci
 
-      - name: Run linting
-        run: npm run lint
+          - name: Install Playwright browsers
+            run: npx playwright install ${{ matrix.browser }}
 
-      - name: Run type checking
-        run: npm run typecheck
+          - name: Install Linux dependencies (native deps)
+            if: runner.os == 'Linux'
+            run: npx playwright install-deps ${{ matrix.browser }}
 
-      - name: Run Playwright tests on ${{ matrix.browser }}
-        run: npm test -- --project=${{ matrix.browser }}
-        env:
-          BROWSER: ${{ matrix.browser }}
+          - name: Run linting
+            run: npm run lint
 
-      - name: Upload Playwright HTML report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: playwright-report-${{ matrix.os }}-${{ matrix.browser }}
-          path: playwright-report/
-          retention-days: 30
+          - name: Run type checking
+            run: npm run typecheck
 
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-${{ matrix.os }}-${{ matrix.browser }}
-          path: test-results/
-          retention-days: 30
+          - name: Run Playwright tests on ${{ matrix.browser }}
+            run: npm test -- --project=${{ matrix.browser }}
+            env:
+              BROWSER: ${{ matrix.browser }}
 
-  lint:
-    name: Code Quality Checks
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+          - name: Upload Playwright HTML report
+            uses: actions/upload-artifact@v4
+            if: always()
+            with:
+              name: playwright-report-${{ matrix.os }}-${{ matrix.browser }}
+              path: playwright-report/
+              retention-days: 30
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: npm
+          - name: Upload test results
+            uses: actions/upload-artifact@v4
+            if: always()
+            with:
+              name: test-results-${{ matrix.os }}-${{ matrix.browser }}
+              path: test-results/
+              retention-days: 30
 
-      - name: Install dependencies
-        run: npm ci
+      lint:
+        name: Code Quality Checks
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
 
-      - name: Run ESLint
-        run: npm run lint
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: '18'
+              cache: 'npm'
 
-      - name: Check code formatting
-        run: npx prettier --check .
+          - name: Install dependencies
+            run: npm ci
 
-      - name: Run TypeScript compiler
-        run: npm run typecheck
+          - name: Run ESLint
+            run: npm run lint
+
+          - name: Check code formatting
+            run: npx prettier --check .
+
+          - name: Run TypeScript compiler
+            run: npm run typecheck
