@@ -1,5 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 import { BasePage } from '../../BasePage';
+import { resolveVwoLoginUrl } from '../../../utils/vwoAuth';
 
 /**
  * VWO login page object.
@@ -72,12 +73,6 @@ export class VwoLoginPage extends BasePage {
   }
 
   private resolveLoginUrl(): string {
-    const configuredBase = process.env.VWO_BASE_URL || 'https://app.vwo.com';
-
-    if (/#\/login\/?$/i.test(configuredBase)) {
-      return configuredBase;
-    }
-
-    return `${configuredBase.replace(/\/$/, '')}/#/login`;
+    return resolveVwoLoginUrl();
   }
 }

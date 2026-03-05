@@ -1,6 +1,7 @@
 import { chromium, expect, Page } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
+import { isValidEmail, resolveVwoLoginUrl } from '../src/utils/vwoAuth';
 
 async function globalSetup() {
   const selectedApp = process.env.APP || process.env.PLAYWRIGHT_APP || 'local';
@@ -61,17 +62,16 @@ async function loginCura(page: Page): Promise<boolean> {
 }
 
 async function loginVwo(page: Page): Promise<boolean> {
-  const vwoBase = process.env.VWO_BASE_URL || 'https://app.vwo.com';
   const email = process.env.VWO_EMAIL || '';
   const password = process.env.VWO_PASSWORD || '';
-  const hasEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const hasEmail = isValidEmail(email);
 
   if (!email || !password || !hasEmail) {
     console.log('VWO credentials missing or invalid. Set VWO_EMAIL and VWO_PASSWORD.');
     return false;
   }
 
-  const loginUrl = /#\/login\/?$/i.test(vwoBase) ? vwoBase : `${vwoBase}/#/login`;
+  const loginUrl = resolveVwoLoginUrl();
   await page.goto(loginUrl);
 
   await page

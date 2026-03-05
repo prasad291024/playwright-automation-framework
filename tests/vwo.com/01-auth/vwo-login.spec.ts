@@ -1,9 +1,10 @@
 import { test } from '@playwright/test';
 import { VwoLoginPage } from '../../../src/pages/vwo.com/01-auth/VwoLoginPage';
+import { isValidEmail } from '../../../src/utils/vwoAuth';
 
 const VWO_EMAIL = process.env.VWO_EMAIL || process.env.USERNAME || '';
 const VWO_PASSWORD = process.env.VWO_PASSWORD || process.env.PASSWORD || '';
-const HAS_EMAIL_FORMAT = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(VWO_EMAIL);
+const HAS_EMAIL_FORMAT = isValidEmail(VWO_EMAIL);
 
 test.describe('VWO Login', () => {
   test.skip(
