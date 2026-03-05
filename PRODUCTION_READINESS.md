@@ -299,11 +299,11 @@ Complete this checklist before deploying to production.
 
 ## Sign-Off
 
-- **Product Owner:** ********\_******** Date: **\_**
-- **Technical Lead:** ********\_******** Date: **\_**
-- **QA Lead:** ********\_******** Date: **\_**
-- **DevOps/Infrastructure:** ********\_******** Date: **\_**
-- **Security Officer:** ********\_******** Date: **\_**
+- **Product Owner:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
+- **Technical Lead:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
+- **QA Lead:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
+- **DevOps/Infrastructure:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
+- **Security Officer:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
 
 ---
 
