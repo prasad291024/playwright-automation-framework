@@ -41,6 +41,15 @@ if (appConfig.storageState && appConfig.storageState.trim().length > 0) {
   process.env.STORAGE_STATE = `storage-state/${selectedApp}.json`;
 }
 
+const resolvedStorageState = process.env.STORAGE_STATE;
+const storageStateExists = resolvedStorageState ? fs.existsSync(resolvedStorageState) : false;
+
+if (resolvedStorageState && !storageStateExists) {
+  console.warn(
+    `Storage state not found at ${resolvedStorageState}. Continuing without storage state.`,
+  );
+}
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -75,7 +84,7 @@ export default defineConfig({
     actionTimeout: Number(process.env.ACTION_TIMEOUT) || 8000, // Increased from 5000
     navigationTimeout: Number(process.env.NAVIGATION_TIMEOUT) || 20000, // Increased from 15000
     /* Optionally re-use a pre-saved storage state for authenticated tests */
-    storageState: process.env.STORAGE_STATE || 'storage-state/storageState.json',
+    storageState: storageStateExists ? resolvedStorageState : undefined,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',
