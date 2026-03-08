@@ -13,8 +13,6 @@ export interface EnvConfig {
 }
 
 export const getEnvConfig = (): EnvConfig => {
-  const env = process.env.NODE_ENV || 'test';
-
   return {
     baseUrl: process.env.BASE_URL || 'http://localhost:3000',
     headless: process.env.HEADLESS !== 'false',

@@ -31,7 +31,12 @@ class Logger {
     return new Date().toISOString();
   }
 
-  private log(level: LogLevel, message: string, context?: string, data?: Record<string, unknown>): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    context?: string,
+    data?: Record<string, unknown>,
+  ): void {
     const entry: LogEntry = {
       timestamp: this.formatTimestamp(),
       level,

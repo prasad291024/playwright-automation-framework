@@ -3,7 +3,7 @@
  * Provides custom fixtures for page objects and utilities
  */
 
-import { test as base, Page } from '@playwright/test';
+import { test as base } from '@playwright/test';
 import { logger } from '../utils/logger';
 import { LoginPage as SauceDemoLoginPage } from '../../apps/saucedemo/pages/LoginPage';
 import { InventoryPage } from '../../apps/saucedemo/pages/InventoryPage';
@@ -34,7 +34,7 @@ interface PageObjects {
  * Custom test fixture with page objects and utilities
  */
 export const test = base.extend<PageObjects>({
-  logger: async ({}, use) => {
+  logger: async (use) => {
     logger.info('Test started');
     await use(logger);
     logger.info('Test completed');

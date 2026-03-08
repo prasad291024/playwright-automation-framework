@@ -6,10 +6,14 @@ import { AppName } from '../../config/app.config';
  * Dynamically creates app-specific page objects
  */
 export class PageFactory {
-  private static pageClasses: Map<string, any> = new Map(); // eslint-disable-line @typescript-eslint/no-explicit-any
+  private static pageClasses: Map<string, new (page: import('@playwright/test').Page) => any> =
+    new Map();
 
-  static register(app: AppName, pageName: string, pageClass: any): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+  static register(
+    app: AppName,
+    pageName: string,
+    pageClass: new (page: import('@playwright/test').Page) => any,
+  ): void {
     this.pageClasses.set(`${app}-${pageName}`, pageClass);
   }
 
