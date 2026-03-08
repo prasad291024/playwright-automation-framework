@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { BasePage } from './base/BasePage';
 import { ILoginPage } from '../interface/pages.interface';
 import { SELECTORS_BY_TESTID, SELECTORS } from '../utils/selectors';
 

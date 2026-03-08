@@ -19,5 +19,10 @@
     }
   },
   "include": ["src/**/*", "tests/**/*", "globals/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "src/pages/katalon-demo-cura.herokuapp.com",
+    "src/pages/saucedemo.com",
+    "src/pages/vwo.com"
+  ]
 }

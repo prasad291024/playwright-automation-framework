@@ -9,37 +9,35 @@ import path from 'path';
 import fs from 'fs';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-// Load app config mapping (optional)
-const appsPath = path.resolve(__dirname, 'config', 'apps.json');
-type AppConfig = {
-  baseUrl?: string;
-  storageState?: string;
-};
+// Import app configuration
+import { AppRegistry, AppConfig, AppName } from './src/config/app.config';
 
-let apps: Record<string, AppConfig> = {};
+// Load app config mapping
+const appsPath = path.resolve(__dirname, 'config', 'apps.json');
 if (fs.existsSync(appsPath)) {
   try {
-    const parsed = JSON.parse(fs.readFileSync(appsPath, 'utf8')) as unknown;
-    if (parsed && typeof parsed === 'object') {
-      apps = parsed as Record<string, AppConfig>;
+    const parsed = JSON.parse(fs.readFileSync(appsPath, 'utf8')) as Record<string, AppConfig>;
+    for (const [appName, config] of Object.entries(parsed)) {
+      AppRegistry.register(appName as AppName, config);
     }
   } catch (e) {
-    // ignore malformed apps.json
     console.warn('Unable to parse config/apps.json, ignoring');
-    apps = {};
   }
 }
 
-const selectedApp = process.env.APP || process.env.PLAYWRIGHT_APP || 'local';
-const appConfig = apps[selectedApp] || {};
-
-// Propagate app-specific settings into environment so framework BasePage and others pick them up
-if (appConfig.baseUrl) process.env.BASE_URL = appConfig.baseUrl;
-if (appConfig.storageState && appConfig.storageState.trim().length > 0) {
-  process.env.STORAGE_STATE = appConfig.storageState;
-} else if (!process.env.STORAGE_STATE) {
-  process.env.STORAGE_STATE = `storage-state/${selectedApp}.json`;
+const selectedApp = (process.env.APP || process.env.PLAYWRIGHT_APP || 'local') as AppName;
+let appConfig: AppConfig;
+try {
+  appConfig = AppRegistry.get(selectedApp);
+} catch (e) {
+  console.warn(`App '${selectedApp}' not found in registry, falling back to local`);
+  appConfig = AppRegistry.get('local');
 }
+
+// Propagate app-specific settings into environment
+process.env.BASE_URL = appConfig.baseUrl;
+process.env.STORAGE_STATE = appConfig.storageState || `storage-state/${selectedApp}.json`;
+process.env.APP_NAME = selectedApp;
 
 const resolvedStorageState = process.env.STORAGE_STATE;
 const storageStateExists = resolvedStorageState ? fs.existsSync(resolvedStorageState) : false;
@@ -73,25 +71,35 @@ export default defineConfig({
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [['html'], ['list'], ['json', { outputFile: 'test-results/results.json' }]],
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    baseURL: process.env.BASE_URL || 'https://your-app-url.com',
-    /* Action and navigation timeouts (ms) - relaxed for flakiness resilience */
-    actionTimeout: Number(process.env.ACTION_TIMEOUT) || 8000, // Increased from 5000
-    navigationTimeout: Number(process.env.NAVIGATION_TIMEOUT) || 20000, // Increased from 15000
-    /* Optionally re-use a pre-saved storage state for authenticated tests */
+    baseURL: appConfig.baseUrl,
+    actionTimeout: appConfig.timeouts.action,
+    navigationTimeout: appConfig.timeouts.navigation,
     storageState: storageStateExists ? resolvedStorageState : undefined,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects for major browsers and applications */
   projects: [
+    // SauceDemo projects
+    {
+      name: 'saucedemo',
+      testDir: './tests/saucedemo',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    // CURA projects
+    {
+      name: 'cura',
+      testDir: './tests/cura',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    // Standard browser projects
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },

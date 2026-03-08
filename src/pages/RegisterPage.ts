@@ -1,4 +1,4 @@
-import { BasePage } from './BasePage';
+import { BasePage } from './base/BasePage';
 import { IRegisterPage } from '../interface/pages.interface';
 
 /**
