@@ -1,18 +1,106 @@
 {
   "vwo": {
+    "name": "VWO",
     "baseUrl": "https://app.vwo.com",
-    "storageState": ""
-  },
-  "orangehrm": {
-    "baseUrl": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
-    "storageState": ""
+    "storageState": "storage-state/vwo.json",
+    "authType": "email",
+    "authEndpoint": "/login",
+    "timeouts": {
+      "page": 15000,
+      "action": 8000,
+      "navigation": 20000
+    },
+    "selectors": {
+      "login": {
+        "emailInput": "[data-testid='email-input']",
+        "passwordInput": "[data-testid='password-input']",
+        "signInButton": "[data-testid='sign-in-btn']"
+      }
+    },
+    "features": ["auth", "dashboard", "api"],
+    "retryStrategy": "exponential",
+    "tags": ["@production", "@critical"]
   },
   "cura": {
+    "name": "CURA Healthcare",
     "baseUrl": "https://katalon-demo-cura.herokuapp.com",
-    "storageState": ""
+    "storageState": "storage-state/cura.json",
+    "authType": "username",
+    "authEndpoint": "/#login",
+    "timeouts": {
+      "page": 12000,
+      "action": 6000,
+      "navigation": 18000
+    },
+    "selectors": {
+      "login": {
+        "usernameInput": "#txt-username",
+        "passwordInput": "#txt-password",
+        "loginButton": "#btn-login"
+      }
+    },
+    "features": ["auth", "appointments", "api"],
+    "retryStrategy": "standard",
+    "tags": ["@demo", "@healthcare"]
+  },
+  "saucedemo": {
+    "name": "SauceDemo",
+    "baseUrl": "https://www.saucedemo.com",
+    "storageState": "storage-state/saucedemo.json",
+    "authType": "username",
+    "authEndpoint": "/",
+    "timeouts": {
+      "page": 10000,
+      "action": 5000,
+      "navigation": 15000
+    },
+    "selectors": {
+      "login": {
+        "usernameInput": "#user-name",
+        "passwordInput": "#password",
+        "loginButton": "#login-button"
+      }
+    },
+    "features": ["auth", "inventory", "cart"],
+    "retryStrategy": "standard",
+    "tags": ["@demo", "@ecommerce"]
+  },
+  "orangehrm": {
+    "name": "OrangeHRM",
+    "baseUrl": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
+    "storageState": "storage-state/orangehrm.json",
+    "authType": "username",
+    "authEndpoint": "",
+    "timeouts": {
+      "page": 15000,
+      "action": 8000,
+      "navigation": 20000
+    },
+    "selectors": {
+      "login": {
+        "usernameInput": "[name='username']",
+        "passwordInput": "[name='password']",
+        "loginButton": "[type='submit']"
+      }
+    },
+    "features": ["auth", "dashboard", "hr"],
+    "retryStrategy": "standard",
+    "tags": ["@demo", "@hr"]
   },
   "local": {
+    "name": "Local Development",
     "baseUrl": "http://localhost:3000",
-    "storageState": "storage-state/storageState.json"
+    "storageState": "storage-state/local.json",
+    "authType": "none",
+    "authEndpoint": "/",
+    "timeouts": {
+      "page": 10000,
+      "action": 5000,
+      "navigation": 15000
+    },
+    "selectors": {},
+    "features": ["auth", "dashboard"],
+    "retryStrategy": "standard",
+    "tags": ["@local", "@dev"]
   }
 }
