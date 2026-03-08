@@ -34,7 +34,7 @@ interface PageObjects {
  * Custom test fixture with page objects and utilities
  */
 export const test = base.extend<PageObjects>({
-  logger: async (use) => {
+  logger: async (_deps, use) => {
     logger.info('Test started');
     await use(logger);
     logger.info('Test completed');
