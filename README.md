@@ -1,86 +1,195 @@
 # Playwright Automation Framework
 
-A comprehensive, production-ready end-to-end testing framework built with **Playwright** and **TypeScript**, featuring Page Object Model (POM) architecture, API testing with schema validation, and full CI/CD integration.
+<div align="center">
+
+🎭 **A Production-Grade End-to-End Testing Framework**
+
+Built with **Playwright**, **TypeScript**, and **Industrial-Quality Automation**
+
+![Playwright](https://img.shields.io/badge/Playwright-v1.56+-0DB7ED?style=flat-square&logo=microsoftedge)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-3178C6?style=flat-square&logo=typescript)
+![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=flat-square&logo=node.js)
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Quality Gates](#-industrial-grade-quality-gates) • [CI/CD](#-cicd-pipeline)
+
+</div>
 
 ---
 
 ## 🚀 Features
 
-- ✅ **Page Object Model (POM)** with TypeScript interfaces and `BasePage` abstraction
-- ✅ **Role-based selectors** for accessible and maintainable tests
-- ✅ **API testing** with JSON schema validation (AJV)
-- ✅ **Type-safe API helpers** with automatic response validation
+<table>
+<tr>
+<td>
+
+### Core Framework
+
+- ✅ **Page Object Model (POM)** with TypeScript interfaces
 - ✅ **Multi-browser support** (Chromium, Firefox, WebKit)
-- ✅ **Data-driven testing** with external JSON files
-- ✅ **Code quality enforcement** (ESLint, Prettier, TypeScript strict)
-- ✅ **Pre-commit hooks** (Husky + lint-staged)
-- ✅ **GitHub Actions CI/CD** (multi-browser, multi-platform)
-- ✅ **Docker & Docker Compose** support for consistent environments
-- ✅ **Comprehensive reporting** (HTML, JSON, screenshots)
-- ✅ **Global setup/teardown** and authentication fixtures
+- ✅ **Accessible selectors** (role-based, test IDs)
+- ✅ **Global setup/teardown** and auth fixtures
+- ✅ **API testing** with JSON schema validation
+- ✅ **Data-driven testing** with external data files
+- ✅ **Comprehensive reporting** (HTML, JSON, videos, screenshots)
+
+</td>
+<td>
+
+### Quality & Reliability
+
+- ✅ **TypeScript strict mode** for type safety
+- ✅ **ESLint + Prettier** code quality enforcement
+- ✅ **Husky + lint-staged** pre-commit automation
+- ✅ **GitHub Actions CI/CD** multi-browser testing
+- ✅ **Flaky test protection** (retries, diagnostics)
+- ✅ **Test tagging strategy** (@smoke, @regression, @critical)
+- ✅ **Production diagnostics** (trace, video, screenshots)
+
+</td>
+<td>
+
+### Developer Experience
+
+- ✅ **Docker & Docker Compose** support
+- ✅ **Visual Studio Code integration**
+- ✅ **Automated test execution**
+- ✅ **Branch protection rules**
+- ✅ **Environment-specific configs**
+- ✅ **Real-time test reporting**
+- ✅ **Comprehensive documentation**
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 📁 Folder Structure
+## 📁 Project Structure
 
 ```
 .
-├── .github/
-│   └── workflows/                # GitHub Actions CI/CD pipelines
-│       ├── test.yml              # Multi-browser test workflow
-│       └── codeql.yml            # Security scanning
-├── .husky/
-│   └── pre-commit                # Pre-commit hook (runs lint-staged)
-├── src/
-│   ├── pages/                    # Page Object classes (extend BasePage)
-│   │   ├── BasePage.ts           # Abstract base with common methods
-│   │   ├── LoginPage.ts          # Example page object
-│   │   └── ...
-│   ├── interface/                # TypeScript interfaces
-│   │   ├── pages.interface.ts    # ILoginPage, IDashboardPage, etc.
-│   │   └── api.interface.ts      # API request/response types
-│   ├── utils/
-│   │   ├── selectors.ts          # Centralized selector definitions
-│   │   ├── apiHelper.ts          # Typed API client
-│   │   ├── schemaValidator.ts    # JSON schema validation (AJV)
-│   │   ├── logger.ts             # Logging utilities
-│   │   └── ...
-│   └── fixture/                  # Static test data & custom fixtures
-├── tests/
-│   ├── 01-fundamentals/          # Basic test examples
-│   ├── 02-interactions/          # User interaction tests
-│   ├── 03-test-organization/     # Grouped test examples
-│   ├── 04-advanced-features/     # Advanced patterns
-│   ├── 05-page-object-model/     # POM examples
-│   ├── 06-api-testing/           # API tests with schema validation
-│   └── config.ts                 # Test configuration
-├── test-data/
-│   ├── fixtures/                 # Test data files (JSON)
-│   ├── dev/                      # Environment-specific data
-│   ├── qa/
-│   └── storage-state/            # Saved browser state
-├── schemas/                      # JSON Schema definitions
-│   ├── user.schema.json          # User response schema
-│   ├── error.schema.json         # Error response schema
-│   └── createUser.request.schema.json # Request schema
-├── globals/
-│   ├── global-setup.ts           # Global setup (auth state, etc.)
-│   └── global-teardown.ts        # Cleanup
-├── playwright-report/            # HTML test reports
-├── test-results/                 # JSON test results
-├── screenshots/                  # Failure screenshots
-├── Dockerfile                    # Docker image configuration
-├── docker-compose.yml            # Docker Compose orchestration
-├── playwright.config.ts          # Playwright configuration
-├── tsconfig.json                 # TypeScript configuration
-├── .eslintrc.json                # ESLint rules
-├── .prettierrc.json              # Prettier formatting
-└── CONTRIBUTING.md               # Developer guidelines
+├── 🔧 Configuration & Setup
+│   ├── playwright.config.ts      # Playwright configuration (browsers, timeouts, retries)
+│   ├── tsconfig.json             # TypeScript strict mode configuration
+│   ├── .eslintrc.cjs             # ESLint rules and plugins
+│   ├── .prettierrc                # Prettier formatting rules
+│   └── .env.example              # Environment variables template
+│
+├── 🤖 CI/CD & Automation
+│   ├── .github/workflows/
+│   │   ├── pr-checks.yml         # PR validation (Lint, Type check, Smoke tests)
+│   │   ├── main-tests.yml        # Post-merge regression testing
+│   │   ├── test.yml              # Multi-browser test pipeline
+│   │   └── codeql.yml            # Security scanning
+│   ├── .husky/                   # Git hooks
+│   │   ├── pre-commit            # Pre-commit validation (lint-staged)
+│   │   ├── pre-push              # Pre-push quality checks
+│   │   ├── pre-merge             # Pre-merge validation
+│   │   └── post-merge            # Post-merge smoke tests
+│   ├── scripts/
+│   │   ├── git-hooks/
+│   │   │   ├── pre-commit.ps1    # PowerShell pre-commit script
+│   │   │   └── pre-commit.sh     # Bash pre-commit script
+│   │   ├── post-pull-checks.ps1  # Environment verification script
+│   │   └── post-pull-checks.sh   # Bash environment check
+│   └── Dockerfile & docker-compose.yml
+│
+├── 📝 Source Code
+│   ├── src/
+│   │   ├── pages/                # Page Object classes
+│   │   │   ├── BasePage.ts       # Abstract base with common methods
+│   │   │   ├── LoginPage.ts      # Example page objects
+│   │   │   ├── DashboardPage.ts
+│   │   │   └── infrastructure/
+│   │   │       ├── PageFactory.ts # Dynamic page object factory
+│   │   │       └── index.ts
+│   │   │
+│   │   ├── interface/            # TypeScript contracts
+│   │   │   ├── pages.interface.ts # ILoginPage, IDashboardPage, etc.
+│   │   │   └── api.interface.ts  # API request/response types
+│   │   │
+│   │   ├── utils/                # Utility functions
+│   │   │   ├── apiHelper.ts      # Type-safe API client
+│   │   │   ├── schemaValidator.ts # JSON schema validation (AJV)
+│   │   │   ├── selectors.ts      # Centralized selector definitions
+│   │   │   ├── assertions.ts     # Custom assertions
+│   │   │   ├── logger.ts         # Logging utilities
+│   │   │   └── [other utilities]
+│   │   │
+│   │   ├── core/                 # Core framework
+│   │   │   ├── base/BasePage.ts  # Base page object class
+│   │   │   ├── fixtures/         # Playwright fixtures
+│   │   │   └── utils/            # Core utilities
+│   │   │
+│   │   ├── fixture/              # Test data & fixtures
+│   │   │   ├── auth.fixture.ts   # Authentication fixture
+│   │   │   └── README.md
+│   │   │
+│   │   └── config/               # Application configurations
+│   │       ├── app.config.ts     # App registry and settings
+│   │       └── [app-specific configs]
+│   │
+│   ├── tests/                    # Test suites
+│   │   ├── 01-fundamentals/      # Basic test examples
+│   │   ├── 02-interactions/      # User interaction tests
+│   │   ├── 03-test-organization/ # Test organization patterns
+│   │   ├── 04-advanced-features/ # Advanced patterns (API, real-time)
+│   │   ├── 05-page-object-model/ # POM examples
+│   │   ├── 06-api-testing/       # API tests with schema validation
+│   │   ├── 07-smoke-testing/     # @smoke tagged smoke tests
+│   │   ├── 08-performance-testing/
+│   │   ├── 09-accessibility-testing/
+│   │   ├── 10-visual-regression/ # Visual regression testing
+│   │   └── config.ts             # Test configuration
+│   │
+│   ├── test-data/                # Test data files
+│   │   ├── fixtures/             # Shared test data (JSON)
+│   │   ├── dev/                  # Development environment data
+│   │   └── qa/                   # QA environment data
+│   │
+│   ├── schemas/                  # JSON Schema definitions
+│   │   ├── user.schema.json      # User response schema
+│   │   ├── error.schema.json     # Error response schema
+│   │   └── createUser.request.schema.json
+│   │
+│   ├── globals/                  # Global test setup/teardown
+│   │   ├── global-setup.ts       # Global authentication setup
+│   │   └── global-teardown.ts    # Cleanup operations
+│   │
+│   └── storage-state/            # Saved browser authentication state
+│
+├── 📊 Reports & Results
+│   ├── playwright-report/        # HTML test report (interactive)
+│   ├── test-results/             # JSON test results
+│   └── screenshots/              # Failure screenshots
+│
+├── 📚 Documentation
+│   ├── Documentations/
+│   │   ├── QUALITY_GATES.md      # Industrial quality gates strategy
+│   │   ├── FRAMEWORK_COMPLETE_GUIDE.md
+│   │   ├── ARCHITECTURE_VISUAL_GUIDE.md
+│   │   ├── LEARNING_GUIDE.md
+│   │   └── [other guides]
+│   ├── CONTRIBUTING.md           # Development guidelines
+│   ├── PRODUCTION_READINESS.md   # Production checklist
+│   └── SECURITY.md              # Security guidelines
+│
+└── 📦 Dependencies & Configuration
+    ├── package.json
+    ├── package-lock.json
+    ├── .gitignore
+    └── README.md (this file)
 ```
 
 ---
 
-## 🧪 Quick Start
+## ⚡ Quick Start
+
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+- Git
 
 ### Installation
 
@@ -94,9 +203,690 @@ npm install
 
 # Install Playwright browsers
 npx playwright install
+
+# Verify environment
+npm run verify-env
 ```
 
 ### Environment Setup
+
+Create a `.env` file in the project root:
+
+```bash
+# Application Configuration
+BASE_URL=https://your-app-url.com
+APP_NAME=local  # or: saucedemo, cura, vwo
+
+# Authentication
+USERNAME=your_username
+PASSWORD=your_password
+
+# Logging
+LOG_LEVEL=info  # debug, info, warn, error
+
+# Timeouts (milliseconds)
+ACTION_TIMEOUT=5000
+NAVIGATION_TIMEOUT=30000
+```
+
+### Running Tests
+
+```bash
+# Run all tests (headless)
+npm test
+
+# Run smoke tests only (@smoke tag)
+npm run test:smoke
+
+# Run with visible browser
+npm run test:headed
+
+# Run specific test file
+npx playwright test tests/01-fundamentals/login.spec.ts
+
+# Run tests matching pattern
+npx playwright test --grep "login"
+
+# Debug a specific test
+npx playwright test tests/auth.spec.ts --debug
+
+# View HTML report
+npx playwright show-report
+```
+
+---
+
+## 🏗️ Architecture & Design Patterns
+
+### Page Object Model with Interfaces
+
+TypeScript interfaces enforce contracts for page objects:
+
+```typescript
+// Interface (contract)
+export interface ILoginPage {
+  navigate(): Promise<void>;
+  fillUsername(username: string): Promise<void>;
+  clickLoginButton(): Promise<void>;
+  getErrorMessage(): Promise<string>;
+}
+
+// Implementation
+export class LoginPage extends BasePage implements ILoginPage {
+  async navigate(): Promise<void> {
+    await this.goto('/login');
+    await this.waitForPageLoad();
+  }
+
+  async fillUsername(username: string): Promise<void> {
+    await this.getByTestId('username-input').fill(username);
+  }
+
+  async clickLoginButton(): Promise<void> {
+    await this.getByRole('button', { name: /sign in/i }).click();
+  }
+}
+```
+
+### Selector Strategy (Priority Order)
+
+1. **Test ID** — `data-testid` (explicit, maintainable)
+
+   ```typescript
+   await this.getByTestId('submit-button').click();
+   ```
+
+2. **Role-based** — `getByRole` (accessible, semantic)
+
+   ```typescript
+   await this.getByRole('button', { name: /login/i }).click();
+   ```
+
+3. **Text/Placeholder** — User-centric selectors
+
+   ```typescript
+   await this.getByText('Submit').click();
+   ```
+
+4. **CSS/XPath** — Last resort only (fragile, avoid when possible)
+
+### BasePage Abstract Class
+
+All page objects inherit from `BasePage` for unified locator strategies:
+
+```typescript
+export abstract class BasePage {
+  constructor(protected page: Page) {}
+
+  // Role-based selectors (preferred for accessibility)
+  protected getByRole(role: AriaRole, options?: GetByRoleOptions) {
+    return this.page.getByRole(role, options);
+  }
+
+  // Test ID selectors (explicit, maintainable)
+  protected getByTestId(testId: string) {
+    return this.page.getByTestId(testId);
+  }
+
+  // Navigation helpers
+  async goto(path: string) { ... }
+  async navigateTo(url: string) { ... }
+  async waitForPageLoad() { ... }
+
+  // Common assertions
+  async waitForElement(selector: string) { ... }
+  async isElementVisible(locator: Locator) { ... }
+}
+```
+
+---
+
+## 🔌 API Testing with Schema Validation
+
+### Type-Safe API Client
+
+```typescript
+import { apiHelper } from '../src/utils/apiHelper';
+
+// Automatically validates response against user.schema.json
+const user = await apiHelper.getUser(1);
+console.log(user.id, user.name, user.email);
+
+// Create user with automatic validation
+const newUser = await apiHelper.createUser({
+  name: 'John Doe',
+  email: 'john@example.com',
+  phone: '555-1234',
+});
+
+// Validation error handling
+try {
+  const response = await apiHelper.getUser(999);
+} catch (error) {
+  console.error('API Error or validation failed:', error.message);
+}
+```
+
+### JSON Schema Validation with AJV
+
+```typescript
+import { schemaValidator } from '../src/utils/schemaValidator';
+
+// Validate data against schema
+const result = schemaValidator.validate(userData, 'user.schema.json');
+if (!result.isValid) {
+  console.error('Validation errors:', result.errors);
+}
+
+// Validate or throw
+schemaValidator.validateOrThrow(response, 'user.schema.json');
+
+// Get human-readable errors
+const messages = schemaValidator.getErrorMessages('user.schema.json', data);
+messages.forEach((msg) => console.log(msg));
+```
+
+---
+
+## 🛡️ Industrial-Grade Quality Gates
+
+This framework implements **four control points** in the development lifecycle to ensure production-ready automation code.
+
+### 1️⃣ Pre-Commit Checks (Local Developer Guard)
+
+**Purpose:** Prevent bad code from entering the repository
+
+**Trigger:** Automatic on `git commit`
+
+**Technology:** Husky + lint-staged
+
+**Checks:**
+
+- ✅ ESLint validation with auto-fix
+- ✅ Prettier formatting with auto-fix
+- ✅ TypeScript compilation (manual: `npm run typecheck`)
+
+```bash
+# Automatic on every commit
+git commit -m "feat: my changes"
+# → Husky runs ESLint + Prettier automatically
+# → Commit succeeds if all checks pass
+# → Commit fails if checks cannot be auto-fixed
+```
+
+**Files Modified:**
+
+- `.husky/pre-commit` — Runs `npx lint-staged`
+- `scripts/git-hooks/pre-commit.ps1` & `.sh` — Alternative implementation
+
+### 2️⃣ Post-Pull Checks (Environment Health Verification)
+
+**Purpose:** Verify developer environment consistency after repository updates
+
+**Trigger:** Manual execution after `git pull`
+
+**Command:** `npm run verify-env`
+
+**Checks:**
+
+- ✅ Dependencies installation
+- ✅ Browser installation
+- ✅ Code quality validation
+- ✅ Smoke test execution (@smoke)
+
+```bash
+# After pulling new changes
+git pull
+npm run verify-env
+# → Installs dependencies
+# → Installs browsers
+# → Runs linting and type checking
+# → Executes smoke test suite
+```
+
+**Implementation:**
+
+- `scripts/post-pull-checks.ps1` — PowerShell version
+- `scripts/post-pull-checks.sh` — Bash version
+- Package.json script: `"verify-env"`
+
+### 3️⃣ Pre-Merge Checks (Pull Request Quality Gate)
+
+**Purpose:** Validate code meets standards before merge to main
+
+**Trigger:** Pull Request to `main` branch
+
+**Technology:** GitHub Actions
+
+**Workflow:** `.github/workflows/pr-checks.yml`
+
+**Checks:**
+
+- ✅ **Lint Job** — ESLint validation
+- ✅ **Type check Job** — TypeScript compilation
+- ✅ **Unit / smoke tests Job** — Smoke test suite (@smoke)
+
+**Each job appears as individual status check:**
+
+- `Lint` ✅
+- `Type check` ✅
+- `Unit / smoke tests` ✅
+
+```yaml
+# Jobs run in parallel after dependency installation
+jobs:
+  install-dependencies:
+    runs-on: ubuntu-latest
+  lint:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+  typecheck:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+  test:
+    runs-on: ubuntu-latest
+    needs: install-dependencies
+```
+
+### 4️⃣ Post-Merge Checks (Main Branch Protection)
+
+**Purpose:** Ensure main branch remains production-ready
+
+**Trigger:** Push to `main` branch after merge
+
+**Workflow:** `.github/workflows/main-tests.yml`
+
+**Checks:**
+
+- ✅ Full regression test suite
+- ✅ All browsers (Chromium, Firefox, WebKit)
+- ✅ HTML report generation
+- ✅ Artifact upload (30-day retention)
+
+---
+
+## 🏷️ Test Tagging Strategy
+
+Tests are tagged for selective execution across the pipeline:
+
+| Tag              | Purpose                            | When to Use                         |
+| ---------------- | ---------------------------------- | ----------------------------------- |
+| `@smoke`         | Core health checks, fast execution | PR validation, smoke testing        |
+| `@regression`    | Full feature coverage              | Post-merge validation, nightly runs |
+| `@critical`      | High-risk business flows           | Production-critical tests           |
+| `@performance`   | Performance benchmarks             | Performance testing pipeline        |
+| `@accessibility` | A11y compliance checks             | Accessibility testing               |
+| `@visual`        | Visual regression tests            | Visual regression pipeline          |
+
+### Usage Example
+
+```typescript
+// Smoke test (runs in PR validation)
+test('@smoke - user can login', async ({ page }) => {
+  // Test implementation
+});
+
+// Regression test (runs on main branch)
+test('@regression - user can update profile', async ({ page }) => {
+  // Test implementation
+});
+
+// Critical path test
+test('@critical - payment processing', async ({ page }) => {
+  // Test implementation
+});
+```
+
+### Running Tests by Tag
+
+```bash
+# Run only smoke tests
+npx playwright test --grep @smoke
+
+# Run regression tests
+npx playwright test --grep @regression
+
+# Run critical tests
+npx playwright test --grep @critical
+
+# Run all except smoke
+npx playwright test --grep --invert @smoke
+```
+
+---
+
+## 🔄 Flaky Test Protection
+
+The framework includes built-in strategies to reduce flakiness:
+
+### Automatic Retries
+
+```typescript
+// playwright.config.ts
+export default defineConfig({
+  // Retry failed tests in CI, not locally
+  retries: process.env.CI ? 2 : 0,
+
+  // Detailed diagnostics on first retry
+  trace: 'on-first-retry',
+  video: 'retain-on-failure',
+  screenshot: 'only-on-failure',
+});
+```
+
+### Wait Strategies
+
+```typescript
+// Always wait for ready state
+await page.goto(url, { waitUntil: 'networkidle' });
+
+// Use Playwright's built-in waits
+await page.waitForLoadState('networkidle');
+await page.waitForSelector('.loaded', { timeout: 10000 });
+```
+
+### Smart Assertions
+
+```typescript
+// Playwright auto-waits for assertions
+await expect(element).toBeVisible(); // Waits up to 5s
+await expect(element).toHaveText('Expected text'); // Auto-waits
+```
+
+---
+
+## 📊 Test Reports & Diagnostics
+
+### HTML Report (Interactive)
+
+```bash
+npx playwright show-report
+```
+
+Location: `playwright-report/index.html`
+
+Shows:
+
+- ✅ Test execution timeline
+- ✅ Pass/fail breakdown
+- ✅ Screenshots of failures
+- ✅ Video playback
+- ✅ Execution traces for debugging
+
+### JSON Report (Machine Readable)
+
+Location: `test-results/results.json`
+
+Use for:
+
+- CI/CD integration
+- Dashboards
+- Custom analytics
+
+### Failure Diagnostics
+
+Automatically captured for failed tests:
+
+- 📸 Screenshots
+- 🎥 Video recordings
+- 📍 Execution traces
+- 🔍 Network logs
+
+---
+
+## 🔐 Branch Protection Rules
+
+Configure the following in GitHub repository settings to protect the `main` branch:
+
+### Required Settings
+
+✅ **Require status checks to pass before merging**
+
+- `Lint`
+- `Type check`
+- `Unit / smoke tests`
+
+✅ **Require branches to be up to date before merging**
+
+✅ **Require pull request reviews before merging**
+
+- Minimum: 1 approval
+
+✅ **Require conversation resolution before merging**
+
+✅ **Require linear history**
+
+### Additional Protections
+
+✅ **Block force pushes**
+
+✅ **Restrict who can push to matching branches**
+
+### Configuration Steps
+
+1. Go to: Settings → Branches
+2. Click "Add rule"
+3. Branch name pattern: `main`
+4. Enable protections above
+5. Click "Create"
+
+See [Branch Protection Documentation](./Documentations/QUALITY_GATES.md) for detailed setup.
+
+---
+
+## 🔧 NPM Scripts
+
+| Command                | Purpose                   |
+| ---------------------- | ------------------------- |
+| `npm test`             | Run all tests (headless)  |
+| `npm run test:headed`  | Run with visible browser  |
+| `npm run test:debug`   | Debug mode with inspector |
+| `npm run test:ui`      | Interactive UI mode       |
+| `npm run test:smoke`   | Run @smoke tests only     |
+| `npm run lint`         | Check code style          |
+| `npm run lint:fix`     | Auto-fix linting issues   |
+| `npm run format`       | Format code               |
+| `npm run format:check` | Check formatting          |
+| `npm run typecheck`    | Validate TypeScript       |
+| `npm run verify-env`   | Verify environment health |
+| `npm run pre-pull`     | Pre-pull checks           |
+| `npm run pre-merge`    | Pre-merge checks          |
+| `npm run pre-push`     | Pre-push checks           |
+
+---
+
+## 🐳 Docker Support
+
+### Docker Compose
+
+```bash
+# Run tests in Docker
+docker-compose up test
+
+# Run specific browser
+docker-compose up test -- --project=firefox
+
+# Run with headed browser
+docker-compose run --build test-headed
+
+# Build image
+docker-compose build
+```
+
+### Manual Docker
+
+```bash
+# Build image
+docker build -t playwright-tests .
+
+# Run tests
+docker run --rm \
+  -v $(pwd)/test-results:/app/test-results \
+  -v $(pwd)/playwright-report:/app/playwright-report \
+  playwright-tests
+```
+
+---
+
+## 💡 Complete Test Example
+
+```typescript
+import { test, expect } from '@playwright/test';
+import { LoginPage } from '../src/pages/LoginPage';
+import { DashboardPage } from '../src/pages/DashboardPage';
+
+test.describe('User Authentication @smoke', () => {
+  let loginPage: LoginPage;
+  let dashboardPage: DashboardPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    dashboardPage = new DashboardPage(page);
+  });
+
+  test('should login with valid credentials', async () => {
+    // Arrange
+    const testUser = {
+      username: 'test@example.com',
+      password: 'SecurePassword123',
+    };
+
+    // Act
+    await loginPage.navigate();
+    await loginPage.fillUsername(testUser.username);
+    await loginPage.fillPassword(testUser.password);
+    await loginPage.clickLoginButton();
+
+    // Assert
+    await expect(dashboardPage.getWelcomeMessage()).toContainText(`Welcome, ${testUser.username}`);
+  });
+
+  test('should display error with invalid credentials', async () => {
+    // Act
+    await loginPage.navigate();
+    await loginPage.fillUsername('invalid@example.com');
+    await loginPage.fillPassword('wrong');
+    await loginPage.clickLoginButton();
+
+    // Assert
+    await expect(loginPage.getErrorMessage()).toBeVisible();
+  });
+
+  test('should require username and password', async () => {
+    // Act
+    await loginPage.navigate();
+    await loginPage.clickLoginButton();
+
+    // Assert
+    await expect(loginPage.getUsernameError()).toContainText('Username is required');
+  });
+});
+```
+
+---
+
+## 📚 Documentation
+
+Comprehensive guides available in `Documentations/`:
+
+| Document                                                                      | Purpose                           |
+| ----------------------------------------------------------------------------- | --------------------------------- |
+| [QUALITY_GATES.md](./Documentations/QUALITY_GATES.md)                         | Industrial quality gates strategy |
+| [FRAMEWORK_COMPLETE_GUIDE.md](./Documentations/FRAMEWORK_COMPLETE_GUIDE.md)   | Complete framework guide          |
+| [ARCHITECTURE_VISUAL_GUIDE.md](./Documentations/ARCHITECTURE_VISUAL_GUIDE.md) | Architecture diagrams             |
+| [LEARNING_GUIDE.md](./Documentations/LEARNING_GUIDE.md)                       | Learning path for new developers  |
+| [PRODUCTION_READINESS.md](./PRODUCTION_READINESS.md)                          | Production checklist              |
+| [CONTRIBUTING.md](./CONTRIBUTING.md)                                          | Development guidelines            |
+
+---
+
+## 🤝 Contributing
+
+We follow strict quality and contribution guidelines.
+
+### Development Workflow
+
+1. **Sync and verify environment**
+
+   ```bash
+   git pull
+   npm run verify-env
+   ```
+
+2. **Create feature branch**
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. **Develop and test**
+
+   ```bash
+   npm test  # Run tests locally
+   ```
+
+4. **Commit with pre-commit hooks**
+
+   ```bash
+   git add .
+   git commit -m "feat: your feature"
+   # → Pre-commit hooks run automatically
+   ```
+
+5. **Push feature branch**
+
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+6. **Create Pull Request**
+   - PR validation runs automatically
+   - Must pass all checks: Lint, Type check, Smoke tests
+
+7. **Merge to main**
+   - Requires 1 approval
+   - All status checks must pass
+   - Post-merge regression suite runs
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+---
+
+## 🌐 Resources
+
+- [Playwright Documentation](https://playwright.dev/)
+- [Page Object Model](https://playwright.dev/docs/pom)
+- [TypeScript Handbook](https://www.typescriptlang.org/)
+- [AJV JSON Schema Validator](https://ajv.js.org/)
+- [ESLint Rules](https://eslint.org/)
+- [Prettier Code Formatter](https://prettier.io/)
+- [GitHub Actions](https://docs.github.com/en/actions)
+- [Docker Documentation](https://docs.docker.com/)
+
+---
+
+## 🎯 Next Steps
+
+- ✅ Review [QUALITY_GATES.md](./Documentations/QUALITY_GATES.md) for quality automation details
+- ✅ Check [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines
+- ✅ Explore [tests/](./tests/) for test examples
+- ✅ Read [PRODUCTION_READINESS.md](./PRODUCTION_READINESS.md) before production deployment
+
+---
+
+## 📄 License
+
+ISC
+
+---
+
+<div align="center">
+
+Made with ❤️ by **Prasad** — Test Automation Engineer
+
+**[⭐ Star on GitHub](https://github.com/prasad291024/playwright-automation-framework)** if you find this useful!
+
+</div>
 
 Create a `.env` file in the project root:
 
