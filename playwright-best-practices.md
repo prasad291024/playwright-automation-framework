@@ -39,7 +39,7 @@ export abstract class BasePage {
    */
   protected getByRole(
     role: 'button' | 'link' | 'textbox' | 'heading',
-    options?: { name?: string | RegExp; exact?: boolean }
+    options?: { name?: string | RegExp; exact?: boolean },
   ): Locator {
     return this.page.getByRole(role, options);
   }
@@ -176,7 +176,7 @@ export abstract class BasePage {
    */
   protected async expectWithRetry(
     assertion: () => Promise<void>,
-    options?: { maxAttempts?: number; interval?: number }
+    options?: { maxAttempts?: number; interval?: number },
   ) {
     const { maxAttempts = 3, interval = 1000 } = options || {};
 
@@ -211,7 +211,7 @@ export abstract class BasePage {
     // Take screenshot for visual debugging
     await this.page.screenshot({
       path: `debug-${Date.now()}.png`,
-      fullPage: true
+      fullPage: true,
     });
   }
 }
@@ -250,10 +250,10 @@ export class LoginPage extends BasePage {
 export class ProductPage extends BasePage {
   private async getAddToCartButton(): Promise<Locator> {
     return this.findElement([
-      this.getByTestId('add-to-cart'),           // Preferred
+      this.getByTestId('add-to-cart'), // Preferred
       this.getByRole('button', { name: 'Add to Cart' }), // Fallback
-      '[data-cy="add-to-cart"]',                 // CSS fallback
-      'button:has-text("Add to Cart")'           // Text fallback
+      '[data-cy="add-to-cart"]', // CSS fallback
+      'button:has-text("Add to Cart")', // Text fallback
     ]);
   }
 
@@ -277,7 +277,7 @@ export class DashboardPage extends BasePage {
       async () => {
         await expect(this.welcomeMessage).toContainText(expectedText);
       },
-      { maxAttempts: 5, interval: 500 }
+      { maxAttempts: 5, interval: 500 },
     );
   }
 }

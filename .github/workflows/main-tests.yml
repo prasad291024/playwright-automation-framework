@@ -2,7 +2,7 @@ name: Main Branch Test Suite
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   regression:
