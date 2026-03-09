@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# run lint and typecheck before pulling
+npm run lint && npm run typecheck

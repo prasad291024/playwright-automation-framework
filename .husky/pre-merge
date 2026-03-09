@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# before merging a branch locally, ensure tests are green
+npm run lint && npm run typecheck && npm test -- --grep @smoke

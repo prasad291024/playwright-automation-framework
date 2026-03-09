@@ -1,4 +1,4 @@
-import Ajv, { ValidateFunction } from 'ajv';
+import Ajv from 'ajv';
 import fs from 'fs';
 import path from 'path';
 
@@ -16,13 +16,12 @@ import path from 'path';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class SchemaValidator {
   private ajv: Ajv;
-  private schemas: Map<string, ValidateFunction<any>> = new Map();
+  private schemas: Map<string, any> = new Map();
   private schemaDir: string;
 
   constructor(schemaDir?: string) {
     this.ajv = new Ajv({
       allErrors: true,
-      strict: false,
     });
 
     this.schemaDir = schemaDir || path.resolve(process.cwd(), 'schemas');
@@ -37,7 +36,7 @@ export class SchemaValidator {
    * @param schemaFileName - Name of the schema file (e.g., 'user.schema.json')
    * @returns Compiled schema validator
    */
-  private loadSchema(schemaFileName: string): ValidateFunction<any> {
+  private loadSchema(schemaFileName: string): any {
     // Check if already compiled
     if (this.schemas.has(schemaFileName)) {
       return this.schemas.get(schemaFileName)!;

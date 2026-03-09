@@ -1,0 +1,6 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# after merge or pull, reinstall deps and run smoke tests
+npm ci
+npm run test:smoke
