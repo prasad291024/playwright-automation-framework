@@ -67,7 +67,9 @@ playwright.config.ts             [✅ Updated with multi-project setup]
 ## Core Components
 
 ### 1. BasePage.ts
+
 **Location**: `src/core/BasePage.ts`
+
 - Abstract base class for all page objects
 - Encapsulates common Playwright operations
 - Methods: `navigate()`, `click()`, `fill()`, `waitForVisible()`, `assertVisible()`
@@ -75,7 +77,9 @@ playwright.config.ts             [✅ Updated with multi-project setup]
 - All page objects extend this class
 
 ### 2. Logger Utility
+
 **Location**: `src/core/utils/logger.ts`
+
 - Structured logging with emoji indicators
 - Log levels: ERROR, WARN, INFO, DEBUG, PASS
 - Timestamps on all log entries
@@ -83,7 +87,9 @@ playwright.config.ts             [✅ Updated with multi-project setup]
 - Thread-safe singleton instance
 
 ### 3. Wait Utilities
+
 **Location**: `src/core/utils/waitUtils.ts`
+
 - `waitForNetworkIdle()` - Network idle with fallback
 - `waitForStable()` - Element stability and animations
 - `waitForAllConditions()` - Multiple condition polling
@@ -91,7 +97,9 @@ playwright.config.ts             [✅ Updated with multi-project setup]
 - No hard timeouts - stability-focused
 
 ### 4. Random Data Utilities
+
 **Location**: `src/core/utils/randomUtils.ts`
+
 - `getRandomString()` - Configurable random text
 - `getRandomEmail()` - Email address generation
 - `getRandomNumber()` - Range-based number generation
@@ -102,7 +110,9 @@ playwright.config.ts             [✅ Updated with multi-project setup]
 - `getRandomBoolean()` - Boolean flag generation
 
 ### 5. Test Fixtures
+
 **Location**: `src/core/fixtures/test.fixture.ts`
+
 - Custom Playwright test fixture
 - Exposes all page objects to tests
 - Provides logger utility
@@ -111,7 +121,9 @@ playwright.config.ts             [✅ Updated with multi-project setup]
 - Automatic lifecycle management
 
 ### 6. Configuration Files
+
 **Locations**: `src/config/`
+
 - `env.config.ts` - Environment variables and timeouts
 - `saucedemo.config.ts` - SauceDemo-specific URLs and selectors
 - `cura.config.ts` - CURA-specific URLs and selectors
@@ -124,6 +136,7 @@ playwright.config.ts             [✅ Updated with multi-project setup]
 ### SauceDemo Pages
 
 #### LoginPage
+
 ```
 Selectors:
 - #user-name        → Username input
@@ -135,6 +148,7 @@ Methods:
 ```
 
 #### InventoryPage
+
 ```
 Selectors:
 - .inventory_list               → Inventory container
@@ -146,6 +160,7 @@ Methods:
 ```
 
 #### CartPage
+
 ```
 Selectors:
 - .shopping_cart_link           → Cart icon/link
@@ -159,6 +174,7 @@ Methods:
 ### CURA Pages
 
 #### LoginPage
+
 ```
 Selectors:
 - #txt-username                 → Username field
@@ -170,6 +186,7 @@ Methods:
 ```
 
 #### AppointmentPage
+
 ```
 Selectors:
 - #combo_facility               → Facility dropdown
@@ -183,6 +200,7 @@ Methods:
 ```
 
 #### ConfirmationPage
+
 ```
 Selectors:
 - #summary                      → Confirmation section
@@ -198,6 +216,7 @@ Methods:
 ### SauceDemo Tests
 
 #### Smoke Test: tests/saucedemo/smoke/login.spec.ts
+
 ```
 Scenario: user can login successfully
 Steps:
@@ -207,6 +226,7 @@ Steps:
 ```
 
 #### Regression Test: tests/saucedemo/regression/add-to-cart.spec.ts
+
 ```
 Scenario: user can add product to cart
 Steps:
@@ -220,6 +240,7 @@ Steps:
 ### CURA Tests
 
 #### Smoke Test: tests/cura/smoke/login.spec.ts
+
 ```
 Scenario: user can login to CURA
 Steps:
@@ -229,6 +250,7 @@ Steps:
 ```
 
 #### Regression Test: tests/cura/regression/book-appointment.spec.ts
+
 ```
 Scenario: user can book appointment
 Steps:
@@ -246,6 +268,7 @@ Steps:
 ## Playwright Configuration
 
 ### Multi-Project Setup
+
 ```typescript
 projects: [
   {
@@ -259,10 +282,11 @@ projects: [
     use: { ...devices['Desktop Chrome'] },
   },
   // ... additional browser projects
-]
+];
 ```
 
 ### Global Settings
+
 - **Timeout**: 45s (local), 60s (CI)
 - **Retries**: 2 (CI only)
 - **Workers**: Auto (local), 1 (CI)
@@ -302,6 +326,7 @@ npx playwright show-report
 ## Quality Metrics
 
 ### Code Quality
+
 ✅ **Clean TypeScript** - Full type safety, no `any` types
 ✅ **No Hard Waits** - Uses Playwright's intelligent wait strategies  
 ✅ **No Duplicated Selectors** - Centralized in page objects
@@ -311,6 +336,7 @@ npx playwright show-report
 ✅ **Proper Assertions** - Uses Playwright expect API
 
 ### Architecture Quality
+
 ✅ **Modular Design** - App-specific modules isolated
 ✅ **Extensible** - New apps without code changes
 ✅ **Maintainable** - Clear separation of concerns
@@ -319,6 +345,7 @@ npx playwright show-report
 ✅ **Enterprise-Ready** - Production best practices
 
 ### Test Quality
+
 ✅ **Page Object Model** - All tests use page objects
 ✅ **Deterministic** - No flaky waits or timing issues
 ✅ **Comprehensive** - Smoke and regression coverage
@@ -380,6 +407,7 @@ npx playwright show-report
 ## Next Steps / Extensibility
 
 ### Adding New Applications
+
 1. Create `src/apps/{appname}/pages/` directory
 2. Implement page objects extending BasePage
 3. Create `src/apps/{appname}/test-data/` with test data
@@ -389,6 +417,7 @@ npx playwright show-report
 7. Framework handles the rest automatically
 
 ### Future Enhancements
+
 - API testing integration
 - Visual regression testing
 - Performance testing utilities

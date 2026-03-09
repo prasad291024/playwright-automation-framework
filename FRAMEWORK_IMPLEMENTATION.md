@@ -319,7 +319,7 @@ import { users } from '../../../src/apps/saucedemo/test-data/users';
 
 test('user can login successfully', async ({ page, logger }) => {
   logger.info('Starting SauceDemo login test');
-  
+
   const loginPage = new LoginPage(page);
   await loginPage.navigate('https://www.saucedemo.com');
   logger.info('Navigated to SauceDemo');
