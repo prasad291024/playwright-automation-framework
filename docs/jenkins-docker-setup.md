@@ -22,9 +22,12 @@ Before this job will run successfully, the Jenkins host must have:
 - Docker installed and running
 - Jenkins `Docker Pipeline` plugin installed
 - Git, Slack, HTML Publisher, JUnit, Workspace Cleanup, and Pipeline plugins available
+- `AnsiColor` and `Timestamper` plugins available for the pipeline options in `Jenkinsfile.docker`
 
 `jenkins/plugins.txt` now includes:
 - `docker-workflow`
+- `ansicolor`
+- `timestamper`
 
 ## Recommended Jenkins Job Type
 Use a separate Jenkins job or multibranch pipeline for this repo.
@@ -59,14 +62,14 @@ Suggested names:
 ## Parameters
 The Docker pipeline exposes these Jenkins parameters:
 - `TEST_SCOPE`: `smoke` or `full`
-- `PLAYWRIGHT_PROJECT`: `chromium`, `firefox`, or `webkit`
+- `PLAYWRIGHT_PROJECT`: `chromium`, `firefox`, `webkit`, `saucedemo`, or `cura`
 - `APP`: `local`, `vwo`, `cura`, `saucedemo`, or `orangehrm`
 
 ## Slack Notifications
 The pipeline includes a dedicated `Notify` stage for Slack success and failure notifications.
 
 Current default channel in `Jenkinsfile.docker`:
-- `#api-automation-framework`
+- `#ui-automation-framework`
 
 Adjust that value before production use if you want a UI-specific channel such as:
 - `#ui-automation-framework`

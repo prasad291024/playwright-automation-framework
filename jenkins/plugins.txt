@@ -3,6 +3,8 @@ docker-workflow
 git
 github
 github-branch-source
+ansicolor
+timestamper
 credentials
 credentials-binding
 plain-credentials
