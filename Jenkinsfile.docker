@@ -1,0 +1,145 @@
+pipeline {
+  agent {
+    docker {
+      image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+      args '--ipc=host'
+      reuseNode true
+    }
+  }
+
+  options {
+    timestamps()
+    ansiColor('xterm')
+    disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+    timeout(time: 60, unit: 'MINUTES')
+  }
+
+  parameters {
+    choice(name: 'TEST_SCOPE', choices: ['smoke', 'full'], description: 'Smoke for quick validation, full for broader regression runs.')
+    choice(name: 'PLAYWRIGHT_PROJECT', choices: ['chromium', 'firefox', 'webkit'], description: 'Browser project to execute.')
+    choice(name: 'APP', choices: ['local', 'vwo', 'cura', 'saucedemo', 'orangehrm'], description: 'Application profile from config/apps.json.')
+  }
+
+  environment {
+    CI = 'true'
+    CURRENT_STAGE = 'Not started'
+    SLACK_CHANNEL = '#api-automation-framework'
+    PLAYWRIGHT_HTML_REPORT = 'playwright-report/jenkins'
+    PLAYWRIGHT_JSON_OUTPUT_FILE = 'test-results/json/jenkins-results.json'
+    PLAYWRIGHT_JUNIT_OUTPUT_FILE = 'test-results/junit/jenkins-results.xml'
+  }
+
+  triggers {
+    githubPush()
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Checkout'
+        }
+        deleteDir()
+        checkout scm
+      }
+    }
+
+    stage('Install') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Install'
+        }
+        sh 'mkdir -p test-results/json test-results/junit playwright-report'
+        sh 'node --version'
+        sh 'npm ci'
+      }
+    }
+
+    stage('Lint') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Lint'
+        }
+        sh 'npm run lint'
+        sh 'npm run format:check'
+      }
+    }
+
+    stage('Typecheck') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Typecheck'
+        }
+        sh 'npm run typecheck'
+      }
+    }
+
+    stage('Test') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Test'
+          def testCommand = params.TEST_SCOPE == 'smoke'
+            ? "npx playwright test --project=${params.PLAYWRIGHT_PROJECT} --grep @smoke"
+            : "npx playwright test --project=${params.PLAYWRIGHT_PROJECT}"
+
+          withEnv(["APP=${params.APP}"]) {
+            sh testCommand
+          }
+        }
+      }
+    }
+
+    stage('Publish Report') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Publish Report'
+        }
+        junit allowEmptyResults: true, testResults: 'test-results/junit/*.xml'
+        publishHTML(target: [
+          allowMissing: true,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: 'playwright-report/jenkins',
+          reportFiles: 'index.html',
+          reportName: 'Playwright HTML Report'
+        ])
+        archiveArtifacts allowEmptyArchive: true, artifacts: 'playwright-report/**/*,test-results/**/*'
+      }
+    }
+  }
+
+  post {
+    success {
+      script {
+        if (env.SLACK_CHANNEL?.trim()) {
+          def branchName = env.GIT_BRANCH ?: 'main'
+          def reportUrl = "${env.BUILD_URL}artifact/playwright-report/jenkins/index.html"
+          slackSend(
+            channel: env.SLACK_CHANNEL,
+            color: 'good',
+            message: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${branchName}\nBuild: ${env.BUILD_URL}\nReport: ${reportUrl}"
+          )
+        }
+      }
+    }
+
+    failure {
+      script {
+        if (env.SLACK_CHANNEL?.trim()) {
+          def branchName = env.GIT_BRANCH ?: 'main'
+          def reportUrl = "${env.BUILD_URL}artifact/playwright-report/jenkins/index.html"
+          slackSend(
+            channel: env.SLACK_CHANNEL,
+            color: 'danger',
+            message: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${branchName}\nStage: ${env.CURRENT_STAGE}\nBuild: ${env.BUILD_URL}\nReport: ${reportUrl}"
+          )
+        }
+      }
+    }
+
+    always {
+      cleanWs(deleteDirs: true, notFailBuild: true)
+    }
+  }
+}
