@@ -41,6 +41,19 @@ process.env.APP_NAME = selectedApp;
 
 const resolvedStorageState = process.env.STORAGE_STATE;
 const storageStateExists = resolvedStorageState ? fs.existsSync(resolvedStorageState) : false;
+const htmlReportOutput = process.env.PLAYWRIGHT_HTML_REPORT || 'playwright-report';
+const jsonReportOutput = process.env.PLAYWRIGHT_JSON_OUTPUT_FILE || 'test-results/results.json';
+const junitReportOutput = process.env.PLAYWRIGHT_JUNIT_OUTPUT_FILE;
+
+const reporters: [string, Record<string, unknown>?][] = [
+  ['list'],
+  ['html', { outputFolder: htmlReportOutput, open: 'never' }],
+  ['json', { outputFile: jsonReportOutput }],
+];
+
+if (junitReportOutput) {
+  reporters.push(['junit', { outputFile: junitReportOutput }]);
+}
 
 if (resolvedStorageState && !storageStateExists) {
   console.warn(
@@ -70,7 +83,7 @@ export default defineConfig({
   globalTeardown: './globals/global-teardown.ts',
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html'], ['list'], ['json', { outputFile: 'test-results/results.json' }]],
+  reporter: reporters,
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
