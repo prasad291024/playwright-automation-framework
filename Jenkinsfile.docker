@@ -24,6 +24,8 @@ pipeline {
   environment {
     CI = 'true'
     CURRENT_STAGE = 'Not started'
+    PIPELINE_STATUS = 'SUCCESS'
+    FAILED_STAGE = ''
     SLACK_CHANNEL = '#api-automation-framework'
     PLAYWRIGHT_HTML_REPORT = 'playwright-report/jenkins'
     PLAYWRIGHT_JSON_OUTPUT_FILE = 'test-results/json/jenkins-results.json'
@@ -49,42 +51,75 @@ pipeline {
       steps {
         script {
           env.CURRENT_STAGE = 'Install'
+          catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+            sh 'mkdir -p test-results/json test-results/junit playwright-report'
+            sh 'node --version'
+            sh 'npm ci'
+          }
+          if (currentBuild.currentResult == 'FAILURE') {
+            env.PIPELINE_STATUS = 'FAILURE'
+            env.FAILED_STAGE = 'Install'
+          }
         }
-        sh 'mkdir -p test-results/json test-results/junit playwright-report'
-        sh 'node --version'
-        sh 'npm ci'
       }
     }
 
     stage('Lint') {
+      when {
+        expression { env.PIPELINE_STATUS != 'FAILURE' }
+      }
       steps {
         script {
           env.CURRENT_STAGE = 'Lint'
+          catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+            sh 'npm run lint'
+            sh 'npm run format:check'
+          }
+          if (currentBuild.currentResult == 'FAILURE') {
+            env.PIPELINE_STATUS = 'FAILURE'
+            env.FAILED_STAGE = 'Lint'
+          }
         }
-        sh 'npm run lint'
-        sh 'npm run format:check'
       }
     }
 
     stage('Typecheck') {
+      when {
+        expression { env.PIPELINE_STATUS != 'FAILURE' }
+      }
       steps {
         script {
           env.CURRENT_STAGE = 'Typecheck'
+          catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+            sh 'npm run typecheck'
+          }
+          if (currentBuild.currentResult == 'FAILURE') {
+            env.PIPELINE_STATUS = 'FAILURE'
+            env.FAILED_STAGE = 'Typecheck'
+          }
         }
-        sh 'npm run typecheck'
       }
     }
 
     stage('Test') {
+      when {
+        expression { env.PIPELINE_STATUS != 'FAILURE' }
+      }
       steps {
         script {
           env.CURRENT_STAGE = 'Test'
-          def testCommand = params.TEST_SCOPE == 'smoke'
-            ? "npx playwright test --project=${params.PLAYWRIGHT_PROJECT} --grep @smoke"
-            : "npx playwright test --project=${params.PLAYWRIGHT_PROJECT}"
+          catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+            def testCommand = params.TEST_SCOPE == 'smoke'
+              ? "npx playwright test --project=${params.PLAYWRIGHT_PROJECT} --grep @smoke"
+              : "npx playwright test --project=${params.PLAYWRIGHT_PROJECT}"
 
-          withEnv(["APP=${params.APP}"]) {
-            sh testCommand
+            withEnv(["APP=${params.APP}"]) {
+              sh testCommand
+            }
+          }
+          if (currentBuild.currentResult == 'FAILURE') {
+            env.PIPELINE_STATUS = 'FAILURE'
+            env.FAILED_STAGE = 'Test'
           }
         }
       }
@@ -104,40 +139,49 @@ pipeline {
           reportFiles: 'index.html',
           reportName: 'Playwright HTML Report'
         ])
+      }
+    }
+
+    stage('Archive Artifacts') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Archive Artifacts'
+        }
         archiveArtifacts allowEmptyArchive: true, artifacts: 'playwright-report/**/*,test-results/**/*'
+      }
+    }
+
+    stage('Notify') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Notify'
+          if (!env.SLACK_CHANNEL?.trim()) {
+            return
+          }
+
+          def branchName = env.GIT_BRANCH ?: 'main'
+          def reportUrl = "${env.BUILD_URL}artifact/playwright-report/jenkins/index.html"
+          def buildStatus = currentBuild.currentResult ?: env.PIPELINE_STATUS
+
+          if (buildStatus == 'SUCCESS') {
+            slackSend(
+              channel: env.SLACK_CHANNEL,
+              color: 'good',
+              message: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${branchName}\nBuild: ${env.BUILD_URL}\nReport: ${reportUrl}"
+            )
+          } else {
+            slackSend(
+              channel: env.SLACK_CHANNEL,
+              color: 'danger',
+              message: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${branchName}\nStage: ${env.FAILED_STAGE ?: env.CURRENT_STAGE}\nBuild: ${env.BUILD_URL}\nReport: ${reportUrl}"
+            )
+          }
+        }
       }
     }
   }
 
   post {
-    success {
-      script {
-        if (env.SLACK_CHANNEL?.trim()) {
-          def branchName = env.GIT_BRANCH ?: 'main'
-          def reportUrl = "${env.BUILD_URL}artifact/playwright-report/jenkins/index.html"
-          slackSend(
-            channel: env.SLACK_CHANNEL,
-            color: 'good',
-            message: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${branchName}\nBuild: ${env.BUILD_URL}\nReport: ${reportUrl}"
-          )
-        }
-      }
-    }
-
-    failure {
-      script {
-        if (env.SLACK_CHANNEL?.trim()) {
-          def branchName = env.GIT_BRANCH ?: 'main'
-          def reportUrl = "${env.BUILD_URL}artifact/playwright-report/jenkins/index.html"
-          slackSend(
-            channel: env.SLACK_CHANNEL,
-            color: 'danger',
-            message: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}\nBranch: ${branchName}\nStage: ${env.CURRENT_STAGE}\nBuild: ${env.BUILD_URL}\nReport: ${reportUrl}"
-          )
-        }
-      }
-    }
-
     always {
       cleanWs(deleteDirs: true, notFailBuild: true)
     }

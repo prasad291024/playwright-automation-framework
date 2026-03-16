@@ -53,6 +53,8 @@ Suggested names:
 4. `Typecheck`
 5. `Test`
 6. `Publish Report`
+7. `Archive Artifacts`
+8. `Notify`
 
 ## Parameters
 The Docker pipeline exposes these Jenkins parameters:
@@ -61,7 +63,7 @@ The Docker pipeline exposes these Jenkins parameters:
 - `APP`: `local`, `vwo`, `cura`, `saucedemo`, or `orangehrm`
 
 ## Slack Notifications
-The pipeline includes Slack success and failure notifications.
+The pipeline includes a dedicated `Notify` stage for Slack success and failure notifications.
 
 Current default channel in `Jenkinsfile.docker`:
 - `#api-automation-framework`
