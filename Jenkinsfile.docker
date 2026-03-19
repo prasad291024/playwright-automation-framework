@@ -1,11 +1,46 @@
-pipeline {
-  agent {
-    docker {
-      image 'mcr.microsoft.com/playwright:v1.56.1-noble'
-      args '--ipc=host'
-      reuseNode true
-    }
+def pullPlaywrightImage(scriptContext) {
+  def image = 'mcr.microsoft.com/playwright:v1.56.1-noble'
+  if (scriptContext.isUnix()) {
+    scriptContext.sh "docker pull ${image}"
+  } else {
+    scriptContext.bat "docker pull ${image}"
   }
+}
+
+def runInPlaywrightContainer(scriptContext, command) {
+  def image = 'mcr.microsoft.com/playwright:v1.56.1-noble'
+  def workspace = scriptContext.env.WORKSPACE.replace('\\', '/')
+  def escapedCommand = command.replace('"', '\\"')
+
+  if (scriptContext.isUnix()) {
+    scriptContext.sh """
+      docker run --rm --ipc=host \
+        -v "${workspace}:/workspace" \
+        -w /workspace \
+        -e CI="${scriptContext.env.CI}" \
+        -e APP="${scriptContext.params.APP}" \
+        -e PLAYWRIGHT_HTML_REPORT="${scriptContext.env.PLAYWRIGHT_HTML_REPORT}" \
+        -e PLAYWRIGHT_JSON_OUTPUT_FILE="${scriptContext.env.PLAYWRIGHT_JSON_OUTPUT_FILE}" \
+        -e PLAYWRIGHT_JUNIT_OUTPUT_FILE="${scriptContext.env.PLAYWRIGHT_JUNIT_OUTPUT_FILE}" \
+        ${image} bash -lc "${escapedCommand}"
+    """
+  } else {
+    scriptContext.bat """
+      docker run --rm --ipc=host ^
+        -v "${workspace}:/workspace" ^
+        -w /workspace ^
+        -e CI="${scriptContext.env.CI}" ^
+        -e APP="${scriptContext.params.APP}" ^
+        -e PLAYWRIGHT_HTML_REPORT="${scriptContext.env.PLAYWRIGHT_HTML_REPORT}" ^
+        -e PLAYWRIGHT_JSON_OUTPUT_FILE="${scriptContext.env.PLAYWRIGHT_JSON_OUTPUT_FILE}" ^
+        -e PLAYWRIGHT_JUNIT_OUTPUT_FILE="${scriptContext.env.PLAYWRIGHT_JUNIT_OUTPUT_FILE}" ^
+        ${image} bash -lc "${escapedCommand}"
+    """
+  }
+}
+
+pipeline {
+  agent any
 
   options {
     timestamps()
@@ -52,9 +87,8 @@ pipeline {
         script {
           env.CURRENT_STAGE = 'Install'
           catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-            sh 'mkdir -p test-results/json test-results/junit playwright-report'
-            sh 'node --version'
-            sh 'npm ci'
+            pullPlaywrightImage(this)
+            runInPlaywrightContainer(this, 'mkdir -p test-results/json test-results/junit playwright-report && node --version && npm ci')
           }
           if (currentBuild.currentResult == 'FAILURE') {
             env.PIPELINE_STATUS = 'FAILURE'
@@ -72,8 +106,7 @@ pipeline {
         script {
           env.CURRENT_STAGE = 'Lint'
           catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-            sh 'npm run lint'
-            sh 'npm run format:check'
+            runInPlaywrightContainer(this, 'npm run lint && npm run format:check')
           }
           if (currentBuild.currentResult == 'FAILURE') {
             env.PIPELINE_STATUS = 'FAILURE'
@@ -91,7 +124,7 @@ pipeline {
         script {
           env.CURRENT_STAGE = 'Typecheck'
           catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-            sh 'npm run typecheck'
+            runInPlaywrightContainer(this, 'npm run typecheck')
           }
           if (currentBuild.currentResult == 'FAILURE') {
             env.PIPELINE_STATUS = 'FAILURE'
@@ -113,9 +146,7 @@ pipeline {
               ? "npx playwright test --project=${params.PLAYWRIGHT_PROJECT} --grep @smoke"
               : "npx playwright test --project=${params.PLAYWRIGHT_PROJECT}"
 
-            withEnv(["APP=${params.APP}"]) {
-              sh testCommand
-            }
+            runInPlaywrightContainer(this, testCommand)
           }
           if (currentBuild.currentResult == 'FAILURE') {
             env.PIPELINE_STATUS = 'FAILURE'

@@ -25,12 +25,14 @@ interface AuthFixtures {
 }
 
 export const test = base.extend<AuthFixtures>({
-  appName: async (_deps, use) => {
+  appName: async ({ browserName }, use) => {
+    void browserName;
     const name = (process.env.APP_NAME as AppName) || 'local';
     await use(name);
   },
 
-  pageFactory: async (_deps, use) => {
+  pageFactory: async ({ browserName }, use) => {
+    void browserName;
     await use(PageFactory);
   },
 
