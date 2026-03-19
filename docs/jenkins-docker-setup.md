@@ -13,6 +13,8 @@ No separate Jenkins account is required per project.
 ## What Is Different for This Project
 This UI project is intended to run through a Docker-based Jenkins job because Playwright UI testing benefits from a consistent browser/runtime image.
 
+The current Jenkinsfile is designed to work on a Windows Jenkins host by invoking Docker CLI commands from a normal Jenkins node. This avoids the Windows path issue that can happen with declarative `agent { docker { ... } }` when running Linux containers on Docker Desktop.
+
 Use:
 - `Jenkinsfile.docker` for the Jenkins job script path
 - `mcr.microsoft.com/playwright:v1.56.1-noble` as the runtime container
@@ -20,14 +22,16 @@ Use:
 ## Jenkins Prerequisites
 Before this job will run successfully, the Jenkins host must have:
 - Docker installed and running
-- Jenkins `Docker Pipeline` plugin installed
+- Docker Desktop healthy enough to run Linux containers
 - Git, Slack, HTML Publisher, JUnit, Workspace Cleanup, and Pipeline plugins available
 - `AnsiColor` and `Timestamper` plugins available for the pipeline options in `Jenkinsfile.docker`
 
-`jenkins/plugins.txt` now includes:
+`jenkins/plugins.txt` includes:
 - `docker-workflow`
 - `ansicolor`
 - `timestamper`
+
+`docker-workflow` can still remain installed, but this pipeline no longer depends on Jenkins Docker agent syntax for the Windows-hosted setup.
 
 ## Recommended Jenkins Job Type
 Use a separate Jenkins job or multibranch pipeline for this repo.
