@@ -1,0 +1,213 @@
+name: Playwright CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: playwright-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    outputs:
+      node-version: ${{ steps.meta.outputs.node-version }}
+      test-scope: ${{ steps.meta.outputs.test-scope }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Resolve CI metadata
+        id: meta
+        shell: bash
+        run: |
+          echo "node-version=20" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "test-scope=smoke" >> "$GITHUB_OUTPUT"
+          else
+            echo "test-scope=full" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.meta.outputs.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ needs.install.outputs.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ needs.install.outputs.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript compiler
+        run: npm run typecheck
+
+  code_quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - typecheck
+    steps:
+      - name: Summarize quality gate
+        run: echo "Lint and type checking completed successfully."
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs:
+      - install
+      - code_quality
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ needs.install.outputs.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Prepare report directories
+        shell: bash
+        run: |
+          mkdir -p test-results/json
+          mkdir -p test-results/junit
+          mkdir -p playwright-report
+
+      - name: Run Playwright tests
+        shell: bash
+        env:
+          CI: 'true'
+          PLAYWRIGHT_HTML_REPORT: playwright-report
+          PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/json/results.json
+          PLAYWRIGHT_JUNIT_OUTPUT_FILE: test-results/junit/results.xml
+        run: |
+          if [ "${{ needs.install.outputs.test-scope }}" = "smoke" ]; then
+            npx playwright test --project=chromium --grep @smoke
+          else
+            npx playwright test --project=chromium
+          fi
+
+      - name: Upload JUnit results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: junit-results
+          path: test-results/junit/results.xml
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload JSON results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: json-results
+          path: test-results/json/results.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload Playwright HTML report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-html-report
+          path: playwright-report/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload raw test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: raw-test-results
+          path: test-results/
+          if-no-files-found: warn
+          retention-days: 30
+
+  publish_report:
+    name: Publish Report
+    runs-on: ubuntu-latest
+    needs:
+      - install
+      - test
+    if: always()
+    steps:
+      - name: Download pipeline artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: collected-artifacts
+
+      - name: Build run summary
+        shell: bash
+        run: |
+          echo "## Pipeline Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Test scope: \`${{ needs.install.outputs.test-scope }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Test result: \`${{ needs.test.result }}\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload consolidated CI artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ci-artifacts-${{ github.run_number }}
+          path: collected-artifacts/
+          if-no-files-found: warn
+          retention-days: 30
