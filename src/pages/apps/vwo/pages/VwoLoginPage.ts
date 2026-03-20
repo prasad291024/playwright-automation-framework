@@ -1,6 +1,7 @@
 import { expect, Locator } from '@playwright/test';
 import { BasePage } from '../../../base/BasePage';
 import { AppName } from '../../../../config/app.config';
+import { resolveVwoLoginUrl } from '../../../../utils/vwoAuth';
 
 /**
  * VWO login page object.
@@ -12,7 +13,7 @@ export class VwoLoginPage extends BasePage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto(`${this.appConfig.baseUrl}${this.appConfig.authEndpoint}`);
+    await this.page.goto(resolveVwoLoginUrl());
     await this.waitForPageLoad();
     await expect(this.emailInput()).toBeVisible();
   }
