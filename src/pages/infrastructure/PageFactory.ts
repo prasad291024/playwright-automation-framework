@@ -1,19 +1,16 @@
 import { Page } from '@playwright/test';
 import { AppName } from '../../config/app.config';
 
+type PageObjectConstructor<T = unknown> = new (page: Page) => T;
+
 /**
  * Page Factory
  * Dynamically creates app-specific page objects
  */
 export class PageFactory {
-  private static pageClasses: Map<string, new (page: import('@playwright/test').Page) => any> =
-    new Map();
+  private static pageClasses: Map<string, PageObjectConstructor> = new Map();
 
-  static register(
-    app: AppName,
-    pageName: string,
-    pageClass: new (page: import('@playwright/test').Page) => any,
-  ): void {
+  static register<T>(app: AppName, pageName: string, pageClass: PageObjectConstructor<T>): void {
     this.pageClasses.set(`${app}-${pageName}`, pageClass);
   }
 
@@ -25,7 +22,7 @@ export class PageFactory {
       throw new Error(`Page '${pageName}' not registered for app '${app}'`);
     }
 
-    return new PageClass(page);
+    return new PageClass(page) as T;
   }
 
   static has(app: AppName, pageName: string): boolean {

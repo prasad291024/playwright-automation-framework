@@ -1,7 +1,6 @@
 import { test as base, Page } from '@playwright/test';
-import path from 'path';
-import fs from 'fs';
-import { AppRegistry, AppName } from '../../config/app.config';
+import { AppName } from '../../config/app.config';
+import { createAuthenticatedSession, resolveAppNameFromEnv } from '../auth/auth-session';
 import { PageFactory } from '../../pages/infrastructure/PageFactory';
 
 /**
@@ -27,8 +26,7 @@ interface AuthFixtures {
 export const test = base.extend<AuthFixtures>({
   appName: async ({ browserName }, use) => {
     void browserName;
-    const name = (process.env.APP_NAME as AppName) || 'local';
-    await use(name);
+    await use(resolveAppNameFromEnv());
   },
 
   pageFactory: async ({ browserName }, use) => {
@@ -37,26 +35,8 @@ export const test = base.extend<AuthFixtures>({
   },
 
   authenticatedPage: async ({ browser, appName }, use) => {
-    const appConfig = AppRegistry.get(appName);
-    const storageFile = path.resolve(process.cwd(), appConfig.storageState);
-
-    // Create context with optional storage state
-    const context = await browser!.newContext(
-      fs.existsSync(storageFile) ? { storageState: storageFile } : {},
-    );
-
-    const page = await context.newPage();
-
-    // If no storage state, perform login if auth is required
-    if (!fs.existsSync(storageFile) && appConfig.authType !== 'none') {
-      // TODO: Implement login flow using PageFactory
-      // For now, just proceed - tests can handle login themselves
-    }
-
-    // Use the authenticated page in the test
+    const { context, page } = await createAuthenticatedSession(browser, appName);
     await use(page);
-
-    // Cleanup
     await context.close();
   },
 });
