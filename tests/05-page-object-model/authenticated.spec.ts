@@ -3,7 +3,7 @@ import { Page } from '@playwright/test';
 import { AppName } from '../../src/config/app.config';
 import { test, expect } from '../../src/core/fixtures/auth.fixture';
 
-const unsupportedApps = new Set<AppName>(['local', 'orangehrm']);
+const unsupportedApps = new Set<AppName>(['local']);
 
 const assertAuthenticatedLanding = async (page: Page, appName: AppName): Promise<void> => {
   switch (appName) {
@@ -17,6 +17,10 @@ const assertAuthenticatedLanding = async (page: Page, appName: AppName): Promise
       break;
     case 'vwo':
       await expect(page).not.toHaveURL(/#\/login/i);
+      break;
+    case 'orangehrm':
+      await expect(page).toHaveURL(/\/dashboard\/index/i);
+      await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
       break;
     default:
       throw new Error(`No authenticated landing assertion registered for '${appName}'.`);
@@ -33,6 +37,9 @@ const openProtectedRoute = async (page: Page, appName: AppName): Promise<void> =
       break;
     case 'vwo':
       await page.goto('/');
+      break;
+    case 'orangehrm':
+      await page.goto('/web/index.php/dashboard/index');
       break;
     default:
       throw new Error(`No protected route registered for '${appName}'.`);

@@ -3,7 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import { AppName, AppRegistry } from '../../config/app.config';
 import { PageFactory } from '../../pages/infrastructure/PageFactory';
-import { CuraLoginPage, SauceDemoLoginPage, VwoLoginPage } from '../../pages/infrastructure';
+import {
+  CuraLoginPage,
+  OrangeHrmLoginPage,
+  SauceDemoLoginPage,
+  VwoLoginPage,
+} from '../../pages/infrastructure';
 import { isValidEmail } from '../../utils/vwoAuth';
 
 export interface AuthSessionResult {
@@ -45,6 +50,11 @@ const resolveCredentials = (appName: AppName): LoginCredentials => {
       return {
         username: process.env.SAUCEDEMO_USERNAME || process.env.USERNAME || 'standard_user',
         password: process.env.SAUCEDEMO_PASSWORD || process.env.PASSWORD || 'secret_sauce',
+      };
+    case 'orangehrm':
+      return {
+        username: process.env.ORANGEHRM_USERNAME || process.env.USERNAME || 'Admin',
+        password: process.env.ORANGEHRM_PASSWORD || process.env.PASSWORD || 'admin123',
       };
     default:
       return {};
@@ -109,6 +119,22 @@ export const loginForApp = async (page: Page, appName: AppName): Promise<boolean
       }
 
       const loginPage = PageFactory.create<SauceDemoLoginPage>(page, 'saucedemo', 'LoginPage');
+      await loginPage.goto();
+      await loginPage.login(username, password);
+      await loginPage.assertLoginSuccess();
+      return true;
+    }
+
+    case 'orangehrm': {
+      const username = credentials.username || '';
+      const password = credentials.password || '';
+
+      if (!username || !password) {
+        console.log('Skipping OrangeHRM auth: set ORANGEHRM_USERNAME and ORANGEHRM_PASSWORD.');
+        return false;
+      }
+
+      const loginPage = PageFactory.create<OrangeHrmLoginPage>(page, 'orangehrm', 'LoginPage');
       await loginPage.goto();
       await loginPage.login(username, password);
       await loginPage.assertLoginSuccess();
