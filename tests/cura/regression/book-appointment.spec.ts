@@ -1,18 +1,18 @@
-import { test } from '@playwright/test';
-import { LoginPage } from '../../../src/apps/cura/pages/LoginPage';
+import { test } from '../../../src/core/fixtures/auth.fixture';
 import { AppointmentPage } from '../../../src/apps/cura/pages/AppointmentPage';
 import { ConfirmationPage } from '../../../src/apps/cura/pages/ConfirmationPage';
-import { user } from '../../../src/apps/cura/test-data/users';
 
-test('user can book appointment', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.navigate('https://katalon-demo-cura.herokuapp.com');
+test('user can book appointment', async ({ authenticatedPage, appName, authSession }) => {
+  test.skip(appName !== 'cura', 'This regression test is scoped to the CURA app.');
+  test.skip(
+    !authSession.authenticated,
+    'Shared auth fixture could not establish a CURA session for this run.',
+  );
 
-  await loginPage.login(user.username, user.password);
-
-  const appointmentPage = new AppointmentPage(page);
+  const appointmentPage = new AppointmentPage(authenticatedPage);
+  await appointmentPage.verifyAppointmentPageVisible();
   await appointmentPage.bookAppointment();
 
-  const confirmationPage = new ConfirmationPage(page);
+  const confirmationPage = new ConfirmationPage(authenticatedPage);
   await confirmationPage.verifyAppointmentConfirmed();
 });

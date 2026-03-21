@@ -1,6 +1,10 @@
 import { test as base, Page } from '@playwright/test';
 import { AppName } from '../../config/app.config';
-import { createAuthenticatedSession, resolveAppNameFromEnv } from '../auth/auth-session';
+import {
+  AuthSessionResult,
+  createAuthenticatedSession,
+  resolveAppNameFromEnv,
+} from '../auth/auth-session';
 import { PageFactory } from '../../pages/infrastructure/PageFactory';
 
 /**
@@ -18,6 +22,7 @@ import { PageFactory } from '../../pages/infrastructure/PageFactory';
  */
 
 interface AuthFixtures {
+  authSession: AuthSessionResult;
   authenticatedPage: Page;
   appName: AppName;
   pageFactory: typeof PageFactory;
@@ -34,10 +39,15 @@ export const test = base.extend<AuthFixtures>({
     await use(PageFactory);
   },
 
-  authenticatedPage: async ({ browser, appName }, use) => {
-    const { context, page } = await createAuthenticatedSession(browser, appName);
+  authSession: async ({ browser, appName }, use) => {
+    const authSession = await createAuthenticatedSession(browser, appName);
+    await use(authSession);
+    await authSession.context.close();
+  },
+
+  authenticatedPage: async ({ authSession }, use) => {
+    const { page } = authSession;
     await use(page);
-    await context.close();
   },
 });
 

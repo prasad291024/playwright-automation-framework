@@ -6,7 +6,7 @@ import { PageFactory } from '../../pages/infrastructure/PageFactory';
 import { CuraLoginPage, SauceDemoLoginPage, VwoLoginPage } from '../../pages/infrastructure';
 import { isValidEmail } from '../../utils/vwoAuth';
 
-interface AuthSessionResult {
+export interface AuthSessionResult {
   context: BrowserContext;
   page: Page;
   storageFile: string;
