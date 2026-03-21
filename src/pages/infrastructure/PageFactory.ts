@@ -34,7 +34,9 @@ export class PageFactory {
 import { VwoLoginPage } from '../apps/vwo';
 import { CuraLoginPage } from '../apps/cura';
 import { SauceDemoLoginPage } from '../apps/saucedemo';
+import { OrangeHrmLoginPage } from '../apps/orangehrm';
 
 PageFactory.register('vwo', 'LoginPage', VwoLoginPage);
 PageFactory.register('cura', 'LoginPage', CuraLoginPage);
 PageFactory.register('saucedemo', 'LoginPage', SauceDemoLoginPage);
+PageFactory.register('orangehrm', 'LoginPage', OrangeHrmLoginPage);
