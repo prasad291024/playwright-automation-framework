@@ -795,8 +795,8 @@ Comprehensive guides available in `Documentations/`:
 | [FRAMEWORK_COMPLETE_GUIDE.md](./Documentations/FRAMEWORK_COMPLETE_GUIDE.md)   | Complete framework guide          |
 | [ARCHITECTURE_VISUAL_GUIDE.md](./Documentations/ARCHITECTURE_VISUAL_GUIDE.md) | Architecture diagrams             |
 | [LEARNING_GUIDE.md](./Documentations/LEARNING_GUIDE.md)                       | Learning path for new developers  |
-| [PRODUCTION_READINESS.md](./PRODUCTION_READINESS.md)                          | Production checklist              |
-| [CONTRIBUTING.md](./CONTRIBUTING.md)                                          | Development guidelines            |
+| [PRODUCTION_READINESS.md](./docs/PRODUCTION_READINESS.md)                     | Production checklist              |
+| [CONTRIBUTING.md](./docs/CONTRIBUTING.md)                                     | Development guidelines            |
 
 ---
 
@@ -848,7 +848,7 @@ We follow strict quality and contribution guidelines.
    - All status checks must pass
    - Post-merge regression suite runs
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for detailed guidelines.
 
 ---
 
@@ -868,9 +868,9 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 ## 🎯 Next Steps
 
 - ✅ Review [QUALITY_GATES.md](./Documentations/QUALITY_GATES.md) for quality automation details
-- ✅ Check [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines
+- ✅ Check [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for development guidelines
 - ✅ Explore [tests/](./tests/) for test examples
-- ✅ Read [PRODUCTION_READINESS.md](./PRODUCTION_READINESS.md) before production deployment
+- ✅ Read [PRODUCTION_READINESS.md](./docs/PRODUCTION_READINESS.md) before production deployment
 
 ---
 
@@ -1180,7 +1180,7 @@ test.describe('User Authentication Flow', () => {
 
 ## 🔗 Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for:
+See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for:
 
 - Development setup
 - Git workflow and commit conventions
@@ -1214,4 +1214,4 @@ ISC
 
 ---
 
-**Ready to contribute?** See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines!
+**Ready to contribute?** See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for guidelines!
