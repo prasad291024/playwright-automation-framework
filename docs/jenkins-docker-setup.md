@@ -2,6 +2,8 @@
 
 This project can use the same Jenkins server and the same Jenkins accounts that are already in use for the API framework.
 
+If you want a project-specific explanation of what Docker Desktop means in practice for this pipeline, see `docs/docker-desktop-guide.md`.
+
 ## Reuse Model
 
 - Reuse the same Jenkins instance.
