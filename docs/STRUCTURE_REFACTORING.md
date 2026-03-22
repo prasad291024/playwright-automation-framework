@@ -61,9 +61,9 @@ project-root
 ### 2. ✅ Reorganized Core Fixtures
 
 - **Old Location**: `src/core/fixture.ts` (empty) and `src/fixture/`
-- **New Location**: `src/core/fixtures/auth.fixture.ts`
-- **Status**: Fixture moved and updated
-- **Updated Imports**: Fixed reference in `tests/vwo.com/01-auth/vwo-login.spec.ts`
+- **Canonical Location**: `src/core/fixtures/auth.fixture.ts`
+- **Status**: Fixture moved, duplicate legacy path removed, and docs consolidated under `src/core/fixtures/`
+- **Updated Imports**: Tests now use the canonical core fixture path
 
 ### 3. ✅ Created Core Utilities
 
@@ -100,7 +100,7 @@ project-root
 ### 7. ✅ Cleanup
 
 - Removed obsolete fixture files from `src/core/`
-- Maintained backward compatibility with existing tests
+- Removed the duplicate legacy fixture path now that tests use the canonical core fixture location
 
 ## Current Project Structure
 
