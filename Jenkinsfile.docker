@@ -7,6 +7,18 @@ def pullPlaywrightImage(scriptContext) {
   }
 }
 
+def verifyDockerAvailable(scriptContext) {
+  def status = scriptContext.isUnix()
+    ? scriptContext.sh(script: 'docker info >/dev/null 2>&1', returnStatus: true)
+    : scriptContext.bat(script: '@echo off\r\ndocker info >NUL 2>&1', returnStatus: true)
+
+  if (status != 0) {
+    scriptContext.error(
+      'Docker is not running on the Jenkins host. Start Docker Desktop and verify `docker info` works before rerunning this pipeline.'
+    )
+  }
+}
+
 def runInPlaywrightContainer(scriptContext, command) {
   def image = 'mcr.microsoft.com/playwright:v1.56.1-noble'
   def workspace = scriptContext.env.WORKSPACE.replace('\\', '/')
@@ -82,7 +94,25 @@ pipeline {
       }
     }
 
+    stage('Preflight') {
+      steps {
+        script {
+          env.CURRENT_STAGE = 'Preflight'
+          catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+            verifyDockerAvailable(this)
+          }
+          if (currentBuild.currentResult == 'FAILURE') {
+            env.PIPELINE_STATUS = 'FAILURE'
+            env.FAILED_STAGE = 'Preflight'
+          }
+        }
+      }
+    }
+
     stage('Install') {
+      when {
+        expression { env.PIPELINE_STATUS != 'FAILURE' }
+      }
       steps {
         script {
           env.CURRENT_STAGE = 'Install'
