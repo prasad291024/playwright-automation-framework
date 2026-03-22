@@ -68,13 +68,14 @@ Suggested names:
 `Jenkinsfile.docker` runs:
 
 1. `Checkout`
-2. `Install`
-3. `Lint`
-4. `Typecheck`
-5. `Test`
-6. `Publish Report`
-7. `Archive Artifacts`
-8. `Notify`
+2. `Preflight`
+3. `Install`
+4. `Lint`
+5. `Typecheck`
+6. `Test`
+7. `Publish Report`
+8. `Archive Artifacts`
+9. `Notify`
 
 ## Parameters
 
@@ -96,21 +97,30 @@ Adjust that value before production use if you want a UI-specific channel such a
 
 - `#ui-automation-framework`
 
-## Important Note About Current Machine
+## Preflight Behavior
 
-Docker is not currently installed on this machine, so this Docker-based pipeline has been prepared in the repository but not executed locally from this environment.
+The pipeline now includes a `Preflight` stage that checks Docker availability before any container-based step runs.
 
-That means:
+If Docker Desktop or the Docker Linux engine is not running on the Jenkins host, the pipeline fails early with a clear message instead of cascading through every stage.
 
-- the Jenkins integration files are ready
-- the Jenkins job can be created
-- actual execution still depends on Docker being available to Jenkins
+## Overnight Ops Checklist
+
+For nightly UI builds to run reliably on the current local Jenkins host, make sure all of the following are true before the overnight window:
+
+1. Jenkins is running.
+2. Docker Desktop is running.
+3. `docker info` works in PowerShell.
+4. The machine is awake and not sleeping.
+5. Internet access is available for GitHub and Slack.
+
+Recommended Windows settings:
+
+- Enable Docker Desktop auto-start at sign-in.
+- Keep the Jenkins PowerShell session running, or move Jenkins to a more persistent startup model later.
+- Set Windows sleep to `Never` or to a value that will not interrupt the nightly schedule.
 
 ## Next Practical Step
 
-Once Docker is available to the Jenkins host:
-
-1. Create a Jenkins job for this repo.
-2. Point Script Path to `Jenkinsfile.docker`.
-3. Run one smoke build first.
-4. Confirm HTML report and Slack notifications.
+1. Keep the nightly job pinned to `main`.
+2. Use stable nightly parameters such as `TEST_SCOPE=smoke`, `PLAYWRIGHT_PROJECT=cura`, and `APP=cura`.
+3. Confirm HTML report and Slack notifications after any Jenkins or Docker maintenance.
