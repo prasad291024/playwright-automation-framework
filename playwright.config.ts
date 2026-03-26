@@ -26,6 +26,7 @@ if (fs.existsSync(appsPath)) {
 }
 
 const selectedApp = (process.env.APP || process.env.PLAYWRIGHT_APP || 'local') as AppName;
+const selectedSuite = process.env.TEST_SUITE || 'all';
 let appConfig: AppConfig;
 try {
   appConfig = AppRegistry.get(selectedApp);
@@ -41,9 +42,14 @@ process.env.APP_NAME = selectedApp;
 
 const resolvedStorageState = process.env.STORAGE_STATE;
 const storageStateExists = resolvedStorageState ? fs.existsSync(resolvedStorageState) : false;
-const htmlReportOutput = process.env.PLAYWRIGHT_HTML_REPORT || 'playwright-report';
-const jsonReportOutput = process.env.PLAYWRIGHT_JSON_OUTPUT_FILE || 'test-results/results.json';
-const junitReportOutput = process.env.PLAYWRIGHT_JUNIT_OUTPUT_FILE;
+const htmlReportOutput =
+  process.env.PLAYWRIGHT_HTML_REPORT || `playwright-report/${selectedApp}/${selectedSuite}`;
+const jsonReportOutput =
+  process.env.PLAYWRIGHT_JSON_OUTPUT_FILE ||
+  `test-results/json/${selectedApp}-${selectedSuite}.json`;
+const junitReportOutput =
+  process.env.PLAYWRIGHT_JUNIT_OUTPUT_FILE ||
+  `test-results/junit/${selectedApp}-${selectedSuite}.xml`;
 
 const reporters: [string, Record<string, unknown>?][] = [
   ['list'],
@@ -84,6 +90,7 @@ export default defineConfig({
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: reporters,
+  outputDir: `test-results/artifacts/${selectedApp}/${selectedSuite}`,
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

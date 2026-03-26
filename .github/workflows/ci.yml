@@ -132,27 +132,49 @@ jobs:
           mkdir -p test-results/json
           mkdir -p test-results/junit
           mkdir -p playwright-report
+          mkdir -p test-results/artifacts
 
-      - name: Run Playwright tests
+      - name: Run app-specific Playwright suites
         shell: bash
         env:
           CI: 'true'
-          PLAYWRIGHT_HTML_REPORT: playwright-report
-          PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/json/results.json
-          PLAYWRIGHT_JUNIT_OUTPUT_FILE: test-results/junit/results.xml
         run: |
+          failures=0
+
           if [ "${{ needs.install.outputs.test-scope }}" = "smoke" ]; then
-            npx playwright test --project=chromium --grep @smoke
+            runs=(
+              "saucedemo:smoke"
+              "cura:smoke"
+              "orangehrm:smoke"
+            )
           else
-            npx playwright test --project=chromium
+            runs=(
+              "saucedemo:smoke"
+              "saucedemo:regression"
+              "cura:auth"
+              "cura:smoke"
+              "cura:regression"
+              "orangehrm:smoke"
+            )
           fi
+
+          for run in "${runs[@]}"; do
+            IFS=':' read -r app suite <<< "$run"
+            echo "Running suite ${app}/${suite}"
+
+            if ! node scripts/run-app-suite.cjs --app="$app" --suite="$suite" --project=chromium; then
+              failures=1
+            fi
+          done
+
+          exit "$failures"
 
       - name: Upload JUnit results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: junit-results
-          path: test-results/junit/results.xml
+          name: junit-results-by-app-suite
+          path: test-results/junit/
           if-no-files-found: warn
           retention-days: 30
 
@@ -160,8 +182,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: json-results
-          path: test-results/json/results.json
+          name: json-results-by-app-suite
+          path: test-results/json/
           if-no-files-found: warn
           retention-days: 30
 
@@ -169,7 +191,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-html-report
+          name: playwright-html-report-by-app-suite
           path: playwright-report/
           if-no-files-found: warn
           retention-days: 30
@@ -178,7 +200,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: raw-test-results
+          name: raw-test-results-by-app-suite
           path: test-results/
           if-no-files-found: warn
           retention-days: 30
@@ -202,6 +224,9 @@ jobs:
           echo "## Pipeline Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "- Test scope: \`${{ needs.install.outputs.test-scope }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Test result: \`${{ needs.test.result }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Generated app/suite artifacts" >> "$GITHUB_STEP_SUMMARY"
+          find collected-artifacts -maxdepth 3 -type f | sort | sed 's#^#- `#; s#$#`#' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload consolidated CI artifacts
         uses: actions/upload-artifact@v4
