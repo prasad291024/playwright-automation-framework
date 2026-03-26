@@ -1,0 +1,61 @@
+{
+  "saucedemo": {
+    "defaultSuite": "all",
+    "suites": {
+      "all": {
+        "path": "tests/saucedemo"
+      },
+      "smoke": {
+        "path": "tests/saucedemo/smoke"
+      },
+      "regression": {
+        "path": "tests/saucedemo/regression"
+      }
+    }
+  },
+  "cura": {
+    "defaultSuite": "all",
+    "suites": {
+      "all": {
+        "path": "tests/cura"
+      },
+      "auth": {
+        "path": "tests/cura/01-auth"
+      },
+      "smoke": {
+        "path": "tests/cura/smoke"
+      },
+      "regression": {
+        "path": "tests/cura/regression"
+      },
+      "accessibility": {
+        "path": "tests/cura/04-accessibility-testing"
+      },
+      "performance": {
+        "path": "tests/cura/05-performance-testing"
+      }
+    }
+  },
+  "orangehrm": {
+    "defaultSuite": "all",
+    "suites": {
+      "all": {
+        "path": "tests/orangehrm"
+      },
+      "smoke": {
+        "path": "tests/orangehrm/smoke"
+      }
+    }
+  },
+  "vwo": {
+    "defaultSuite": "all",
+    "suites": {
+      "all": {
+        "path": "tests/vwo.com"
+      },
+      "auth": {
+        "path": "tests/vwo.com/01-auth"
+      }
+    }
+  }
+}

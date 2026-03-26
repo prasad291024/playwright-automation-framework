@@ -45,11 +45,11 @@ Markdown files currently at the project root to move:
 
 ## 5. Strengthen Reporting And Suite Organization
 
-- [ ] Standardize app-specific test folder structure and naming
-- [ ] Improve reporting outputs for app-specific suites
-- [ ] Ensure HTML, JSON, and JUnit outputs are easy to map back to app and suite
-- [ ] Add clearer smoke vs regression grouping for each app
-- [ ] Review artifact naming so CI reports are easier to scan
+- [x] Standardize app-specific test folder structure and naming
+- [x] Improve reporting outputs for app-specific suites
+- [x] Ensure HTML, JSON, and JUnit outputs are easy to map back to app and suite
+- [x] Add clearer smoke vs regression grouping for each app
+- [x] Review artifact naming so CI reports are easier to scan
 
 ## Suggested Execution Order
 
