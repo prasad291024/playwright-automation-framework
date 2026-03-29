@@ -146,15 +146,22 @@ jobs:
               "saucedemo:smoke"
               "cura:smoke"
               "orangehrm:smoke"
+              "local:shared-api"
             )
           else
             runs=(
+              "saucedemo:auth"
               "saucedemo:smoke"
               "saucedemo:regression"
+              "saucedemo:shared-auth"
               "cura:auth"
               "cura:smoke"
               "cura:regression"
+              "cura:shared-auth"
+              "orangehrm:auth"
               "orangehrm:smoke"
+              "orangehrm:shared-auth"
+              "local:shared-api"
             )
           fi
 

@@ -5,8 +5,14 @@
       "all": {
         "path": "tests/saucedemo"
       },
+      "auth": {
+        "path": "tests/saucedemo/01-auth"
+      },
       "smoke": {
         "path": "tests/saucedemo/smoke"
+      },
+      "shared-auth": {
+        "path": "tests/shared/auth"
       },
       "regression": {
         "path": "tests/saucedemo/regression"
@@ -25,6 +31,9 @@
       "smoke": {
         "path": "tests/cura/smoke"
       },
+      "shared-auth": {
+        "path": "tests/shared/auth"
+      },
       "regression": {
         "path": "tests/cura/regression"
       },
@@ -42,8 +51,14 @@
       "all": {
         "path": "tests/orangehrm"
       },
+      "auth": {
+        "path": "tests/orangehrm/01-auth"
+      },
       "smoke": {
         "path": "tests/orangehrm/smoke"
+      },
+      "shared-auth": {
+        "path": "tests/shared/auth"
       }
     }
   },
@@ -55,6 +70,14 @@
       },
       "auth": {
         "path": "tests/vwo.com/01-auth"
+      }
+    }
+  },
+  "local": {
+    "defaultSuite": "shared-api",
+    "suites": {
+      "shared-api": {
+        "path": "tests/shared/api"
       }
     }
   }
