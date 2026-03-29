@@ -40,7 +40,7 @@ Markdown files currently at the project root to move:
 
 - [x] Remove duplicated old fixture paths where the new core fixture path already exists
 - [x] Consolidate imports so tests use one consistent fixture location
-- [ ] Review legacy folders and decide which are still active versus archive/demo only
+- [x] Review legacy folders and decide which are still active versus archive/demo only
 - [x] Reduce duplicate app/page object structures where they overlap
 
 ## 5. Strengthen Reporting And Suite Organization
@@ -58,3 +58,4 @@ Markdown files currently at the project root to move:
 - [ ] Step 3: Add OrangeHRM auth support
 - [ ] Step 4: Clean up duplicated fixture/framework paths
 - [ ] Step 5: Strengthen reporting and suite organization
+- [x] Reorganize numbered suites into active app/shared coverage plus complete numbered templates
