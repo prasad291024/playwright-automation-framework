@@ -1,6 +1,5 @@
 import { test } from '../../../src/core/fixtures/auth.fixture';
-import { InventoryPage } from '../../../src/apps/saucedemo/pages/InventoryPage';
-import { CartPage } from '../../../src/apps/saucedemo/pages/CartPage';
+import { SauceDemoCartPage, SauceDemoInventoryPage } from '../../../src/pages/infrastructure';
 
 test('user can add product to cart', async ({ authenticatedPage, appName, authSession }) => {
   test.skip(appName !== 'saucedemo', 'This regression test is scoped to the SauceDemo app.');
@@ -9,11 +8,11 @@ test('user can add product to cart', async ({ authenticatedPage, appName, authSe
     'Shared auth fixture could not establish a SauceDemo session for this run.',
   );
 
-  const inventory = new InventoryPage(authenticatedPage);
+  const inventory = new SauceDemoInventoryPage(authenticatedPage);
   await inventory.verifyInventoryLoaded();
   await inventory.addFirstProductToCart();
 
-  const cart = new CartPage(authenticatedPage);
+  const cart = new SauceDemoCartPage(authenticatedPage);
   await cart.openCart();
   await cart.verifyItemPresent();
 });

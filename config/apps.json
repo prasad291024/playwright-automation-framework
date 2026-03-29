@@ -37,6 +37,15 @@
         "usernameInput": "#txt-username",
         "passwordInput": "#txt-password",
         "loginButton": "#btn-login"
+      },
+      "appointment": {
+        "facilityDropdown": "#combo_facility",
+        "visitDate": "#txt_visit_date",
+        "comment": "#txt_comment",
+        "bookAppointmentButton": "#btn-book-appointment"
+      },
+      "confirmation": {
+        "confirmationSection": "#summary"
       }
     },
     "features": ["auth", "appointments", "api"],
@@ -59,6 +68,14 @@
         "usernameInput": "#user-name",
         "passwordInput": "#password",
         "loginButton": "#login-button"
+      },
+      "inventory": {
+        "inventoryList": ".inventory_list",
+        "addToCartButton": ".inventory_item button"
+      },
+      "cart": {
+        "cartIcon": ".shopping_cart_link",
+        "cartItem": ".cart_item"
       }
     },
     "features": ["auth", "inventory", "cart"],
