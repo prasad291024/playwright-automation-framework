@@ -1,14 +1,13 @@
 import { test } from '@playwright/test';
-import { LoginPage } from '../../../src/apps/saucedemo/pages/LoginPage';
-import { InventoryPage } from '../../../src/apps/saucedemo/pages/InventoryPage';
+import { SauceDemoInventoryPage, SauceDemoLoginPage } from '../../../src/pages/infrastructure';
 import { users } from '../../../src/apps/saucedemo/test-data/users';
 
 test('user can login successfully', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.navigate('https://www.saucedemo.com');
+  const loginPage = new SauceDemoLoginPage(page);
+  await loginPage.goto();
 
   await loginPage.login(users.standard_user.username, users.standard_user.password);
 
-  const inventory = new InventoryPage(page);
+  const inventory = new SauceDemoInventoryPage(page);
   await inventory.verifyInventoryLoaded();
 });
