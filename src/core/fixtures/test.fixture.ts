@@ -5,12 +5,14 @@
 
 import { test as base } from '@playwright/test';
 import { logger } from '../utils/logger';
-import { LoginPage as SauceDemoLoginPage } from '../../apps/saucedemo/pages/LoginPage';
-import { InventoryPage } from '../../apps/saucedemo/pages/InventoryPage';
-import { CartPage } from '../../apps/saucedemo/pages/CartPage';
-import { LoginPage as CuraLoginPage } from '../../apps/cura/pages/LoginPage';
-import { AppointmentPage } from '../../apps/cura/pages/AppointmentPage';
-import { ConfirmationPage } from '../../apps/cura/pages/ConfirmationPage';
+import {
+  CuraConfirmationPage,
+  CuraAppointmentPage,
+  CuraLoginPage,
+  SauceDemoCartPage,
+  SauceDemoInventoryPage,
+  SauceDemoLoginPage,
+} from '../../pages/infrastructure';
 
 /**
  * Custom fixtures for all page objects
@@ -18,13 +20,13 @@ import { ConfirmationPage } from '../../apps/cura/pages/ConfirmationPage';
 interface PageObjects {
   // SauceDemo pages
   saucedemoLoginPage: SauceDemoLoginPage;
-  inventoryPage: InventoryPage;
-  cartPage: CartPage;
+  inventoryPage: SauceDemoInventoryPage;
+  cartPage: SauceDemoCartPage;
 
   // CURA pages
   curaLoginPage: CuraLoginPage;
-  appointmentPage: AppointmentPage;
-  confirmationPage: ConfirmationPage;
+  appointmentPage: CuraAppointmentPage;
+  confirmationPage: CuraConfirmationPage;
 
   // Utilities
   logger: typeof logger;
@@ -47,12 +49,12 @@ export const test = base.extend<PageObjects>({
   },
 
   inventoryPage: async ({ page }, use) => {
-    const inventoryPage = new InventoryPage(page);
+    const inventoryPage = new SauceDemoInventoryPage(page);
     await use(inventoryPage);
   },
 
   cartPage: async ({ page }, use) => {
-    const cartPage = new CartPage(page);
+    const cartPage = new SauceDemoCartPage(page);
     await use(cartPage);
   },
 
@@ -63,12 +65,12 @@ export const test = base.extend<PageObjects>({
   },
 
   appointmentPage: async ({ page }, use) => {
-    const appointmentPage = new AppointmentPage(page);
+    const appointmentPage = new CuraAppointmentPage(page);
     await use(appointmentPage);
   },
 
   confirmationPage: async ({ page }, use) => {
-    const confirmationPage = new ConfirmationPage(page);
+    const confirmationPage = new CuraConfirmationPage(page);
     await use(confirmationPage);
   },
 });

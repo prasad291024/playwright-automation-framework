@@ -1,14 +1,14 @@
 import { test } from '@playwright/test';
-import { LoginPage } from '../../../src/apps/cura/pages/LoginPage';
-import { AppointmentPage } from '../../../src/apps/cura/pages/AppointmentPage';
+import { CuraAppointmentPage, CuraLoginPage } from '../../../src/pages/infrastructure';
 import { user } from '../../../src/apps/cura/test-data/users';
 
 test('user can login to CURA system', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.navigate('https://katalon-demo-cura.herokuapp.com');
+  const loginPage = new CuraLoginPage(page);
+  await loginPage.goto();
+  await loginPage.goToLogin();
 
   await loginPage.login(user.username, user.password);
 
-  const appointmentPage = new AppointmentPage(page);
+  const appointmentPage = new CuraAppointmentPage(page);
   await appointmentPage.verifyAppointmentPageVisible();
 });
