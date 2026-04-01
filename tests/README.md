@@ -17,7 +17,10 @@
 - `tests/cura/05-performance-testing`: CURA performance coverage
 - `tests/orangehrm/01-auth`: OrangeHRM authentication and login-data coverage
 - `tests/orangehrm/smoke`: OrangeHRM smoke coverage
-- `tests/vwo.com/01-auth`: VWO authentication coverage
+
+## Archived App Coverage
+
+- `tests/templates/apps/vwo.com/01-auth`: Archived VWO auth template kept for future reactivation when valid org-owned credentials are available
 
 ## Numbered Templates
 

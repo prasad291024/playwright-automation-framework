@@ -215,7 +215,7 @@ Create a `.env` file in the project root:
 ```bash
 # Application Configuration
 BASE_URL=https://your-app-url.com
-APP_NAME=local  # or: saucedemo, cura, vwo
+APP_NAME=local  # or: saucedemo, cura, orangehrm
 
 # Authentication
 USERNAME=your_username

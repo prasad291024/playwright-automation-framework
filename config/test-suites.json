@@ -62,17 +62,6 @@
       }
     }
   },
-  "vwo": {
-    "defaultSuite": "all",
-    "suites": {
-      "all": {
-        "path": "tests/vwo.com"
-      },
-      "auth": {
-        "path": "tests/vwo.com/01-auth"
-      }
-    }
-  },
   "local": {
     "defaultSuite": "shared-api",
     "suites": {

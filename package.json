@@ -12,8 +12,6 @@
     "test:performance": "node scripts/run-app-suite.cjs --app=cura --suite=performance --project=chromium",
     "test:a11y": "node scripts/run-app-suite.cjs --app=cura --suite=accessibility --project=chromium",
     "test:visual": "node -e \"console.log('No active visual suite is configured. Use tests/templates/10-visual-regression as the template source.');\"",
-    "test:vwo": "node scripts/run-app-suite.cjs --app=vwo --suite=all --project=chromium",
-    "test:vwo:auth": "node scripts/run-app-suite.cjs --app=vwo --suite=auth --project=chromium",
     "test:cura": "node scripts/run-app-suite.cjs --app=cura --suite=all --project=chromium",
     "test:cura:auth": "node scripts/run-app-suite.cjs --app=cura --suite=auth --project=chromium",
     "test:cura:smoke": "node scripts/run-app-suite.cjs --app=cura --suite=smoke --project=chromium",

@@ -4,7 +4,11 @@ This folder preserves a complete numbered reference template from `01` through `
 
 - These files are templates only.
 - They are intentionally stored as `*.template.ts` so Playwright does not execute them.
-- Active coverage lives under app-specific suites like `tests/cura`, `tests/saucedemo`, `tests/orangehrm`, `tests/vwo.com`, and shared suites under `tests/shared`.
+- Active coverage lives under app-specific suites like `tests/cura`, `tests/saucedemo`, `tests/orangehrm`, and shared suites under `tests/shared`.
+
+## Archived App Templates
+
+- `apps/vwo.com/01-auth`: VWO auth coverage preserved as a template until valid org-owned credentials return
 
 ## Numbered Template Folders
 

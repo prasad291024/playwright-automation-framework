@@ -3,7 +3,7 @@ import { Page } from '@playwright/test';
 import { AppName } from '../../../src/config/app.config';
 import { test, expect } from '../../../src/core/fixtures/auth.fixture';
 
-const unsupportedApps = new Set<AppName>(['local']);
+const unsupportedApps = new Set<AppName>(['local', 'vwo']);
 
 const assertAuthenticatedLanding = async (page: Page, appName: AppName): Promise<void> => {
   switch (appName) {
@@ -52,10 +52,7 @@ test.describe('Authenticated session fixture', () => {
     authSession,
     authenticatedPage,
   }) => {
-    test.skip(
-      unsupportedApps.has(appName),
-      `Shared auth coverage is not implemented for ${appName}.`,
-    );
+    test.skip(unsupportedApps.has(appName), `Shared auth coverage is not active for ${appName}.`);
     test.skip(
       !authSession.authenticated,
       `No authenticated session was available for ${appName}. Configure credentials to run this coverage.`,
@@ -72,10 +69,7 @@ test.describe('Authenticated session fixture', () => {
     authSession,
     authenticatedPage,
   }) => {
-    test.skip(
-      unsupportedApps.has(appName),
-      `Shared auth coverage is not implemented for ${appName}.`,
-    );
+    test.skip(unsupportedApps.has(appName), `Shared auth coverage is not active for ${appName}.`);
     test.skip(
       !authSession.authenticated,
       `No authenticated session was available for ${appName}. Configure credentials to run this coverage.`,

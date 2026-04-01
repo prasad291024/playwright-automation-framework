@@ -1,5 +1,5 @@
-import { test } from '../../../src/core/fixtures/auth.fixture';
-import { VwoLoginPage } from '../../../src/pages/infrastructure';
+import { test } from '../../../../../src/core/fixtures/auth.fixture';
+import { VwoLoginPage } from '../../../../../src/pages/infrastructure';
 
 const VWO_EMAIL = process.env.VWO_EMAIL || process.env.USERNAME || '';
 const VWO_PASSWORD = process.env.VWO_PASSWORD || process.env.PASSWORD || '';
@@ -7,7 +7,7 @@ const VWO_PASSWORD = process.env.VWO_PASSWORD || process.env.PASSWORD || '';
 test.describe('VWO Login', () => {
   test.skip(
     true,
-    'VWO test app is no longer supported and credentials are unavailable. Skipping all VWO tests.',
+    'VWO is archived from active execution until valid organization-owned credentials are available again.',
   );
 
   test('@smoke @vwo - login succeeds with valid email/password', async ({ page, appName }) => {
