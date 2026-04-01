@@ -3,12 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { AppName, AppRegistry } from '../../config/app.config';
 import { PageFactory } from '../../pages/infrastructure/PageFactory';
-import {
-  CuraLoginPage,
-  OrangeHrmLoginPage,
-  SauceDemoLoginPage,
-  VwoLoginPage,
-} from '../../pages/infrastructure';
+import { CuraLoginPage, OrangeHrmLoginPage, SauceDemoLoginPage } from '../../pages/infrastructure';
 import { isValidEmail } from '../../utils/vwoAuth';
 
 export interface AuthSessionResult {
@@ -76,18 +71,14 @@ export const loginForApp = async (page: Page, appName: AppName): Promise<boolean
   switch (appName) {
     case 'vwo': {
       const email = credentials.email || '';
-      const password = credentials.password || '';
+      const hasValidEmail = isValidEmail(email);
 
-      if (!email || !password || !isValidEmail(email)) {
-        console.log('Skipping VWO auth: set valid VWO_EMAIL and VWO_PASSWORD credentials.');
-        return false;
-      }
-
-      const loginPage = PageFactory.create<VwoLoginPage>(page, 'vwo', 'LoginPage');
-      await loginPage.goto();
-      await loginPage.login(email, password);
-      await loginPage.assertLoginSuccessful();
-      return true;
+      console.log(
+        hasValidEmail
+          ? 'Skipping VWO auth: VWO is currently archived from active execution until organization-owned credentials are restored.'
+          : 'Skipping VWO auth: VWO is archived from active execution and valid organization-owned credentials are unavailable.',
+      );
+      return false;
     }
 
     case 'cura': {

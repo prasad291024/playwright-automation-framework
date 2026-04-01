@@ -85,7 +85,7 @@ The Docker pipeline exposes these Jenkins parameters:
 
 - `TEST_SCOPE`: `smoke` or `full`
 - `PLAYWRIGHT_PROJECT`: `chromium`, `firefox`, `webkit`, `saucedemo`, or `cura`
-- `APP`: `local`, `vwo`, `cura`, `saucedemo`, or `orangehrm`
+- `APP`: `local`, `cura`, `saucedemo`, or `orangehrm`
 
 ## Slack Notifications
 
