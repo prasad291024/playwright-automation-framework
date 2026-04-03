@@ -7,16 +7,16 @@
 
 ## App-Specific Suites
 
-- `tests/saucedemo/01-auth`: SauceDemo authentication and login-data coverage
-- `tests/saucedemo/smoke`: Fast SauceDemo login and happy-path coverage
+- `tests/saucedemo/01-auth`: SauceDemo negative and edge-case authentication coverage
+- `tests/saucedemo/smoke`: Fast SauceDemo happy-path login and shell coverage
 - `tests/saucedemo/regression`: Broader SauceDemo flows
-- `tests/cura/01-auth`: CURA authentication-specific coverage
-- `tests/cura/smoke`: Fast CURA smoke coverage
+- `tests/cura/01-auth`: CURA negative and edge-case authentication coverage
+- `tests/cura/smoke`: Fast CURA happy-path smoke coverage
 - `tests/cura/regression`: Broader CURA appointment flows
 - `tests/cura/04-accessibility-testing`: CURA accessibility coverage
 - `tests/cura/05-performance-testing`: CURA performance coverage
-- `tests/orangehrm/01-auth`: OrangeHRM authentication and login-data coverage
-- `tests/orangehrm/smoke`: OrangeHRM smoke coverage
+- `tests/orangehrm/01-auth`: OrangeHRM negative and edge-case authentication coverage
+- `tests/orangehrm/smoke`: OrangeHRM happy-path smoke coverage
 
 ## Archived App Coverage
 
@@ -34,6 +34,11 @@
 - `tests/templates/08-performance-testing`: Performance-testing templates
 - `tests/templates/09-accessibility-testing`: Accessibility-testing templates
 - `tests/templates/10-visual-regression`: Visual-regression templates
+
+## Suite Intent
+
+- `01-auth` suites focus on negative-path and validation coverage so they do not duplicate smoke login tests.
+- `smoke` suites own the fast happy-path login and shell checks used for quick confidence.
 
 ## Reporting Conventions
 

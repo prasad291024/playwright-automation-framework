@@ -12,12 +12,4 @@ test.describe('OrangeHRM Login', () => {
     await orangeHrmLoginPage.login(ORANGEHRM_USERNAME, ORANGEHRM_PASSWORD);
     await orangeHrmLoginPage.assertLoginSuccess();
   });
-
-  test('@smoke @orangehrm - login fails with invalid password', async ({ page }) => {
-    const orangeHrmLoginPage = new OrangeHrmLoginPage(page);
-    await orangeHrmLoginPage.goto();
-
-    await orangeHrmLoginPage.login(ORANGEHRM_USERNAME, `${ORANGEHRM_PASSWORD}__invalid`);
-    await orangeHrmLoginPage.assertLoginFailure();
-  });
 });
