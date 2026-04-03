@@ -68,6 +68,15 @@
       },
       "shared-auth": {
         "path": "tests/shared/auth"
+      },
+      "accessibility": {
+        "path": "tests/orangehrm/04-accessibility-testing"
+      },
+      "performance": {
+        "path": "tests/orangehrm/05-performance-testing"
+      },
+      "visual": {
+        "path": "tests/orangehrm/06-visual-regression"
       }
     }
   },
