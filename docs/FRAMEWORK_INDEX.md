@@ -82,12 +82,12 @@ tests/cura/
 
 ### Documentation
 
-| File                              | Content                     | Status     |
-| --------------------------------- | --------------------------- | ---------- |
-| `FRAMEWORK_IMPLEMENTATION.md`     | Detailed code samples       | ✅ Created |
-| `PRODUCTION_FRAMEWORK_SUMMARY.md` | Complete architecture guide | ✅ Created |
-| `STRUCTURE_REFACTORING.md`        | Directory structure changes | ✅ Created |
-| `FRAMEWORK_INDEX.md`              | This file                   | ✅ Created |
+| File                                   | Content                     | Status     |
+| -------------------------------------- | --------------------------- | ---------- |
+| `docs/FRAMEWORK_IMPLEMENTATION.md`     | Detailed code samples       | ✅ Created |
+| `docs/PRODUCTION_FRAMEWORK_SUMMARY.md` | Complete architecture guide | ✅ Created |
+| `docs/STRUCTURE_REFACTORING.md`        | Directory structure changes | ✅ Created |
+| `docs/FRAMEWORK_INDEX.md`              | This file                   | ✅ Created |
 
 ---
 
@@ -156,7 +156,7 @@ Framework Root
 │   └── playwright.config.ts              → Playwright config
 │
 └── Reports & Artifacts
-    ├── reports/                          → Test reports
+    ├── test-results/                     → JSON, JUnit, and artifact outputs
     └── playwright-report/                → HTML reports
 ```
 
@@ -412,12 +412,12 @@ stage('Test') {
 
 ## Documentation Files
 
-| Document                          | Use Case                         |
-| --------------------------------- | -------------------------------- |
-| `FRAMEWORK_IMPLEMENTATION.md`     | Understanding code structure     |
-| `PRODUCTION_FRAMEWORK_SUMMARY.md` | Architecture & features overview |
-| `STRUCTURE_REFACTORING.md`        | Directory changes & migration    |
-| `FRAMEWORK_INDEX.md`              | This quick reference guide       |
+| Document                               | Use Case                         |
+| -------------------------------------- | -------------------------------- |
+| `docs/FRAMEWORK_IMPLEMENTATION.md`     | Understanding code structure     |
+| `docs/PRODUCTION_FRAMEWORK_SUMMARY.md` | Architecture & features overview |
+| `docs/STRUCTURE_REFACTORING.md`        | Directory changes & migration    |
+| `docs/FRAMEWORK_INDEX.md`              | This quick reference guide       |
 
 ---
 
@@ -425,10 +425,10 @@ stage('Test') {
 
 ### Immediate Actions
 
-1. Review `PRODUCTION_FRAMEWORK_SUMMARY.md`
+1. Review `docs/PRODUCTION_FRAMEWORK_SUMMARY.md`
 2. Run `npx playwright test --ui` to explore tests
-3. Examine existing page objects
-4. Add your own tests following patterns
+3. Review `tests/README.md` for the active suite map
+4. Add your own tests following existing app-owned patterns
 
 ### Future Enhancements
 

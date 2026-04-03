@@ -77,9 +77,7 @@ Built with **Playwright**, **TypeScript**, and **Industrial-Quality Automation**
 │
 ├── 🤖 CI/CD & Automation
 │   ├── .github/workflows/
-│   │   ├── pr-checks.yml         # PR validation (Lint, Type check, Smoke tests)
-│   │   ├── main-tests.yml        # Post-merge regression testing
-│   │   ├── test.yml              # Multi-browser test pipeline
+│   │   ├── ci.yml                # Staged CI pipeline (install, lint, typecheck, test, publish)
 │   │   └── codeql.yml            # Security scanning
 │   ├── .husky/                   # Git hooks
 │   │   ├── pre-commit            # Pre-commit validation (lint-staged)
@@ -130,17 +128,11 @@ Built with **Playwright**, **TypeScript**, and **Industrial-Quality Automation**
 │   │       └── [app-specific configs]
 │   │
 │   ├── tests/                    # Test suites
-│   │   ├── 01-fundamentals/      # Basic test examples
-│   │   ├── 02-interactions/      # User interaction tests
-│   │   ├── 03-test-organization/ # Test organization patterns
-│   │   ├── 04-advanced-features/ # Advanced patterns (API, real-time)
-│   │   ├── 05-page-object-model/ # POM examples
-│   │   ├── 06-api-testing/       # API tests with schema validation
-│   │   ├── 07-smoke-testing/     # @smoke tagged smoke tests
-│   │   ├── 08-performance-testing/
-│   │   ├── 09-accessibility-testing/
-│   │   ├── 10-visual-regression/ # Visual regression testing
-│   │   └── config.ts             # Test configuration
+│   │   ├── cura/                 # CURA suites (auth, smoke, regression, a11y, performance)
+│   │   ├── orangehrm/            # OrangeHRM suites
+│   │   ├── saucedemo/            # SauceDemo suites
+│   │   ├── shared/               # Shared auth and API coverage
+│   │   └── templates/            # Numbered template track (01-10)
 │   │
 │   ├── test-data/                # Test data files
 │   │   ├── fixtures/             # Shared test data (JSON)
@@ -164,15 +156,14 @@ Built with **Playwright**, **TypeScript**, and **Industrial-Quality Automation**
 │   └── screenshots/              # Failure screenshots
 │
 ├── 📚 Documentation
-│   ├── Documentations/
-│   │   ├── QUALITY_GATES.md      # Industrial quality gates strategy
-│   │   ├── FRAMEWORK_COMPLETE_GUIDE.md
-│   │   ├── ARCHITECTURE_VISUAL_GUIDE.md
-│   │   ├── LEARNING_GUIDE.md
-│   │   └── [other guides]
-│   ├── CONTRIBUTING.md           # Development guidelines
-│   ├── PRODUCTION_READINESS.md   # Production checklist
-│   └── SECURITY.md              # Security guidelines
+│   ├── docs/
+│   │   ├── FRAMEWORK_INDEX.md          # Current framework overview
+│   │   ├── FRAMEWORK_IMPLEMENTATION.md # Implementation guide
+│   │   ├── PRODUCTION_FRAMEWORK_SUMMARY.md
+│   │   ├── STRUCTURE_REFACTORING.md    # Structure history and migration notes
+│   │   ├── PRODUCTION_READINESS.md     # Production checklist
+│   │   ├── CONTRIBUTING.md             # Development guidelines
+│   │   └── SECURITY.md                 # Security guidelines
 │
 └── 📦 Dependencies & Configuration
     ├── package.json
@@ -241,8 +232,8 @@ npm run test:smoke
 # Run with visible browser
 npm run test:headed
 
-# Run specific test file
-npx playwright test tests/01-fundamentals/login.spec.ts
+# Run specific active test file
+npx playwright test tests/saucedemo/smoke/login.spec.ts
 
 # Run tests matching pattern
 npx playwright test --grep "login"
@@ -458,34 +449,46 @@ npm run verify-env
 
 **Technology:** GitHub Actions
 
-**Workflow:** `.github/workflows/pr-checks.yml`
+**Workflow:** `.github/workflows/ci.yml`
 
 **Checks:**
 
-- ✅ **Lint Job** — ESLint validation
-- ✅ **Type check Job** — TypeScript compilation
-- ✅ **Unit / smoke tests Job** — Smoke test suite (@smoke)
+- ✅ **Install Dependencies** — workspace/bootstrap stage
+- ✅ **Lint** — ESLint + Prettier validation
+- ✅ **Type check** — TypeScript compilation
+- ✅ **Code Quality Checks** — staged quality gate summary
+- ✅ **Test** — smoke scope on PR, broader suite coverage on push/manual runs
+- ✅ **Publish Report** — artifact and report summary stage
 
 **Each job appears as individual status check:**
 
+- `Install Dependencies` ✅
 - `Lint` ✅
 - `Type check` ✅
-- `Unit / smoke tests` ✅
+- `Code Quality Checks` ✅
+- `Test` ✅
+- `Publish Report` ✅
 
 ```yaml
-# Jobs run in parallel after dependency installation
+# Jobs run in stages after dependency installation
 jobs:
-  install-dependencies:
+  install:
     runs-on: ubuntu-latest
   lint:
     runs-on: ubuntu-latest
-    needs: install-dependencies
+    needs: install
   typecheck:
     runs-on: ubuntu-latest
-    needs: install-dependencies
+    needs: install
+  code_quality:
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
   test:
     runs-on: ubuntu-latest
-    needs: install-dependencies
+    needs: [install, code_quality]
+  publish_report:
+    runs-on: ubuntu-latest
+    needs: [install, test]
 ```
 
 ### 4️⃣ Post-Merge Checks (Main Branch Protection)
@@ -494,14 +497,14 @@ jobs:
 
 **Trigger:** Push to `main` branch after merge
 
-**Workflow:** `.github/workflows/main-tests.yml`
+**Workflow:** `.github/workflows/ci.yml`
 
 **Checks:**
 
-- ✅ Full regression test suite
-- ✅ All browsers (Chromium, Firefox, WebKit)
-- ✅ HTML report generation
-- ✅ Artifact upload (30-day retention)
+- ✅ Staged CI execution on `main`
+- ✅ Smoke/full scope selection based on event type
+- ✅ HTML, JSON, JUnit, and raw artifact upload
+- ✅ Published CI run summary
 
 ---
 
@@ -670,7 +673,7 @@ Configure the following in GitHub repository settings to protect the `main` bran
 4. Enable protections above
 5. Click "Create"
 
-See [Branch Protection Documentation](./Documentations/QUALITY_GATES.md) for detailed setup.
+See [Framework Index](./docs/FRAMEWORK_INDEX.md) and [Contributing](./docs/CONTRIBUTING.md) for current workflow guidance.
 
 ---
 
@@ -787,16 +790,18 @@ test.describe('User Authentication @smoke', () => {
 
 ## 📚 Documentation
 
-Comprehensive guides available in `Documentations/`:
+Comprehensive guides available in `docs/`:
 
-| Document                                                                      | Purpose                           |
-| ----------------------------------------------------------------------------- | --------------------------------- |
-| [QUALITY_GATES.md](./Documentations/QUALITY_GATES.md)                         | Industrial quality gates strategy |
-| [FRAMEWORK_COMPLETE_GUIDE.md](./Documentations/FRAMEWORK_COMPLETE_GUIDE.md)   | Complete framework guide          |
-| [ARCHITECTURE_VISUAL_GUIDE.md](./Documentations/ARCHITECTURE_VISUAL_GUIDE.md) | Architecture diagrams             |
-| [LEARNING_GUIDE.md](./Documentations/LEARNING_GUIDE.md)                       | Learning path for new developers  |
-| [PRODUCTION_READINESS.md](./docs/PRODUCTION_READINESS.md)                     | Production checklist              |
-| [CONTRIBUTING.md](./docs/CONTRIBUTING.md)                                     | Development guidelines            |
+| Document                                                                  | Purpose                               |
+| ------------------------------------------------------------------------- | ------------------------------------- |
+| [FRAMEWORK_INDEX.md](./docs/FRAMEWORK_INDEX.md)                           | Current framework overview            |
+| [FRAMEWORK_IMPLEMENTATION.md](./docs/FRAMEWORK_IMPLEMENTATION.md)         | Implementation details                |
+| [PRODUCTION_FRAMEWORK_SUMMARY.md](./docs/PRODUCTION_FRAMEWORK_SUMMARY.md) | Architecture summary                  |
+| [STRUCTURE_REFACTORING.md](./docs/STRUCTURE_REFACTORING.md)               | Structure changes and migration notes |
+| [PRODUCTION_READINESS.md](./docs/PRODUCTION_READINESS.md)                 | Production checklist                  |
+| [CONTRIBUTING.md](./docs/CONTRIBUTING.md)                                 | Development guidelines                |
+| [SECURITY.md](./docs/SECURITY.md)                                         | Security guidance                     |
+| [tests/README.md](./tests/README.md)                                      | Current active and template suites    |
 
 ---
 
@@ -867,9 +872,9 @@ See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for detailed guidelines.
 
 ## 🎯 Next Steps
 
-- ✅ Review [QUALITY_GATES.md](./Documentations/QUALITY_GATES.md) for quality automation details
+- ✅ Review [FRAMEWORK_INDEX.md](./docs/FRAMEWORK_INDEX.md) for the current framework map
 - ✅ Check [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for development guidelines
-- ✅ Explore [tests/](./tests/) for test examples
+- ✅ Explore [tests/README.md](./tests/README.md) for active suite organization
 - ✅ Read [PRODUCTION_READINESS.md](./docs/PRODUCTION_READINESS.md) before production deployment
 
 ---
@@ -1065,7 +1070,7 @@ Runs on every push and pull request:
 
 ```bash
 # View workflows
-.github/workflows/test.yml      # Main test pipeline
+.github/workflows/ci.yml        # Main staged CI pipeline
 .github/workflows/codeql.yml    # Security scanning
 ```
 

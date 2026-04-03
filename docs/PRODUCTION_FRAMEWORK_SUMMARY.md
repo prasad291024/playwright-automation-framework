@@ -57,7 +57,7 @@ tests/
     └── regression/
         └── book-appointment.spec.ts[✅ CURA appointment booking test]
 
-reports/                          [✅ Test reports directory]
+test-results/ and playwright-report/ [✅ Test results and report directories]
 docker/                           [✅ Docker configuration directory]
 playwright.config.ts             [✅ Updated with multi-project setup]
 ```
