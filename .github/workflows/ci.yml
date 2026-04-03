@@ -153,6 +153,7 @@ jobs:
               "saucedemo:auth"
               "saucedemo:smoke"
               "saucedemo:regression"
+              "saucedemo:accessibility"
               "saucedemo:shared-auth"
               "cura:auth"
               "cura:smoke"
