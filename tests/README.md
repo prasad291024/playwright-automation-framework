@@ -18,6 +18,7 @@
 - `tests/cura/regression`: Broader CURA appointment flows
 - `tests/cura/04-accessibility-testing`: CURA accessibility coverage
 - `tests/cura/05-performance-testing`: CURA performance coverage
+- `tests/cura/06-visual-regression`: CURA visual regression coverage
 - `tests/orangehrm/01-auth`: OrangeHRM negative and edge-case authentication coverage
 - `tests/orangehrm/smoke`: OrangeHRM happy-path smoke coverage
 - `tests/orangehrm/04-accessibility-testing`: OrangeHRM accessibility coverage
@@ -54,5 +55,5 @@
 - JUnit reports are written to `test-results/junit/<app>-<suite>.xml`
 - Playwright attachments are written to `test-results/artifacts/<app>/<suite>`
 - Visual snapshot baselines live alongside the owning visual suite under `*-snapshots/`
-- Use `npm run test:visual:update` to refresh SauceDemo visual baselines on the current platform
+- Use `npm run test:visual:update` to refresh app-owned visual baselines on the current platform
 - Template files are stored as `*.template.ts` so Playwright does not execute them

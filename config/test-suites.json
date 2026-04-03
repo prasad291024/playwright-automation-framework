@@ -51,6 +51,9 @@
       },
       "performance": {
         "path": "tests/cura/05-performance-testing"
+      },
+      "visual": {
+        "path": "tests/cura/06-visual-regression"
       }
     }
   },
