@@ -42,7 +42,7 @@ project-root
 │  └ cura
 │     ├ smoke/
 │     └ regression/
-├ reports/
+├ test-results/
 ├ docker/
 └ playwright.config.ts
 ```
@@ -94,7 +94,7 @@ project-root
 
 ### 6. ✅ Additional Directories Created
 
-- `reports/` - For test reports and screenshots
+- `test-results/` and `playwright-report/` - For reports, screenshots, traces, and artifacts
 - `docker/` - For Docker-related files
 
 ### 7. ✅ Cleanup
@@ -145,7 +145,7 @@ tests/
     ├── smoke/
     └── regression/
 
-reports/
+test-results/
 docker/
 ```
 
