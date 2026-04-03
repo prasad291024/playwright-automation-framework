@@ -10,6 +10,9 @@
 - `tests/saucedemo/01-auth`: SauceDemo negative and edge-case authentication coverage
 - `tests/saucedemo/smoke`: Fast SauceDemo happy-path login and shell coverage
 - `tests/saucedemo/regression`: Broader SauceDemo flows
+- `tests/saucedemo/04-accessibility-testing`: SauceDemo accessibility coverage
+- `tests/saucedemo/05-performance-testing`: SauceDemo performance coverage
+- `tests/saucedemo/06-visual-regression`: SauceDemo visual regression coverage
 - `tests/cura/01-auth`: CURA negative and edge-case authentication coverage
 - `tests/cura/smoke`: Fast CURA happy-path smoke coverage
 - `tests/cura/regression`: Broader CURA appointment flows
@@ -47,4 +50,6 @@
 - JSON reports are written to `test-results/json/<app>-<suite>.json`
 - JUnit reports are written to `test-results/junit/<app>-<suite>.xml`
 - Playwright attachments are written to `test-results/artifacts/<app>/<suite>`
+- Visual snapshot baselines live alongside the owning visual suite under `*-snapshots/`
+- Use `npm run test:visual:update` to refresh SauceDemo visual baselines on the current platform
 - Template files are stored as `*.template.ts` so Playwright does not execute them

@@ -16,6 +16,15 @@
       },
       "regression": {
         "path": "tests/saucedemo/regression"
+      },
+      "accessibility": {
+        "path": "tests/saucedemo/04-accessibility-testing"
+      },
+      "performance": {
+        "path": "tests/saucedemo/05-performance-testing"
+      },
+      "visual": {
+        "path": "tests/saucedemo/06-visual-regression"
       }
     }
   },
