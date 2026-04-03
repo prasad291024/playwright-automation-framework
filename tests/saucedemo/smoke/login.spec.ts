@@ -2,7 +2,7 @@ import { test } from '@playwright/test';
 import { SauceDemoInventoryPage, SauceDemoLoginPage } from '../../../src/pages/infrastructure';
 import { users } from '../../../src/apps/saucedemo/test-data/users';
 
-test('user can login successfully', async ({ page }) => {
+test('@smoke @saucedemo - user can login successfully', async ({ page }) => {
   const loginPage = new SauceDemoLoginPage(page);
   await loginPage.goto();
 

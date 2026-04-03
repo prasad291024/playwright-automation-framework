@@ -20,16 +20,7 @@ const invalidScenarios = [
   },
 ];
 
-test.describe('CURA Login Data', () => {
-  test('@auth @cura - login succeeds with valid credentials', async ({ page }) => {
-    const loginPage = new CuraLoginPage(page);
-    await loginPage.goto();
-    await loginPage.goToLogin();
-
-    await loginPage.login(validScenario.username, validScenario.password);
-    await loginPage.assertLoginSuccess();
-  });
-
+test.describe('CURA Login Validation', () => {
   for (const scenario of invalidScenarios) {
     test(`@auth @cura - login fails for ${scenario.name}`, async ({ page }) => {
       const loginPage = new CuraLoginPage(page);

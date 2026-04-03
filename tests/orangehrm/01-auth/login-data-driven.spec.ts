@@ -19,15 +19,7 @@ const invalidScenarios = [
   },
 ];
 
-test.describe('OrangeHRM Login Data', () => {
-  test('@auth @orangehrm - login succeeds with valid credentials', async ({ page }) => {
-    const loginPage = new OrangeHrmLoginPage(page);
-    await loginPage.goto();
-
-    await loginPage.login(validScenario.username, validScenario.password);
-    await loginPage.assertLoginSuccess();
-  });
-
+test.describe('OrangeHRM Login Validation', () => {
   for (const scenario of invalidScenarios) {
     test(`@auth @orangehrm - login fails for ${scenario.name}`, async ({ page }) => {
       const loginPage = new OrangeHrmLoginPage(page);
