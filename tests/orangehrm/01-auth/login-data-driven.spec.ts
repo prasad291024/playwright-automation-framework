@@ -2,8 +2,8 @@ import { test } from '@playwright/test';
 import { OrangeHrmLoginPage } from '../../../src/pages/infrastructure';
 
 const validScenario = {
-  username: process.env.ORANGEHRM_USERNAME || process.env.USERNAME || 'Admin',
-  password: process.env.ORANGEHRM_PASSWORD || process.env.PASSWORD || 'admin123',
+  username: process.env.ORANGEHRM_USERNAME || 'Admin',
+  password: process.env.ORANGEHRM_PASSWORD || 'admin123',
 };
 
 const invalidScenarios = [
