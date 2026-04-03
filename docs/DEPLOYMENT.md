@@ -94,33 +94,30 @@ env:
 
 ### GitHub Actions Workflow
 
-The framework includes `.github/workflows/test.yml` with:
+The framework includes `.github/workflows/ci.yml` with:
 
 ✅ **Features:**
 
-- Multi-browser testing (Chromium, Firefox, WebKit)
-- Multi-platform testing (Ubuntu, Windows, macOS)
-- Scheduled daily runs at 2 AM UTC
-- Pull request validation
-- Test artifact upload
-- Slack notifications
+- Staged jobs for install, lint, typecheck, test, and report publishing
+- Pull request validation with smoke scope
+- Broader push/manual run coverage
+- HTML, JSON, JUnit, and raw test artifact upload
+- Published run summaries for easier triage
 
-### Scheduled Test Runs
+### Triggered Test Runs
 
-Tests run on a schedule to catch regressions:
+The current GitHub Actions pipeline runs on:
 
-```yaml
-schedule:
-  - cron: '0 2 * * *' # Daily at 2 AM UTC
-  - cron: '0 9 * * 1' # Weekly on Monday at 9 AM UTC
-```
+- pull requests to `main` and `develop`
+- pushes to `main`, `develop`, and `feature/**`
+- manual workflow dispatch
 
 ### Manual Test Runs
 
 Trigger tests manually via GitHub UI:
 
 1. Go to Actions tab
-2. Select "Playwright Tests" workflow
+2. Select the `Playwright CI` workflow
 3. Click "Run workflow"
 4. Select branch and click "Run"
 
