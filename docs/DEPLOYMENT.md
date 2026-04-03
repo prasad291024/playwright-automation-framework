@@ -351,8 +351,14 @@ persisting
 
 ```bash
 # Regenerate storage state
-rm storage-state/storageState.json
+rm storage-state/<app>.json
 npm run test  # This will trigger global-setup
+```
+
+For local debugging, you can bypass the auth bootstrap layer entirely when you do not need saved login state:
+
+```bash
+SKIP_GLOBAL_AUTH_SETUP=1
 ```
 
 ---

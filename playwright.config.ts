@@ -42,6 +42,7 @@ process.env.APP_NAME = selectedApp;
 
 const resolvedStorageState = process.env.STORAGE_STATE;
 const storageStateExists = resolvedStorageState ? fs.existsSync(resolvedStorageState) : false;
+const requiresAuthStorage = appConfig.authType !== 'none';
 const htmlReportOutput =
   process.env.PLAYWRIGHT_HTML_REPORT || `playwright-report/${selectedApp}/${selectedSuite}`;
 const jsonReportOutput =
@@ -61,7 +62,7 @@ if (junitReportOutput) {
   reporters.push(['junit', { outputFile: junitReportOutput }]);
 }
 
-if (resolvedStorageState && !storageStateExists) {
+if (resolvedStorageState && requiresAuthStorage && !storageStateExists) {
   console.warn(
     `Storage state not found at ${resolvedStorageState}. Continuing without storage state.`,
   );
@@ -97,7 +98,7 @@ export default defineConfig({
     baseURL: appConfig.baseUrl,
     actionTimeout: appConfig.timeouts.action,
     navigationTimeout: appConfig.timeouts.navigation,
-    storageState: storageStateExists ? resolvedStorageState : undefined,
+    storageState: requiresAuthStorage && storageStateExists ? resolvedStorageState : undefined,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',
