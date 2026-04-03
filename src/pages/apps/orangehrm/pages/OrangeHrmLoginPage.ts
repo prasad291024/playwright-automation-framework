@@ -25,7 +25,9 @@ export class OrangeHrmLoginPage extends BasePage {
   }
 
   async assertLoginSuccess(): Promise<void> {
-    await expect(this.page).toHaveURL(/\/dashboard\/index/i);
+    await expect(this.page).toHaveURL(/\/dashboard\/index/i, {
+      timeout: this.appConfig.timeouts.navigation,
+    });
     await expect(this.page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
   }
 

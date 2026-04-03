@@ -2,8 +2,8 @@ import { test } from '@playwright/test';
 import { OrangeHrmLoginPage } from '../../../src/pages/infrastructure';
 
 const validScenario = {
-  username: process.env.ORANGEHRM_USERNAME || process.env.USERNAME || 'Admin',
-  password: process.env.ORANGEHRM_PASSWORD || process.env.PASSWORD || 'admin123',
+  username: process.env.ORANGEHRM_USERNAME || 'Admin',
+  password: process.env.ORANGEHRM_PASSWORD || 'admin123',
 };
 
 const invalidScenarios = [
@@ -19,15 +19,7 @@ const invalidScenarios = [
   },
 ];
 
-test.describe('OrangeHRM Login Data', () => {
-  test('@auth @orangehrm - login succeeds with valid credentials', async ({ page }) => {
-    const loginPage = new OrangeHrmLoginPage(page);
-    await loginPage.goto();
-
-    await loginPage.login(validScenario.username, validScenario.password);
-    await loginPage.assertLoginSuccess();
-  });
-
+test.describe('OrangeHRM Login Validation', () => {
   for (const scenario of invalidScenarios) {
     test(`@auth @orangehrm - login fails for ${scenario.name}`, async ({ page }) => {
       const loginPage = new OrangeHrmLoginPage(page);

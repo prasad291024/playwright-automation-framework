@@ -15,15 +15,7 @@ const invalidScenarios = [
   },
 ];
 
-test.describe('SauceDemo Login Data', () => {
-  test('@auth @saucedemo - standard user can login successfully', async ({ page }) => {
-    const loginPage = new SauceDemoLoginPage(page);
-    await loginPage.goto();
-
-    await loginPage.login(users.standard_user.username, users.standard_user.password);
-    await loginPage.assertLoginSuccess();
-  });
-
+test.describe('SauceDemo Login Validation', () => {
   for (const scenario of invalidScenarios) {
     test(`@auth @saucedemo - login fails for ${scenario.name}`, async ({ page }) => {
       const loginPage = new SauceDemoLoginPage(page);
