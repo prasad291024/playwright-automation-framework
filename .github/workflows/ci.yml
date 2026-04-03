@@ -161,6 +161,7 @@ jobs:
               "cura:shared-auth"
               "orangehrm:auth"
               "orangehrm:smoke"
+              "orangehrm:accessibility"
               "orangehrm:shared-auth"
               "local:shared-api"
             )
