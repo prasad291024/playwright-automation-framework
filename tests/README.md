@@ -20,6 +20,9 @@
 - `tests/cura/05-performance-testing`: CURA performance coverage
 - `tests/orangehrm/01-auth`: OrangeHRM negative and edge-case authentication coverage
 - `tests/orangehrm/smoke`: OrangeHRM happy-path smoke coverage
+- `tests/orangehrm/04-accessibility-testing`: OrangeHRM accessibility coverage
+- `tests/orangehrm/05-performance-testing`: OrangeHRM performance coverage
+- `tests/orangehrm/06-visual-regression`: OrangeHRM visual regression coverage
 
 ## Archived App Coverage
 
