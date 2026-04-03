@@ -48,8 +48,8 @@ const resolveCredentials = (appName: AppName): LoginCredentials => {
       };
     case 'orangehrm':
       return {
-        username: process.env.ORANGEHRM_USERNAME || process.env.USERNAME || 'Admin',
-        password: process.env.ORANGEHRM_PASSWORD || process.env.PASSWORD || 'admin123',
+        username: process.env.ORANGEHRM_USERNAME || 'Admin',
+        password: process.env.ORANGEHRM_PASSWORD || 'admin123',
       };
     default:
       return {};
