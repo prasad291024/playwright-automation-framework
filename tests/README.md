@@ -1,5 +1,7 @@
 # Test Suite Structure
 
+See `docs/TEST_STRATEGY.md` for CI scope, suite ownership rules, and rollout guidance.
+
 ## Active Shared Suites
 
 - `tests/shared/auth`: Shared authentication fixture and storage-state coverage

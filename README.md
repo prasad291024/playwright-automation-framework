@@ -795,6 +795,7 @@ Comprehensive guides available in `docs/`:
 | Document                                                                  | Purpose                               |
 | ------------------------------------------------------------------------- | ------------------------------------- |
 | [FRAMEWORK_INDEX.md](./docs/FRAMEWORK_INDEX.md)                           | Current framework overview            |
+| [TEST_STRATEGY.md](./docs/TEST_STRATEGY.md)                               | Active suite ownership and CI scope   |
 | [FRAMEWORK_IMPLEMENTATION.md](./docs/FRAMEWORK_IMPLEMENTATION.md)         | Implementation details                |
 | [PRODUCTION_FRAMEWORK_SUMMARY.md](./docs/PRODUCTION_FRAMEWORK_SUMMARY.md) | Architecture summary                  |
 | [STRUCTURE_REFACTORING.md](./docs/STRUCTURE_REFACTORING.md)               | Structure changes and migration notes |
