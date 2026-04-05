@@ -85,6 +85,7 @@ tests/cura/
 | File                                   | Content                     | Status     |
 | -------------------------------------- | --------------------------- | ---------- |
 | `docs/FRAMEWORK_IMPLEMENTATION.md`     | Detailed code samples       | ✅ Created |
+| `docs/TEST_STRATEGY.md`                | Active suite and CI policy  | ✅ Created |
 | `docs/PRODUCTION_FRAMEWORK_SUMMARY.md` | Complete architecture guide | ✅ Created |
 | `docs/STRUCTURE_REFACTORING.md`        | Directory structure changes | ✅ Created |
 | `docs/FRAMEWORK_INDEX.md`              | This file                   | ✅ Created |
@@ -415,6 +416,7 @@ stage('Test') {
 | Document                               | Use Case                         |
 | -------------------------------------- | -------------------------------- |
 | `docs/FRAMEWORK_IMPLEMENTATION.md`     | Understanding code structure     |
+| `docs/TEST_STRATEGY.md`                | Suite ownership and CI execution |
 | `docs/PRODUCTION_FRAMEWORK_SUMMARY.md` | Architecture & features overview |
 | `docs/STRUCTURE_REFACTORING.md`        | Directory changes & migration    |
 | `docs/FRAMEWORK_INDEX.md`              | This quick reference guide       |
@@ -427,7 +429,7 @@ stage('Test') {
 
 1. Review `docs/PRODUCTION_FRAMEWORK_SUMMARY.md`
 2. Run `npx playwright test --ui` to explore tests
-3. Review `tests/README.md` for the active suite map
+3. Review `docs/TEST_STRATEGY.md` for suite ownership and CI scope
 4. Add your own tests following existing app-owned patterns
 
 ### Future Enhancements
