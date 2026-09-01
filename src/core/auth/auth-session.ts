@@ -14,11 +14,29 @@ export interface AuthSessionResult {
   reusedStorageState: boolean;
 }
 
+export interface StorageStateStatus {
+  reusable: boolean;
+  reason: 'missing' | 'invalid' | 'stale' | 'valid';
+  ageMs?: number;
+}
+
 interface LoginCredentials {
   username?: string;
   email?: string;
   password?: string;
 }
+
+const DEFAULT_STORAGE_STATE_MAX_AGE_HOURS = 12;
+
+const resolveStorageStateMaxAgeMs = (): number => {
+  const configuredHours = Number(process.env.AUTH_STORAGE_STATE_MAX_AGE_HOURS);
+  const hours =
+    Number.isFinite(configuredHours) && configuredHours > 0
+      ? configuredHours
+      : DEFAULT_STORAGE_STATE_MAX_AGE_HOURS;
+
+  return hours * 60 * 60 * 1000;
+};
 
 const toAppName = (value?: string): AppName => {
   const candidate = (value || '').trim() as AppName;
@@ -63,6 +81,33 @@ export const resolveAppNameFromEnv = (): AppName => {
 export const resolveStorageFile = (appName: AppName): string => {
   const configuredPath = process.env.STORAGE_STATE || AppRegistry.get(appName).storageState;
   return path.resolve(process.cwd(), configuredPath);
+};
+
+export const getStorageStateStatus = (
+  storageFile: string,
+  maxAgeMs = resolveStorageStateMaxAgeMs(),
+): StorageStateStatus => {
+  if (!fs.existsSync(storageFile)) {
+    return { reusable: false, reason: 'missing' };
+  }
+
+  try {
+    const contents = fs.readFileSync(storageFile, 'utf8');
+    const parsed = JSON.parse(contents) as { cookies?: unknown; origins?: unknown };
+
+    if (!Array.isArray(parsed.cookies) || !Array.isArray(parsed.origins)) {
+      return { reusable: false, reason: 'invalid' };
+    }
+  } catch {
+    return { reusable: false, reason: 'invalid' };
+  }
+
+  const ageMs = Date.now() - fs.statSync(storageFile).mtimeMs;
+  if (ageMs > maxAgeMs) {
+    return { reusable: false, reason: 'stale', ageMs };
+  }
+
+  return { reusable: true, reason: 'valid', ageMs };
 };
 
 export const loginForApp = async (page: Page, appName: AppName): Promise<boolean> => {
@@ -150,7 +195,7 @@ export const ensureStorageState = async (
     return false;
   }
 
-  if (!force && fs.existsSync(storageFile)) {
+  if (!force && getStorageStateStatus(storageFile).reusable) {
     return true;
   }
 
@@ -169,13 +214,14 @@ export const createAuthenticatedSession = async (
   appName: AppName,
 ): Promise<AuthSessionResult> => {
   const storageFile = resolveStorageFile(appName);
-  const reusedStorageState = fs.existsSync(storageFile);
+  const storageStateStatus = getStorageStateStatus(storageFile);
+  const reusedStorageState = storageStateStatus.reusable;
   const context = await browser.newContext(reusedStorageState ? { storageState: storageFile } : {});
   const page = await context.newPage();
 
   let authenticated = reusedStorageState;
   if (!reusedStorageState) {
-    authenticated = await ensureStorageState(page, appName, storageFile);
+    authenticated = await ensureStorageState(page, appName, storageFile, true);
   }
 
   return {
