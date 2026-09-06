@@ -72,6 +72,9 @@
       "shared-auth": {
         "path": "tests/shared/auth"
       },
+      "regression": {
+        "path": "tests/orangehrm/regression"
+      },
       "accessibility": {
         "path": "tests/orangehrm/04-accessibility-testing"
       },

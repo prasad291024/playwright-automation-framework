@@ -113,6 +113,7 @@ Current full scope:
 - `cura:shared-auth`
 - `orangehrm:auth`
 - `orangehrm:smoke`
+- `orangehrm:regression`
 - `orangehrm:accessibility`
 - `orangehrm:shared-auth`
 - `local:shared-api`
