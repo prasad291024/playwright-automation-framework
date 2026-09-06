@@ -5,7 +5,7 @@ export { BasePage } from '../base/BasePage';
 export { VwoLoginPage } from '../apps/vwo';
 export { CuraConfirmationPage, CuraLoginPage, CuraAppointmentPage } from '../apps/cura';
 export { SauceDemoCartPage, SauceDemoInventoryPage, SauceDemoLoginPage } from '../apps/saucedemo';
-export { OrangeHrmLoginPage } from '../apps/orangehrm';
+export { OrangeHrmLoginPage, OrangeHrmDashboardPage } from '../apps/orangehrm';
 
 // Generic page objects (may need app-specific overrides)
 export { LoginPage } from '../LoginPage';
