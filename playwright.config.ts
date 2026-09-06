@@ -1,12 +1,13 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices, ReporterDescription } from '@playwright/test';
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-import dotenv from 'dotenv';
-import path from 'path';
-import fs from 'fs';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as os from 'os';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Import app configuration
@@ -52,7 +53,7 @@ const junitReportOutput =
   process.env.PLAYWRIGHT_JUNIT_OUTPUT_FILE ||
   `test-results/junit/${selectedApp}-${selectedSuite}.xml`;
 
-const reporters: [string, Record<string, unknown>?][] = [
+const reporters: ReporterDescription[] = [
   ['list'],
   ['html', { outputFolder: htmlReportOutput, open: 'never' }],
   ['json', { outputFile: jsonReportOutput }],
@@ -71,6 +72,60 @@ if (resolvedStorageState && requiresAuthStorage && !storageStateExists) {
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+/*
+ * Enhanced worker and retry configuration with environment overrides and app-specific strategy
+ * Precedence:
+ *   1. Explicit override via environment variable PLAYWRIGHT_RETRIES
+ *   2. CI environment: 2 retries (unless overridden by PLAYWRIGHT_RETRIES)
+ *   3. Debug mode: 0 retries (unless overridden by PLAYWRIGHT_RETRIES)
+ *   4. App-specific retryStrategy: maps 'none'→0, 'standard'→1, 'exponential'→2
+ *   5. Fallback: 1 retry
+ * Note: Test-level configuration (test.describe.configure or test.configure) can still override this global setting.
+ */
+
+
+const getWorkerCount = (): number | undefined => {
+  // Explicit override via environment variable
+  if (process.env.PLAYWRIGHT_WORKERS) {
+    const workers = parseInt(process.env.PLAYWRIGHT_WORKERS, 10);
+    return !isNaN(workers) && workers > 0 ? workers : undefined;
+  }
+
+  // CI-specific defaults
+  if (process.env.CI) return 1; // Stable single worker in CI
+
+  // Local development: leave one core free for system responsiveness
+  const cpuCount = os.cpus().length;
+  return Math.max(1, cpuCount - 1);
+};
+
+const getRetryCount = (): number => {
+  // Explicit override via environment variable (highest priority)
+  if (process.env.PLAYWRIGHT_RETRIES) {
+    const retries = parseInt(process.env.PLAYWRIGHT_RETRIES, 10);
+    return !isNaN(retries) && retries >= 0 ? retries : 0;
+  }
+
+  // In CI, we use a stable default of 2 retries unless overridden by env var
+  if (process.env.CI) {
+    return 2;
+  }
+
+  // In debug mode, disable retries for faster iteration
+  if (process.env.PLAYWRIGHT_DEBUG) {
+    return 0;
+  }
+
+  // Use app-specific retry strategy to determine base retry count
+  const strategyToRetryMap: Record<AppConfig['retryStrategy'], number> = {
+    none: 0,
+    standard: 1,
+    exponential: 2,
+  };
+
+  // Fallback to 1 retry if strategy is not recognized (should not happen with proper config)
+  return strategyToRetryMap[appConfig.retryStrategy] ?? 1;
+};
 export default defineConfig({
   testDir: './tests',
   /* Global test timeout - increased for flakiness resilience */
@@ -80,9 +135,9 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only - helps with transient failures */
-  retries: process.env.CI ? 2 : 0,
+  retries: getRetryCount(),
   /* Opt out of parallel tests on CI for stability */
-  workers: process.env.CI ? 1 : undefined,
+  workers: getWorkerCount(),
 
   // Global setup script: runs once before all tests (e.g., login, session state)
   globalSetup: './globals/global-setup.ts',

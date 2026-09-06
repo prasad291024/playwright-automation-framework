@@ -1,6 +1,6 @@
 import { Browser, BrowserContext, Page } from '@playwright/test';
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 import { AppName, AppRegistry } from '../../config/app.config';
 import { PageFactory } from '../../pages/infrastructure/PageFactory';
 import { CuraLoginPage, OrangeHrmLoginPage, SauceDemoLoginPage } from '../../pages/infrastructure';

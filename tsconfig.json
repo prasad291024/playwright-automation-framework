@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./",
@@ -11,16 +11,21 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": ["node", "@playwright/test"],
-    "baseUrl": "./",
+    "types": [
+      "node",
+      "@playwright/test"
+    ],
     "paths": {
-      "@pages/*": ["src/pages/*"],
-      "@tests/*": ["src/tests/*"]
+      "@pages/*": ["./src/pages/*"],
+      "@tests/*": ["./src/tests/*"]
     }
   },
-  "include": ["src/**/*", "tests/**/*", "globals/**/*"],
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "globals/**/*"
+  ],
   "exclude": [
-    "node_modules",
     "tests/templates",
     "src/pages/katalon-demo-cura.herokuapp.com",
     "src/pages/saucedemo.com",

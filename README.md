@@ -45,6 +45,24 @@ Built with **Playwright**, **TypeScript**, and **Industrial-Quality Automation**
 - ✅ **Test tagging strategy** (@smoke, @regression, @critical)
 - ✅ **Production diagnostics** (trace, video, screenshots)
 
+#### Configurable Retry Strategy
+The framework implements a flexible retry mechanism that can be configured at multiple levels:
+- **Environment Variable**: `PLAYWRIGHT_RETRIES` (highest priority)
+- **CI Environment**: Automatically uses 2 retries in CI (unless overridden)
+- **Debug Mode**: 0 retries when `PLAYWRIGHT_DEBUG` is set (unless overridden)
+- **Application-Specific**: Each test suite can define a `retryStrategy` in its config:
+  - `'none'` → 0 retries
+  - `'standard'` → 1 retry
+  - `'exponential'` → 2 retries
+- **Test/Suite Level**: Override globally using Playwright's configure APIs:
+  ```typescript
+  // Suite-level override
+  test.describe.configure({ retries: 3 });
+  
+  // Test-level override  
+  test.configure({ retries: 1 });
+  ```
+
 </td>
 <td>
 
@@ -1122,6 +1140,55 @@ docker run --rm playwright-tests npm test -- --project=firefox
 | `npm run typecheck`   | Validate TypeScript            |
 
 ---
+## 🔧 Advanced Configuration
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PLAYWRIGHT_WORKERS` | Override number of workers (parallel processes) | `CI ? 1 : CPU cores - 1` |
+| `PLAYWRIGHT_RETRIES` | Override number of retry attempts | `CI ? 2 : (PLAYWRIGHT_DEBUG ? 0 : 1)` |
+| `CI` | Set to `true` in CI environments | `false` |
+| `PLAYWRIGHT_DEBUG` | Set to `true` to disable retries for debugging | `false` |
+| `APP` | Select application under test (e.g., `saucedemo`, `cura`, `local`) | `local` |
+| `TEST_SUITE` | Select test suite to run (e.g., `all`, `smoke`, `regression`) | `all` |
+
+### Usage Examples
+
+```bash
+# Run with custom worker count (e.g., 4 workers)
+PLAYWRIGHT_WORKERS=4 npm test
+
+# Run with no retries (useful for debugging)
+PLAYWRIGHT_RETRIES=0 npm test
+
+# Run in CI mode (forces 1 worker and 2 retries)
+CI=true npm test
+
+# Run specific application
+APP=saucedemo npm test
+
+# Run specific test suite
+TEST_SUITE=smoke npm test
+
+# Combine overrides
+PLAYWRIGHT_WORKERS=2 PLAYWRIGHT_RETRIES=1 APP=cura TEST_SUITE=regression npm test
+```
+
+### Predefined NPM Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `npm run test:balanced` | Default balance of speed and reliability (1 worker, 1 retry) |
+| `npm run test:fast` | Faster execution with more workers, fewer retries |
+| `npm run test:reliable` | Maximum reliability with more retries, fewer workers |
+| `npm run test:debug` | No retries, headed browser for debugging |
+| `npm run test:ci` | CI-optimized (1 worker, 2 retries) |
+| `npm run test:saucedemo` | Run SauceDemo tests only |
+| `npm run test:cura` | Run CURA tests only |
+| `npm run test:chromium` | Run Chromium tests only |
+| `npm run test:firefox` | Run Firefox tests only |
+| `npm run test:webkit` | Run WebKit tests only |
 
 ## 📊 Test Reports
 

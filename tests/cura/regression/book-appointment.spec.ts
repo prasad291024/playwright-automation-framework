@@ -1,6 +1,10 @@
 import { test } from '../../../src/core/fixtures/auth.fixture';
 import { CuraAppointmentPage, CuraConfirmationPage } from '../../../src/pages/infrastructure';
 
+// Example: Configure retry behavior for individual tests
+// Uncomment to override the global or suite-level retry configuration:
+// test.configure({ retries: 3 }); // Test-level retry override
+
 test('user can book appointment', async ({ authenticatedPage, appName, authSession }) => {
   test.skip(appName !== 'cura', 'This regression test is scoped to the CURA app.');
   test.skip(
