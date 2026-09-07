@@ -188,6 +188,10 @@ On PowerShell, the equivalent is:
 $env:SKIP_GLOBAL_AUTH_SETUP='1'; npm.cmd run test:cura:visual:update
 ```
 
+Saved authentication state is reused only when it is valid JSON and newer than
+`AUTH_STORAGE_STATE_MAX_AGE_HOURS` (12 hours by default). Global setup refreshes
+missing, invalid, or stale state before the next run.
+
 ## When Adding New Coverage
 
 Before adding a new suite, decide:
