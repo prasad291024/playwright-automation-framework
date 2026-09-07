@@ -236,7 +236,11 @@ jobs:
           echo "- Test result: \`${{ needs.test.result }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "### Generated app/suite artifacts" >> "$GITHUB_STEP_SUMMARY"
-          find collected-artifacts -maxdepth 3 -type f | sort | sed 's#^#- `#; s#$#`#' >> "$GITHUB_STEP_SUMMARY"
+          if [ -d "collected-artifacts" ]; then
+            find collected-artifacts -maxdepth 3 -type f | sort | sed 's#^#- `#; s#$#`#' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "- No artifacts collected" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload consolidated CI artifacts
         uses: actions/upload-artifact@v4
