@@ -12,6 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Import app configuration
 import { AppRegistry, AppConfig, AppName } from './src/config/app.config';
+import { getStorageStateStatus } from './src/core/auth/auth-session';
 
 // Load app config mapping
 const appsPath = path.resolve(__dirname, 'config', 'apps.json');
@@ -42,7 +43,9 @@ process.env.STORAGE_STATE = appConfig.storageState || `storage-state/${selectedA
 process.env.APP_NAME = selectedApp;
 
 const resolvedStorageState = process.env.STORAGE_STATE;
-const storageStateExists = resolvedStorageState ? fs.existsSync(resolvedStorageState) : false;
+const storageStateStatus = resolvedStorageState
+  ? getStorageStateStatus(resolvedStorageState)
+  : { reusable: false, reason: 'missing' as const };
 const requiresAuthStorage = appConfig.authType !== 'none';
 const htmlReportOutput =
   process.env.PLAYWRIGHT_HTML_REPORT || `playwright-report/${selectedApp}/${selectedSuite}`;
@@ -63,9 +66,9 @@ if (junitReportOutput) {
   reporters.push(['junit', { outputFile: junitReportOutput }]);
 }
 
-if (resolvedStorageState && requiresAuthStorage && !storageStateExists) {
+if (resolvedStorageState && requiresAuthStorage && !storageStateStatus.reusable) {
   console.warn(
-    `Storage state not found at ${resolvedStorageState}. Continuing without storage state.`,
+    `Storage state is ${storageStateStatus.reason} at ${resolvedStorageState}. Continuing without storage state.`,
   );
 }
 
@@ -153,7 +156,8 @@ export default defineConfig({
     baseURL: appConfig.baseUrl,
     actionTimeout: appConfig.timeouts.action,
     navigationTimeout: appConfig.timeouts.navigation,
-    storageState: requiresAuthStorage && storageStateExists ? resolvedStorageState : undefined,
+    storageState:
+      requiresAuthStorage && storageStateStatus.reusable ? resolvedStorageState : undefined,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'on-first-retry',

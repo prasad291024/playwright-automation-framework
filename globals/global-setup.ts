@@ -1,8 +1,8 @@
 import { chromium } from '@playwright/test';
-import fs from 'fs';
 import { AppRegistry } from '../src/config/app.config';
 import {
   ensureStorageState,
+  getStorageStateStatus,
   resolveAppNameFromEnv,
   resolveStorageFile,
 } from '../src/core/auth/auth-session';
@@ -33,10 +33,16 @@ async function globalSetup() {
     return;
   }
 
-  // If storage state already exists, skip login flow
-  if (!force && fs.existsSync(storageFile)) {
+  const storageStateStatus = getStorageStateStatus(storageFile);
+  if (!force && storageStateStatus.reusable) {
     console.log('Using existing storage state:', storageFile);
     return;
+  }
+
+  if (!force && storageStateStatus.reason !== 'missing') {
+    console.log(
+      `Refreshing ${storageStateStatus.reason} storage state for APP=${selectedApp}: ${storageFile}`,
+    );
   }
 
   let browser;
@@ -57,7 +63,7 @@ async function globalSetup() {
   const page = await browser.newPage();
 
   try {
-    const authenticated = await ensureStorageState(page, selectedApp, storageFile, force);
+    const authenticated = await ensureStorageState(page, selectedApp, storageFile, true);
     if (!authenticated) {
       console.log(`Auth flow did not complete for APP=${selectedApp}; storage state not saved.`);
     }

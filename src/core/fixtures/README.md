@@ -6,7 +6,8 @@ This folder contains the canonical custom Playwright fixtures used by the framew
 
 - `auth.fixture.ts`
   - Provides a shared authenticated session for supported apps
-  - Reuses app-specific storage state from `config/apps.json` when available
+  - Reuses valid, non-stale app-specific storage state from `config/apps.json` when available
+  - Refreshes missing, invalid, or stale state through the app-specific login flow
   - Falls back to app-specific login flows when credentials are configured
   - Preferred import: `import { test, expect } from '../core/fixtures/auth.fixture';`
 
