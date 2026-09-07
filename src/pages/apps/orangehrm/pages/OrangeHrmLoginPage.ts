@@ -14,7 +14,9 @@ export class OrangeHrmLoginPage extends BasePage {
   async goto(): Promise<void> {
     await this.page.goto(this.appConfig.baseUrl);
     await this.waitForPageLoad();
-    await expect(this.page.getByRole('heading', { name: /login/i })).toBeVisible();
+    await expect(this.page.getByRole('heading', { name: /login/i })).toBeVisible({
+      timeout: 10000,
+    });
     await expect(this.usernameInput()).toBeVisible();
   }
 
