@@ -11,20 +11,13 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": [
-      "node",
-      "@playwright/test"
-    ],
+    "types": ["node", "@playwright/test"],
     "paths": {
       "@pages/*": ["./src/pages/*"],
       "@tests/*": ["./src/tests/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "tests/**/*",
-    "globals/**/*"
-  ],
+  "include": ["src/**/*", "tests/**/*", "globals/**/*"],
   "exclude": [
     "tests/templates",
     "src/pages/katalon-demo-cura.herokuapp.com",
