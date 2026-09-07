@@ -7,3 +7,4 @@ tests/templates
 .idea
 .vscode
 *.log
+error.ts
