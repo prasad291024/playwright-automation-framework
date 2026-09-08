@@ -37,8 +37,12 @@ export class OrangeHrmLoginPage extends BasePage {
   }
 
   async assertLoginFailure(): Promise<void> {
-    await expect(this.page).toHaveURL(/\/auth\/login/i);
-    await expect(this.page.getByText(/invalid credentials/i)).toBeVisible();
+    await expect(this.page).toHaveURL(/\/auth\/login/i, {
+      timeout: this.appConfig.timeouts.navigation || 20000,
+    });
+    await expect(this.page.getByText(/invalid credentials/i)).toBeVisible({
+      timeout: this.appConfig.timeouts.page || 15000,
+    });
   }
 
   private usernameInput(): Locator {
