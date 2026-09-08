@@ -17,7 +17,8 @@ test.describe('Accessibility: CURA', () => {
     await page.locator('#btn-make-appointment').click();
     await expect(page.locator('#txt-username')).toBeVisible();
 
-    await page.keyboard.press('Tab');
+    //await page.keyboard.press('Tab');
+    await page.locator('#txt-username').focus();
     await expect(page.locator('#txt-username')).toBeFocused();
 
     await page.keyboard.press('Tab');

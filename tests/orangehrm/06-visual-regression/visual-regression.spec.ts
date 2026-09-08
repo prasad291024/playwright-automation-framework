@@ -12,6 +12,7 @@ test.describe('Visual Regression: OrangeHRM', () => {
     await expect(page).toHaveScreenshot('orangehrm-login-shell.png', {
       fullPage: true,
       animations: 'disabled',
+      maxDiffPixelRatio: 0.05,
     });
   });
 

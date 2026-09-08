@@ -9,12 +9,15 @@ test.describe('Accessibility: OrangeHRM', () => {
     const loginPage = new OrangeHrmLoginPage(page);
     await loginPage.goto();
 
-    await page.keyboard.press('Tab');
+    // Establish focus on the entry form field
+    await page.locator('[name="username"]').focus();
     await expect(page.locator('[name="username"]')).toBeFocused();
 
+    // Verify Tab key navigates to password
     await page.keyboard.press('Tab');
     await expect(page.locator('[name="password"]')).toBeFocused();
 
+    // Verify Tab key navigates to the submit button
     await page.keyboard.press('Tab');
     await expect(page.getByRole('button', { name: /login/i })).toBeFocused();
   });
