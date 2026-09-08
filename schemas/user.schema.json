@@ -30,7 +30,6 @@
     },
     "website": {
       "type": "string",
-      "format": "uri",
       "description": "User's website URL"
     },
     "company": {

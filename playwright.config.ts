@@ -86,7 +86,6 @@ if (resolvedStorageState && requiresAuthStorage && !storageStateStatus.reusable)
  * Note: Test-level configuration (test.describe.configure or test.configure) can still override this global setting.
  */
 
-
 const getWorkerCount = (): number | undefined => {
   // Explicit override via environment variable
   if (process.env.PLAYWRIGHT_WORKERS) {

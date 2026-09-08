@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import fs from 'fs';
 import path from 'path';
+import addFormats from 'ajv-formats';
 
 /**
  * Schema Validator Utility
@@ -23,6 +24,18 @@ export class SchemaValidator {
     this.ajv = new Ajv({
       allErrors: true,
     });
+    addFormats(this.ajv);
+    // Test that uri format works
+    const testSchema = {
+      type: 'object',
+      properties: { website: { type: 'string', format: 'uri' } },
+    };
+    const testValidate = this.ajv.compile(testSchema);
+    console.log(
+      'SchemaValidator: URI format test:',
+      testValidate({ website: 'https://example.com' }) ? 'PASS' : 'FAIL',
+      testValidate.errors,
+    );
 
     this.schemaDir = schemaDir || path.resolve(process.cwd(), 'schemas');
 
