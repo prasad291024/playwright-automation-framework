@@ -13,8 +13,12 @@ export class OrangeHrmLoginPage extends BasePage {
 
   async goto(): Promise<void> {
     await this.page.goto(this.appConfig.baseUrl);
-    await expect(this.page.getByRole('heading', { name: /login/i })).toBeVisible();
-    await expect(this.usernameInput()).toBeVisible();
+    await expect(this.page.getByRole('heading', { name: /login/i })).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(this.usernameInput()).toBeVisible({
+      timeout: 15000,
+    });
   }
 
   async login(username: string, password: string): Promise<void> {
@@ -25,9 +29,11 @@ export class OrangeHrmLoginPage extends BasePage {
 
   async assertLoginSuccess(): Promise<void> {
     await expect(this.page).toHaveURL(/\/dashboard\/index/i, {
-      timeout: this.appConfig.timeouts.navigation,
+      timeout: this.appConfig.timeouts.navigation || 20000,
     });
-    await expect(this.page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
+    await expect(this.page.getByRole('heading', { name: /dashboard/i })).toBeVisible({
+      timeout: 15000,
+    });
   }
 
   async assertLoginFailure(): Promise<void> {

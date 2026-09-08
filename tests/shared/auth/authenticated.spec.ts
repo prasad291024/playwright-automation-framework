@@ -61,6 +61,8 @@ test.describe('Authenticated session fixture', () => {
     expect(authSession.storageFile).toContain(`storage-state/${appName}.json`);
     expect(fs.existsSync(authSession.storageFile)).toBeTruthy();
 
+    // Navigate to the app's protected landing route before asserting
+    await openProtectedRoute(authenticatedPage, appName);
     await assertAuthenticatedLanding(authenticatedPage, appName);
   });
 
