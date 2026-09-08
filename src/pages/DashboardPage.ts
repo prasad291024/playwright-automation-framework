@@ -84,7 +84,7 @@ export class DashboardPage extends BasePage implements IDashboardPage {
           console.log(`✓ Navigated to profile`);
           return;
         }
-      } catch (e) {
+      } catch {
         // Continue to next candidate
       }
     }
@@ -122,7 +122,7 @@ export class DashboardPage extends BasePage implements IDashboardPage {
           console.log(`✓ Navigated to settings`);
           return;
         }
-      } catch (e) {
+      } catch {
         // Continue to next candidate
       }
     }

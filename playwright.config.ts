@@ -22,7 +22,7 @@ if (fs.existsSync(appsPath)) {
     for (const [appName, config] of Object.entries(parsed)) {
       AppRegistry.register(appName as AppName, config);
     }
-  } catch (e) {
+  } catch {
     console.warn('Unable to parse config/apps.json, ignoring');
   }
 }
@@ -32,7 +32,7 @@ const selectedSuite = process.env.TEST_SUITE || 'all';
 let appConfig: AppConfig;
 try {
   appConfig = AppRegistry.get(selectedApp);
-} catch (e) {
+} catch {
   console.warn(`App '${selectedApp}' not found in registry, falling back to local`);
   appConfig = AppRegistry.get('local');
 }
