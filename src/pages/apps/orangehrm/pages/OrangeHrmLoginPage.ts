@@ -12,7 +12,11 @@ export class OrangeHrmLoginPage extends BasePage {
   }
 
   async goto(): Promise<void> {
+    // Clear cookies to ensure we start from a clean state (no existing session)
+    await this.page.context().clearCookies();
+
     await this.page.goto(`${this.appConfig.baseUrl}${this.appConfig.authEndpoint}`);
+    await this.waitForPageLoad();
     await expect(this.usernameInput()).toBeVisible({
       timeout: 15000,
     });
