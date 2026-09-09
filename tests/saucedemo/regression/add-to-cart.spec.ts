@@ -1,22 +1,22 @@
-import { test } from '../../../src/core/fixtures/auth.fixture';
-import { SauceDemoCartPage, SauceDemoInventoryPage } from '../../../src/pages/infrastructure';
+import { test } from '@playwright/test';
+import {
+  SauceDemoCartPage,
+  SauceDemoInventoryPage,
+  SauceDemoLoginPage,
+} from '../../../src/pages/infrastructure';
+import { users } from '../../../src/apps/saucedemo/test-data/users';
 
-// Example: Configure retry behavior for this test suite
-// Uncomment to override the global retry configuration:
-// test.describe.configure({ retries: 2 }); // Suite-level retry override
+test('user can add product to cart', async ({ page }) => {
+  const loginPage = new SauceDemoLoginPage(page);
+  await loginPage.goto();
 
-test('user can add product to cart', async ({ authenticatedPage, appName, authSession }) => {
-  test.skip(appName !== 'saucedemo', 'This regression test is scoped to the SauceDemo app.');
-  test.skip(
-    !authSession.authenticated,
-    'Shared auth fixture could not establish a SauceDemo session for this run.',
-  );
+  await loginPage.login(users.standard_user.username, users.standard_user.password);
 
-  const inventory = new SauceDemoInventoryPage(authenticatedPage);
+  const inventory = new SauceDemoInventoryPage(page);
   await inventory.verifyInventoryLoaded();
   await inventory.addFirstProductToCart();
 
-  const cart = new SauceDemoCartPage(authenticatedPage);
+  const cart = new SauceDemoCartPage(page);
   await cart.openCart();
   await cart.verifyItemPresent();
 });
