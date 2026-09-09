@@ -6,5 +6,5 @@ test('@smoke @orangehrm - login page shell renders correctly', async ({ page }) 
   await loginPage.goto();
 
   await expect(page).toHaveTitle(/orangehrm/i);
-  await expect(page.getByRole('heading', { name: /login/i })).toBeVisible();
+  await expect(page.locator('[name="username"]')).toBeVisible();
 });

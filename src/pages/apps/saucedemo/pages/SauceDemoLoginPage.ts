@@ -36,6 +36,7 @@ export class SauceDemoLoginPage extends BasePage {
   }
 
   async assertLoginSuccess(): Promise<void> {
+    await this.waitForPageLoad();
     await expect(this.page).toHaveURL(/inventory\.html/);
     await expect(this.page.getByText('Products')).toBeVisible();
   }

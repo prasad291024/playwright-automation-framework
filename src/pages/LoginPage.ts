@@ -99,7 +99,7 @@ export class LoginPage extends BasePage implements ILoginPage {
           console.log(`✓ Password filled using candidate strategy`);
           return;
         }
-      } catch (e) {
+      } catch {
         // Continue to next candidate
       }
     }
@@ -140,7 +140,7 @@ export class LoginPage extends BasePage implements ILoginPage {
           console.log(`✓ Login button clicked successfully`);
           return;
         }
-      } catch (e) {
+      } catch {
         // Continue to next candidate
       }
     }

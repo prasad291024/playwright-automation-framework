@@ -213,10 +213,14 @@ export const createAuthenticatedSession = async (
   browser: Browser,
   appName: AppName,
 ): Promise<AuthSessionResult> => {
+  const appConfig = AppRegistry.get(appName);
   const storageFile = resolveStorageFile(appName);
   const storageStateStatus = getStorageStateStatus(storageFile);
   const reusedStorageState = storageStateStatus.reusable;
-  const context = await browser.newContext(reusedStorageState ? { storageState: storageFile } : {});
+  const context = await browser.newContext({
+    ...(reusedStorageState ? { storageState: storageFile } : {}),
+    baseURL: appConfig.baseUrl,
+  });
   const page = await context.newPage();
 
   let authenticated = reusedStorageState;

@@ -84,10 +84,10 @@
   },
   "orangehrm": {
     "name": "OrangeHRM",
-    "baseUrl": "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login",
+    "baseUrl": "https://opensource-demo.orangehrmlive.com",
     "storageState": "storage-state/orangehrm.json",
     "authType": "username",
-    "authEndpoint": "",
+    "authEndpoint": "/web/index.php/auth/login",
     "timeouts": {
       "page": 15000,
       "action": 8000,

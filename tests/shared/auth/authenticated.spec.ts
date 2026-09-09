@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { Page } from '@playwright/test';
 import { AppName } from '../../../src/config/app.config';
 import { test, expect } from '../../../src/core/fixtures/auth.fixture';
@@ -58,9 +59,11 @@ test.describe('Authenticated session fixture', () => {
       `No authenticated session was available for ${appName}. Configure credentials to run this coverage.`,
     );
 
-    expect(authSession.storageFile).toContain(`storage-state/${appName}.json`);
+    expect(authSession.storageFile).toContain(path.join('storage-state', `${appName}.json`));
     expect(fs.existsSync(authSession.storageFile)).toBeTruthy();
 
+    // Navigate to the app's protected landing route before asserting
+    await openProtectedRoute(authenticatedPage, appName);
     await assertAuthenticatedLanding(authenticatedPage, appName);
   });
 

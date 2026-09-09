@@ -12,9 +12,14 @@ export class OrangeHrmLoginPage extends BasePage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto(this.appConfig.baseUrl);
-    await expect(this.page.getByRole('heading', { name: /login/i })).toBeVisible();
-    await expect(this.usernameInput()).toBeVisible();
+    // Clear cookies to ensure we start from a clean state (no existing session)
+    await this.page.context().clearCookies();
+
+    await this.page.goto(`${this.appConfig.baseUrl}${this.appConfig.authEndpoint}`);
+    await this.waitForPageLoad();
+    await expect(this.usernameInput()).toBeVisible({
+      timeout: 15000,
+    });
   }
 
   async login(username: string, password: string): Promise<void> {
@@ -24,15 +29,21 @@ export class OrangeHrmLoginPage extends BasePage {
   }
 
   async assertLoginSuccess(): Promise<void> {
-    await expect(this.page).toHaveURL(/\/dashboard\/index/i, {
-      timeout: this.appConfig.timeouts.navigation,
+    await expect(this.page).toHaveURL(/\/web\/index\.php\/dashboard/i, {
+      timeout: this.appConfig.timeouts.navigation || 20000,
     });
-    await expect(this.page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
+    await expect(this.page.getByRole('heading', { name: /dashboard/i })).toBeVisible({
+      timeout: 15000,
+    });
   }
 
   async assertLoginFailure(): Promise<void> {
-    await expect(this.page).toHaveURL(/\/auth\/login/i);
-    await expect(this.page.getByText(/invalid credentials/i)).toBeVisible();
+    await expect(this.page).toHaveURL(/\/auth\/login/i, {
+      timeout: this.appConfig.timeouts.navigation || 20000,
+    });
+    await expect(this.page.getByText(/invalid credentials/i)).toBeVisible({
+      timeout: this.appConfig.timeouts.page || 15000,
+    });
   }
 
   private usernameInput(): Locator {

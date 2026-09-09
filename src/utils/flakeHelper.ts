@@ -81,7 +81,7 @@ export async function waitForNetworkStable(
 
   try {
     await page.waitForLoadState('networkidle', { timeout: maxWaitMs });
-  } catch (e) {
+  } catch {
     // Fallback: page might not reach perfect network idle, just wait a bit
     console.warn(
       `Network idle timeout after ${maxWaitMs}ms, falling back to ${minNetworkIdleMs}ms delay`,

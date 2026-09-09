@@ -13,7 +13,8 @@ export class SauceDemoInventoryPage extends BasePage {
   }
 
   async verifyInventoryLoaded(): Promise<void> {
-    await expect(this.inventoryList()).toBeVisible();
+    await expect(this.page).toHaveURL(/inventory\.html/);
+    await expect(this.inventoryList()).toBeVisible({ timeout: 10000 });
   }
 
   async addFirstProductToCart(): Promise<void> {
