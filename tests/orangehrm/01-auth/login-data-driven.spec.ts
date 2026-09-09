@@ -1,5 +1,4 @@
-import { test } from '@playwright/test';
-import { OrangeHrmLoginPage } from '../../../src/pages/infrastructure';
+import { test } from '../../../src/core/fixtures/auth.fixture';
 
 const validScenario = {
   username: process.env.ORANGEHRM_USERNAME || 'Admin',
@@ -21,12 +20,21 @@ const invalidScenarios = [
 
 test.describe('OrangeHRM Login Validation', () => {
   for (const scenario of invalidScenarios) {
-    test(`@auth @orangehrm - login fails for ${scenario.name}`, async ({ page }) => {
-      const loginPage = new OrangeHrmLoginPage(page);
-      await loginPage.goto();
+    test(`@auth @orangehrm - login fails for ${scenario.name}`, async ({
+      orangeHrmApp,
+      appName,
+    }) => {
+      // Skip test if not running for OrangeHRM
+      if (appName !== 'orangehrm') {
+        test.skip();
+        return;
+      }
 
-      await loginPage.login(scenario.username, scenario.password);
-      await loginPage.assertLoginFailure();
+      // orangeHrmApp is guaranteed to be defined when appName is 'orangehrm'
+      await orangeHrmApp!.goto();
+
+      await orangeHrmApp!.loginPage.login(scenario.username, scenario.password);
+      await orangeHrmApp!.loginPage.assertLoginFailure();
     });
   }
 });
