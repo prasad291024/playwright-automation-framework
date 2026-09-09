@@ -12,10 +12,19 @@ export class CuraAppointmentPage extends BasePage {
     await this.verifyAppointmentPageVisible();
   }
 
+  async selectFacility(facility: string): Promise<void> {
+    await this.facilityDropdown().selectOption(facility);
+  }
+
+  async setVisitDate(date: string): Promise<void> {
+    await this.stableFill(this.visitDate(), date);
+  }
+
+  async setComment(comment: string): Promise<void> {
+    await this.stableFill(this.comment(), comment);
+  }
+
   async bookAppointment(): Promise<void> {
-    await this.facilityDropdown().selectOption('Tokyo CURA Healthcare Center');
-    await this.stableFill(this.visitDate(), '30/12/2023');
-    await this.stableFill(this.comment(), 'Test appointment');
     await this.stableClick(this.bookAppointmentButton());
   }
 

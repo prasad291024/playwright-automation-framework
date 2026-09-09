@@ -13,6 +13,11 @@ import {
   SauceDemoInventoryPage,
   SauceDemoLoginPage,
 } from '../../pages/infrastructure';
+import { CuraApp } from '../../apps/cura';
+import { SauceDemoApp } from '../../apps/saucedemo';
+import { OrangeHrmApp } from '../../apps/orangehrm';
+import { OrangeHrmLoginPage } from '../../pages/apps/orangehrm/pages/OrangeHrmLoginPage';
+import { OrangeHrmDashboardPage } from '../../pages/apps/orangehrm/pages/OrangeHrmDashboardPage';
 
 /**
  * Custom fixtures for all page objects
@@ -27,6 +32,15 @@ interface PageObjects {
   curaLoginPage: CuraLoginPage;
   appointmentPage: CuraAppointmentPage;
   confirmationPage: CuraConfirmationPage;
+
+  // OrangeHRM pages
+  orangeHrmLoginPage: OrangeHrmLoginPage;
+  orangeHrmDashboardPage: OrangeHrmDashboardPage;
+
+  // App facades
+  curaApp: CuraApp;
+  saucedemoApp: SauceDemoApp;
+  orangeHrmApp: OrangeHrmApp;
 
   // Utilities
   logger: typeof logger;
@@ -72,6 +86,30 @@ export const test = base.extend<PageObjects>({
   confirmationPage: async ({ page }, use) => {
     const confirmationPage = new CuraConfirmationPage(page);
     await use(confirmationPage);
+  },
+
+  // OrangeHRM page fixtures
+  orangeHrmLoginPage: async ({ page }, use) => {
+    const loginPage = new OrangeHrmLoginPage(page);
+    await use(loginPage);
+  },
+
+  orangeHrmDashboardPage: async ({ page }, use) => {
+    const dashboardPage = new OrangeHrmDashboardPage(page);
+    await use(dashboardPage);
+  },
+
+  // App facades
+  curaApp: async ({ page }, use) => {
+    await use(new CuraApp(page));
+  },
+
+  saucedemoApp: async ({ page }, use) => {
+    await use(new SauceDemoApp(page));
+  },
+
+  orangeHrmApp: async ({ page }, use) => {
+    await use(new OrangeHrmApp(page));
   },
 });
 

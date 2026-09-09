@@ -31,4 +31,4 @@ export const saucedemoConfig = {
   features: ['auth', 'inventory', 'cart'],
   retryStrategy: 'standard',
   tags: ['@saucedemo', '@ecommerce'],
-};
+} as const;
