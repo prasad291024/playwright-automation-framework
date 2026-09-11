@@ -4,5 +4,7 @@ test('@smoke @saucedemo - login page shell renders correctly', async ({ saucedem
   await saucedemoApp.goto();
 
   await expect(saucedemoApp.loginPage.getPage()).toHaveTitle(/swag labs/i);
-  await expect(saucedemoApp.loginPage.getPage().getByText(/accepted usernames are:/i)).toBeVisible();
+  await expect(
+    saucedemoApp.loginPage.getPage().getByText(/accepted usernames are:/i),
+  ).toBeVisible();
 });

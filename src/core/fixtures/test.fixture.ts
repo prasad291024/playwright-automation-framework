@@ -50,11 +50,13 @@ interface PageObjects {
  * Custom test fixture with page objects and utilities
  */
 export const test = base.extend<PageObjects>({
+  /* eslint-disable no-empty-pattern */
   logger: async ({}, use) => {
     logger.info('Test started');
     await use(logger);
     logger.info('Test completed');
   },
+  /* eslint-enable no-empty-pattern */
 
   // SauceDemo page fixtures
   saucedemoLoginPage: async ({ page }, use) => {
