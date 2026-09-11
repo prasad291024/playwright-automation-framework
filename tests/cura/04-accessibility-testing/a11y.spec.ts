@@ -1,27 +1,29 @@
-import { expect, test } from '@playwright/test';
-
-const CURA_BASE_URL = process.env.CURA_BASE_URL || 'https://katalon-demo-cura.herokuapp.com';
+import { expect, test } from '../../../src/core/fixtures/test.fixture';
 
 test.describe('Accessibility: CURA', () => {
-  test('@a11y - homepage has a clear primary heading and CTA', async ({ page }) => {
-    await page.goto(CURA_BASE_URL);
+  test('@a11y - homepage has a clear primary heading and CTA', async ({ curaApp }) => {
+    await curaApp.goto();
 
     await expect(
-      page.getByRole('heading', { level: 1, name: /cura healthcare service/i }),
+      curaApp.loginPage
+        .getPage()
+        .getByRole('heading', { level: 1, name: /cura healthcare service/i }),
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: /make appointment/i })).toBeVisible();
+    await expect(
+      curaApp.loginPage.getPage().getByRole('link', { name: /make appointment/i }),
+    ).toBeVisible();
   });
 
-  test('@a11y - login form fields are keyboard reachable', async ({ page }) => {
-    await page.goto(CURA_BASE_URL);
-    await page.locator('#btn-make-appointment').click();
-    await expect(page.locator('#txt-username')).toBeVisible();
+  test('@a11y - login form fields are keyboard reachable', async ({ curaApp }) => {
+    await curaApp.goto();
+    await curaApp.loginPage.goToLogin();
+    await expect(curaApp.loginPage.getPage().locator('#txt-username')).toBeVisible();
 
     //await page.keyboard.press('Tab');
-    await page.locator('#txt-username').focus();
-    await expect(page.locator('#txt-username')).toBeFocused();
+    await curaApp.loginPage.getPage().locator('#txt-username').focus();
+    await expect(curaApp.loginPage.getPage().locator('#txt-username')).toBeFocused();
 
-    await page.keyboard.press('Tab');
-    await expect(page.locator('#txt-password')).toBeFocused();
+    await curaApp.loginPage.getPage().keyboard.press('Tab');
+    await expect(curaApp.loginPage.getPage().locator('#txt-password')).toBeFocused();
   });
 });

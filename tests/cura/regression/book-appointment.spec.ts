@@ -1,21 +1,15 @@
-import { test } from '../../../src/core/fixtures/auth.fixture';
-import { CuraAppointmentPage, CuraConfirmationPage } from '../../../src/pages/infrastructure';
+import { test } from '../../../src/core/fixtures/test.fixture';
 
 // Example: Configure retry behavior for individual tests
 // Uncomment to override the global or suite-level retry configuration:
 // test.configure({ retries: 3 }); // Test-level retry override
 
-test('user can book appointment', async ({ authenticatedPage, appName, authSession }) => {
-  test.skip(appName !== 'cura', 'This regression test is scoped to the CURA app.');
-  test.skip(
-    !authSession.authenticated,
-    'Shared auth fixture could not establish a CURA session for this run.',
-  );
+test('user can book appointment', async ({ curaApp }) => {
+  test.skip(process.env.APP_NAME !== 'cura', 'This regression test is scoped to the CURA app.');
+  test.skip(!curaApp, 'CURA app fixture not available for this test configuration.');
 
-  const appointmentPage = new CuraAppointmentPage(authenticatedPage);
-  await appointmentPage.verifyAppointmentPageVisible();
-  await appointmentPage.bookAppointment();
+  await curaApp.appointmentPage.verifyAppointmentPageVisible();
+  await curaApp.appointmentPage.bookAppointment();
 
-  const confirmationPage = new CuraConfirmationPage(authenticatedPage);
-  await confirmationPage.verifyAppointmentConfirmed();
+  await curaApp.confirmationPage.verifyAppointmentConfirmed();
 });
