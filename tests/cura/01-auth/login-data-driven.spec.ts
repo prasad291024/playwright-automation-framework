@@ -1,5 +1,4 @@
-import { test } from '@playwright/test';
-import { CuraLoginPage } from '../../../src/pages/infrastructure';
+import { test } from '../../../src/core/fixtures/test.fixture';
 import { user } from '../../../src/apps/cura/test-data/users';
 
 const validScenario = {
@@ -22,13 +21,12 @@ const invalidScenarios = [
 
 test.describe('CURA Login Validation', () => {
   for (const scenario of invalidScenarios) {
-    test(`@auth @cura - login fails for ${scenario.name}`, async ({ page }) => {
-      const loginPage = new CuraLoginPage(page);
-      await loginPage.goto();
-      await loginPage.goToLogin();
+    test(`@auth @cura - login fails for ${scenario.name}`, async ({ curaApp }) => {
+      await curaApp.loginPage.goto();
+      await curaApp.loginPage.goToLogin();
 
-      await loginPage.login(scenario.username, scenario.password);
-      await loginPage.assertLoginFailure();
+      await curaApp.loginPage.login(scenario.username, scenario.password);
+      await curaApp.loginPage.assertLoginFailure();
     });
   }
 });

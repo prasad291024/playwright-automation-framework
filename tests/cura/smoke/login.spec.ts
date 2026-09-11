@@ -1,14 +1,8 @@
-import { test } from '@playwright/test';
-import { CuraAppointmentPage, CuraLoginPage } from '../../../src/pages/infrastructure';
+import { test } from '../../../src/core/fixtures/test.fixture';
 import { user } from '../../../src/apps/cura/test-data/users';
 
-test('@smoke @cura - user can login to CURA system', async ({ page }) => {
-  const loginPage = new CuraLoginPage(page);
-  await loginPage.goto();
-  await loginPage.goToLogin();
+test('@smoke @cura - user can login to CURA system', async ({ curaApp }) => {
+  await curaApp.login(user.username, user.password);
 
-  await loginPage.login(user.username, user.password);
-
-  const appointmentPage = new CuraAppointmentPage(page);
-  await appointmentPage.verifyAppointmentPageVisible();
+  await curaApp.appointmentPage.verifyAppointmentPageVisible();
 });

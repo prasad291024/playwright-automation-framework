@@ -6,6 +6,9 @@ import {
   resolveAppNameFromEnv,
 } from '../auth/auth-session';
 import { PageFactory } from '../../pages/infrastructure/PageFactory';
+import { CuraApp } from '../../apps/cura';
+import { SauceDemoApp } from '../../apps/saucedemo';
+import { OrangeHrmApp } from '../../apps/orangehrm';
 
 /**
  * Authentication Fixture
@@ -26,6 +29,10 @@ interface AuthFixtures {
   authenticatedPage: Page;
   appName: AppName;
   pageFactory: typeof PageFactory;
+  // App facades for easier access
+  curaApp?: CuraApp;
+  saucedemoApp?: SauceDemoApp;
+  orangeHrmApp?: OrangeHrmApp;
 }
 
 export const test = base.extend<AuthFixtures>({
@@ -48,6 +55,31 @@ export const test = base.extend<AuthFixtures>({
   authenticatedPage: async ({ authSession }, use) => {
     const { page } = authSession;
     await use(page);
+  },
+
+  // Provide app facades based on appName
+  curaApp: async ({ appName, page }, use) => {
+    if (appName === 'cura') {
+      await use(new CuraApp(page));
+    } else {
+      await use(undefined as unknown as CuraApp);
+    }
+  },
+
+  saucedemoApp: async ({ appName, page }, use) => {
+    if (appName === 'saucedemo') {
+      await use(new SauceDemoApp(page));
+    } else {
+      await use(undefined as unknown as SauceDemoApp);
+    }
+  },
+
+  orangeHrmApp: async ({ appName, page }, use) => {
+    if (appName === 'orangehrm') {
+      await use(new OrangeHrmApp(page));
+    } else {
+      await use(undefined as unknown as OrangeHrmApp);
+    }
   },
 });
 

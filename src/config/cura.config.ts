@@ -32,4 +32,4 @@ export const curaConfig = {
   features: ['auth', 'appointments', 'confirmation'],
   retryStrategy: 'standard',
   tags: ['@cura', '@healthcare'],
-};
+} as const;
