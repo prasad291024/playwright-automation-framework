@@ -1,10 +1,8 @@
-import { test, expect } from '@playwright/test';
-import { OrangeHrmLoginPage } from '../../../src/pages/infrastructure';
+import { test, expect } from '../../../src/core/fixtures/test.fixture';
 
-test('@smoke @orangehrm - login page shell renders correctly', async ({ page }) => {
-  const loginPage = new OrangeHrmLoginPage(page);
-  await loginPage.goto();
+test('@smoke @orangehrm - login page shell renders correctly', async ({ orangeHrmApp }) => {
+  await orangeHrmApp.goto();
 
-  await expect(page).toHaveTitle(/orangehrm/i);
-  await expect(page.locator('[name="username"]')).toBeVisible();
+  await expect(orangeHrmApp.loginPage.getPage()).toHaveTitle(/orangehrm/i);
+  await expect(orangeHrmApp.loginPage.getPage().locator('[name="username"]')).toBeVisible();
 });

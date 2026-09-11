@@ -1,40 +1,29 @@
-import { test } from '../../../src/core/fixtures/auth.fixture';
-import { OrangeHrmDashboardPage } from '../../../src/pages/infrastructure';
+import { test } from '../../../src/core/fixtures/test.fixture';
 
 test.describe('OrangeHRM Dashboard Regression', () => {
-  test('authenticated user can view dashboard after login', async ({
-    authenticatedPage,
-    appName,
-    authSession,
-  }) => {
-    test.skip(appName !== 'orangehrm', 'This regression test is scoped to the OrangeHRM app.');
+  test('authenticated user can view dashboard after login', async ({ orangeHrmApp }) => {
     test.skip(
-      !authSession.authenticated,
-      'Shared auth fixture could not establish an OrangeHRM session for this run.',
+      process.env.APP_NAME !== 'orangehrm',
+      'This regression test is scoped to the OrangeHRM app.',
     );
+    test.skip(!orangeHrmApp, 'OrangeHRM app fixture not available for this test configuration.');
 
-    const dashboard = new OrangeHrmDashboardPage(authenticatedPage);
-    await dashboard.goto();
-    await dashboard.verifyDashboardVisible();
+    await orangeHrmApp.dashboardPage.goto();
+    await orangeHrmApp.dashboardPage.verifyDashboardVisible();
   });
 
-  test('authenticated user can search for a user via admin module', async ({
-    authenticatedPage,
-    appName,
-    authSession,
-  }) => {
-    test.skip(appName !== 'orangehrm', 'This regression test is scoped to the OrangeHRM app.');
+  test('authenticated user can search for a user via admin module', async ({ orangeHrmApp }) => {
     test.skip(
-      !authSession.authenticated,
-      'Shared auth fixture could not establish an OrangeHRM session for this run.',
+      process.env.APP_NAME !== 'orangehrm',
+      'This regression test is scoped to the OrangeHRM app.',
     );
+    test.skip(!orangeHrmApp, 'OrangeHRM app fixture not available for this test configuration.');
 
-    const dashboard = new OrangeHrmDashboardPage(authenticatedPage);
-    await dashboard.goto();
-    await dashboard.verifyDashboardVisible();
+    await orangeHrmApp.dashboardPage.goto();
+    await orangeHrmApp.dashboardPage.verifyDashboardVisible();
 
-    await dashboard.navigateToUsers();
-    await dashboard.searchUser('Admin');
-    await dashboard.verifySearchResultsPresent();
+    await orangeHrmApp.dashboardPage.navigateToUsers();
+    await orangeHrmApp.dashboardPage.searchUser('Admin');
+    await orangeHrmApp.dashboardPage.verifySearchResultsPresent();
   });
 });
