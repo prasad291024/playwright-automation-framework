@@ -1,10 +1,8 @@
-import { test, expect } from '@playwright/test';
-import { SauceDemoLoginPage } from '../../../src/pages/infrastructure';
+import { test, expect } from '../../../src/core/fixtures/test.fixture';
 
-test('@smoke @saucedemo - login page shell renders correctly', async ({ page }) => {
-  const loginPage = new SauceDemoLoginPage(page);
-  await loginPage.goto();
+test('@smoke @saucedemo - login page shell renders correctly', async ({ saucedemoApp }) => {
+  await saucedemoApp.goto();
 
-  await expect(page).toHaveTitle(/swag labs/i);
-  await expect(page.getByText(/accepted usernames are:/i)).toBeVisible();
+  await expect(saucedemoApp.loginPage.getPage()).toHaveTitle(/swag labs/i);
+  await expect(saucedemoApp.loginPage.getPage().getByText(/accepted usernames are:/i)).toBeVisible();
 });

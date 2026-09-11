@@ -209,6 +209,13 @@ export abstract class BasePage {
   }
 
   /**
+   * Get the page instance
+   */
+  public getPage(): Page {
+    return this.page;
+  }
+
+  /**
    * Close the page
    */
   async close(): Promise<void> {

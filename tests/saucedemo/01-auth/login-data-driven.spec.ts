@@ -1,5 +1,4 @@
-import { test } from '@playwright/test';
-import { SauceDemoLoginPage } from '../../../src/pages/infrastructure';
+import { test } from '../../../src/core/fixtures/test.fixture';
 import { users } from '../../../src/apps/saucedemo/test-data/users';
 
 const invalidScenarios = [
@@ -17,12 +16,10 @@ const invalidScenarios = [
 
 test.describe('SauceDemo Login Validation', () => {
   for (const scenario of invalidScenarios) {
-    test(`@auth @saucedemo - login fails for ${scenario.name}`, async ({ page }) => {
-      const loginPage = new SauceDemoLoginPage(page);
-      await loginPage.goto();
-
-      await loginPage.login(scenario.username, scenario.password);
-      await loginPage.assertLoginFailure();
+    test(`@auth @saucedemo - login fails for ${scenario.name}`, async ({ saucedemoApp }) => {
+      await saucedemoApp.loginPage.goto();
+      await saucedemoApp.loginPage.login(scenario.username, scenario.password);
+      await saucedemoApp.loginPage.assertLoginFailure();
     });
   }
 });
