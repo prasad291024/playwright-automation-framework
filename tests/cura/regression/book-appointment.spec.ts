@@ -1,5 +1,4 @@
 import { test } from '../../../src/core/fixtures/test.fixture';
-import { getStorageStateStatus } from '../../../src/core/auth/auth-session';
 
 // Example: Configure retry behavior for individual tests
 // Uncomment to override the global or suite-level retry configuration:
@@ -7,12 +6,13 @@ import { getStorageStateStatus } from '../../../src/core/auth/auth-session';
 
 test.use({ storageState: 'storage-state/cura.json' });
 
-test.beforeEach(async ({ curaApp }) => {
-  // Verify or perform authentication before accessing protected routes
-  const status = getStorageStateStatus('storage-state/cura.json');
-  if (!status.reusable) {
-    // Either log in on demand:
+test.beforeEach(async ({ curaApp, page }) => {
+  await curaApp.appointmentPage.goto();
+
+  // If session expired and redirected to login, re-authenticate on demand
+  if (page.url().includes('#login') || (await page.locator('#txt-username').isVisible())) {
     await curaApp.login();
+    await curaApp.appointmentPage.goto();
   }
 });
 
