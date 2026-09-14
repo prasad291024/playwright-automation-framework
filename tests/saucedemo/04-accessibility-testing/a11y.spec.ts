@@ -1,11 +1,10 @@
-import { expect, test } from '@playwright/test';
-import { SauceDemoLoginPage } from '../../../src/pages/infrastructure';
+import { expect, test } from '../../../src/core/fixtures/test.fixture';
 import { users } from '../../../src/apps/saucedemo/test-data/users';
 
 test.describe('Accessibility: SauceDemo', () => {
-  test('@a11y - login form controls are keyboard reachable', async ({ page }) => {
-    const loginPage = new SauceDemoLoginPage(page);
-    await loginPage.goto();
+  test('@a11y - login form controls are keyboard reachable', async ({ saucedemoApp }) => {
+    const page = saucedemoApp.loginPage.getPage();
+    await saucedemoApp.loginPage.goto();
 
     await page.keyboard.press('Tab');
     await expect(page.locator('#user-name')).toBeFocused();
@@ -17,12 +16,11 @@ test.describe('Accessibility: SauceDemo', () => {
     await expect(page.locator('#login-button')).toBeFocused();
   });
 
-  test('@a11y - inventory page exposes labeled product content', async ({ page }) => {
-    const loginPage = new SauceDemoLoginPage(page);
-    await loginPage.goto();
-    await loginPage.login(users.standard_user.username, users.standard_user.password);
-    await loginPage.assertLoginSuccess();
+  test('@a11y - inventory page exposes labeled product content', async ({ saucedemoApp }) => {
+    await saucedemoApp.login(users.standard_user.username, users.standard_user.password);
+    await saucedemoApp.loginPage.assertLoginSuccess();
 
+    const page = saucedemoApp.loginPage.getPage();
     await expect(page.getByText('Products')).toBeVisible();
 
     const images = page.locator('.inventory_item img');

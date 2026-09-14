@@ -3,7 +3,13 @@ import { expect, test } from '@playwright/test';
 import { getStorageStateStatus } from '../../../src/core/auth/auth-session';
 
 const writeStorageState = (storageFile: string): void => {
-  fs.writeFileSync(storageFile, JSON.stringify({ cookies: [], origins: [] }));
+  fs.writeFileSync(
+    storageFile,
+    JSON.stringify({
+      cookies: [{ name: 'session_id', value: 'xyz123', domain: 'example.com', path: '/' }],
+      origins: [],
+    }),
+  );
 };
 
 test.describe('Storage state validation', () => {
@@ -19,6 +25,14 @@ test.describe('Storage state validation', () => {
     void browserName;
     const storageFile = testInfo.outputPath('invalid-storage-state.json');
     fs.writeFileSync(storageFile, '{not valid json');
+
+    expect(getStorageStateStatus(storageFile).reason).toBe('invalid');
+  });
+
+  test('rejects storage state with empty cookies', async ({ browserName }, testInfo) => {
+    void browserName;
+    const storageFile = testInfo.outputPath('empty-cookies-storage-state.json');
+    fs.writeFileSync(storageFile, JSON.stringify({ cookies: [], origins: [] }));
 
     expect(getStorageStateStatus(storageFile).reason).toBe('invalid');
   });

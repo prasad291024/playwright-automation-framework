@@ -56,8 +56,8 @@ const resolveCredentials = (appName: AppName): LoginCredentials => {
       };
     case 'cura':
       return {
-        username: process.env.CURA_USERNAME || process.env.USERNAME || '',
-        password: process.env.CURA_PASSWORD || process.env.PASSWORD || '',
+        username: process.env.CURA_USERNAME || process.env.USERNAME || 'John Doe',
+        password: process.env.CURA_PASSWORD || process.env.PASSWORD || 'ThisIsNotAPassword',
       };
     case 'saucedemo':
       return {
@@ -93,9 +93,14 @@ export const getStorageStateStatus = (
 
   try {
     const contents = fs.readFileSync(storageFile, 'utf8');
-    const parsed = JSON.parse(contents) as { cookies?: unknown; origins?: unknown };
+    const parsed = JSON.parse(contents) as { cookies?: unknown[]; origins?: unknown[] };
 
-    if (!Array.isArray(parsed.cookies) || !Array.isArray(parsed.origins)) {
+    // Invalidate if schema structure is incorrect OR if the cookies array is empty
+    if (
+      !Array.isArray(parsed.cookies) ||
+      !Array.isArray(parsed.origins) ||
+      parsed.cookies.length === 0
+    ) {
       return { reusable: false, reason: 'invalid' };
     }
   } catch {

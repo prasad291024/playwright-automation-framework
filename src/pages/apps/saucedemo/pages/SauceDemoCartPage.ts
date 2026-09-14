@@ -20,6 +20,10 @@ export class SauceDemoCartPage extends BasePage {
     await expect(this.cartItem().first()).toBeVisible();
   }
 
+  async clickCheckout(): Promise<void> {
+    await this.stableClick(this.checkoutButton());
+  }
+
   private cartIcon(): Locator {
     const selector = this.getAppSelector('cart', 'cartIcon');
     return selector ? this.locator(selector) : this.page.locator('.shopping_cart_link');
@@ -28,5 +32,10 @@ export class SauceDemoCartPage extends BasePage {
   private cartItem(): Locator {
     const selector = this.getAppSelector('cart', 'cartItem');
     return selector ? this.locator(selector) : this.page.locator('.cart_item');
+  }
+
+  private checkoutButton(): Locator {
+    // Assuming the checkout button has a data-test or class, adjust as needed
+    return this.page.locator('#checkout');
   }
 }

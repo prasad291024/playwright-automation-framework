@@ -16,6 +16,10 @@ export class CuraConfirmationPage extends BasePage {
     await expect(this.confirmationSection()).toBeVisible();
   }
 
+  async assertConfirmationVisible(): Promise<void> {
+    await this.verifyAppointmentConfirmed();
+  }
+
   private confirmationSection(): Locator {
     const selector = this.getAppSelector('confirmation', 'confirmationSection');
     return selector ? this.locator(selector) : this.page.locator('#summary');

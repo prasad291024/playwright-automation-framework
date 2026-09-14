@@ -13,7 +13,7 @@ const assertAuthenticatedLanding = async (page: Page, appName: AppName): Promise
       await expect(page.getByText('Products')).toBeVisible();
       break;
     case 'cura':
-      await expect(page).toHaveURL(/#appointment|appointment\.php/i);
+      await expect(page).toHaveURL(/index\.php#appointment/i);
       await expect(page.getByRole('heading', { name: /make appointment/i })).toBeVisible();
       break;
     case 'vwo':
@@ -34,7 +34,7 @@ const openProtectedRoute = async (page: Page, appName: AppName): Promise<void> =
       await page.goto('/inventory.html');
       break;
     case 'cura':
-      await page.goto('/profile.php#appointment');
+      await page.goto('/index.php#appointment');
       break;
     case 'vwo':
       await page.goto('/');

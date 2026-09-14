@@ -27,7 +27,10 @@ if (fs.existsSync(appsPath)) {
   }
 }
 
-const selectedApp = (process.env.APP || process.env.PLAYWRIGHT_APP || 'local') as AppName;
+const selectedApp = (process.env.APP ||
+  process.env.APP_NAME ||
+  process.env.PLAYWRIGHT_APP ||
+  'local') as AppName;
 const selectedSuite = process.env.TEST_SUITE || 'all';
 let appConfig: AppConfig;
 try {

@@ -8,19 +8,43 @@ export class CuraAppointmentPage extends BasePage {
   }
 
   async goto(): Promise<void> {
-    await this.navigateTo('/profile.php#appointment');
-    await this.verifyAppointmentPageVisible();
+    await this.navigateTo('/index.php#appointment');
+  }
+
+  async selectFacility(facility: string): Promise<void> {
+    await this.facilityDropdown().selectOption(facility);
+  }
+
+  async setVisitDate(date: string): Promise<void> {
+    await this.visitDate().click();
+    const day = date.split('/')[0].replace(/^0/, '');
+    const dayCell = this.page
+      .locator('.datepicker-days td.day:not(.old):not(.new)')
+      .filter({ hasText: new RegExp(`^${day}$`) });
+    if ((await dayCell.count()) > 0) {
+      await dayCell.first().click();
+    } else {
+      await this.visitDate().fill(date);
+    }
+  }
+
+  async setComment(comment: string): Promise<void> {
+    await this.stableFill(this.comment(), comment);
   }
 
   async bookAppointment(): Promise<void> {
-    await this.facilityDropdown().selectOption('Tokyo CURA Healthcare Center');
-    await this.stableFill(this.visitDate(), '30/12/2023');
-    await this.stableFill(this.comment(), 'Test appointment');
     await this.stableClick(this.bookAppointmentButton());
   }
 
   async verifyAppointmentPageVisible(): Promise<void> {
-    await expect(this.facilityDropdown()).toBeVisible();
+    if (
+      !/#appointment|appointment\.php/.test(this.page.url()) ||
+      (await this.page.locator('#combo_facility').count()) === 0
+    ) {
+      await this.goto();
+    }
+    await this.page.waitForURL(/.*appointment.*/, { timeout: 15000, waitUntil: 'commit' });
+    await expect(this.facilityDropdown()).toBeVisible({ timeout: 15000 });
   }
 
   private facilityDropdown(): Locator {

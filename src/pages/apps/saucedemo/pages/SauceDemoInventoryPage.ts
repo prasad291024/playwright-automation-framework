@@ -21,6 +21,10 @@ export class SauceDemoInventoryPage extends BasePage {
     await this.stableClick(this.addToCartButton().first());
   }
 
+  async clickCartIcon(): Promise<void> {
+    await this.stableClick(this.cartIcon());
+  }
+
   private inventoryList(): Locator {
     const selector = this.getAppSelector('inventory', 'inventoryList');
     return selector ? this.locator(selector) : this.page.locator('.inventory_list');
@@ -29,5 +33,10 @@ export class SauceDemoInventoryPage extends BasePage {
   private addToCartButton(): Locator {
     const selector = this.getAppSelector('inventory', 'addToCartButton');
     return selector ? this.locator(selector) : this.page.locator('.inventory_item button');
+  }
+
+  private cartIcon(): Locator {
+    const selector = this.getAppSelector('cart', 'cartIcon');
+    return selector ? this.locator(selector) : this.page.locator('.shopping_cart_link');
   }
 }

@@ -138,6 +138,8 @@ jobs:
         shell: bash
         env:
           CI: 'true'
+          CURA_USERNAME: ${{ secrets.CURA_USERNAME || 'John Doe' }}
+          CURA_PASSWORD: ${{ secrets.CURA_PASSWORD || 'ThisIsNotAPassword' }}
         run: |
           failures=0
 

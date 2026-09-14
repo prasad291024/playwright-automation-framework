@@ -1,4 +1,8 @@
 // src/config/app.config.ts
+import { curaConfig } from './cura.config';
+import { saucedemoConfig } from './saucedemo.config';
+import { orangehrmConfig } from './orangehrm.config';
+
 export interface AppConfig {
   name: string;
   baseUrl: string;
@@ -11,9 +15,9 @@ export interface AppConfig {
     navigation: number;
   };
   selectors: Record<string, Record<string, string>>;
-  features: string[];
+  features: readonly string[];
   retryStrategy: 'standard' | 'exponential' | 'none';
-  tags: string[];
+  tags: readonly string[];
 }
 
 export type AppName = 'vwo' | 'cura' | 'saucedemo' | 'orangehrm' | 'local';
@@ -38,4 +42,15 @@ export class AppRegistry {
   static has(app: AppName): boolean {
     return this.configs.has(app);
   }
+
+  // Initialize and register all app configs
+  static initialize(): void {
+    this.register('cura', curaConfig);
+    this.register('saucedemo', saucedemoConfig);
+    this.register('orangehrm', orangehrmConfig);
+    // Note: vwo and local are registered elsewhere or handled as fallbacks
+  }
 }
+
+// Auto-initialize when module is imported
+AppRegistry.initialize();
