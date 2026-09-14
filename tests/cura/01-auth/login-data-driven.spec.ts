@@ -1,6 +1,8 @@
 import { test } from '../../../src/core/fixtures/test.fixture';
 import { user } from '../../../src/apps/cura/test-data/users';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 const validScenario = {
   username: process.env.CURA_USERNAME || user.username,
   password: process.env.CURA_PASSWORD || user.password,

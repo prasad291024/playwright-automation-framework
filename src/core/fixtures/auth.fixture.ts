@@ -58,25 +58,25 @@ export const test = base.extend<AuthFixtures>({
   },
 
   // Provide app facades based on appName
-  curaApp: async ({ appName, page }, use) => {
+  curaApp: async ({ appName, authenticatedPage }, use) => {
     if (appName === 'cura') {
-      await use(new CuraApp(page));
+      await use(new CuraApp(authenticatedPage));
     } else {
       await use(undefined as unknown as CuraApp);
     }
   },
 
-  saucedemoApp: async ({ appName, page }, use) => {
+  saucedemoApp: async ({ appName, authenticatedPage }, use) => {
     if (appName === 'saucedemo') {
-      await use(new SauceDemoApp(page));
+      await use(new SauceDemoApp(authenticatedPage));
     } else {
       await use(undefined as unknown as SauceDemoApp);
     }
   },
 
-  orangeHrmApp: async ({ appName, page }, use) => {
+  orangeHrmApp: async ({ appName, authenticatedPage }, use) => {
     if (appName === 'orangehrm') {
-      await use(new OrangeHrmApp(page));
+      await use(new OrangeHrmApp(authenticatedPage));
     } else {
       await use(undefined as unknown as OrangeHrmApp);
     }

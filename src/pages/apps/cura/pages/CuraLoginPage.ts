@@ -20,11 +20,30 @@ export class CuraLoginPage extends BasePage {
   }
 
   async goToLogin(): Promise<void> {
+    // If already authenticated or on the appointment page, no need to navigate to login
+    if (
+      /#appointment|appointment\.php/i.test(this.page.url()) ||
+      (await this.page.locator('#combo_facility').count()) > 0
+    ) {
+      return;
+    }
+
     const makeAppointmentLink = this.page
       .getByRole('link', { name: /make appointment/i })
       .or(this.page.locator('#btn-make-appointment'));
+
+    await this.waitForStableVisibility(makeAppointmentLink.first());
     await this.stableClick(makeAppointmentLink.first());
-    await expect(this.usernameInput()).toBeVisible();
+
+    // If clicking it stayed on or redirected directly to the appointment page, return
+    if (
+      /#appointment|appointment\.php/i.test(this.page.url()) ||
+      (await this.page.locator('#combo_facility').count()) > 0
+    ) {
+      return;
+    }
+
+    await expect(this.usernameInput()).toBeVisible({ timeout: 15000 });
   }
 
   async login(username: string, password: string): Promise<void> {

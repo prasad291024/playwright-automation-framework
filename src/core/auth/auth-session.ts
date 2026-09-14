@@ -56,8 +56,8 @@ const resolveCredentials = (appName: AppName): LoginCredentials => {
       };
     case 'cura':
       return {
-        username: process.env.CURA_USERNAME || process.env.USERNAME || '',
-        password: process.env.CURA_PASSWORD || process.env.PASSWORD || '',
+        username: process.env.CURA_USERNAME || process.env.USERNAME || 'John Doe',
+        password: process.env.CURA_PASSWORD || process.env.PASSWORD || 'ThisIsNotAPassword',
       };
     case 'saucedemo':
       return {

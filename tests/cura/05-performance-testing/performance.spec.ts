@@ -1,5 +1,7 @@
 import { expect, test } from '../../../src/core/fixtures/test.fixture';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 const MAX_HOME_LOAD_MS = Number(process.env.CURA_MAX_HOME_LOAD_MS || 6000);
 const MAX_LOGIN_LOAD_MS = Number(process.env.CURA_MAX_LOGIN_LOAD_MS || 7000);
 

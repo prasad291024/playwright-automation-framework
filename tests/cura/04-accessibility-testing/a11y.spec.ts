@@ -1,5 +1,7 @@
 import { expect, test } from '../../../src/core/fixtures/test.fixture';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test.describe('Accessibility: CURA', () => {
   test('@a11y - homepage has a clear primary heading and CTA', async ({ curaApp }) => {
     await curaApp.goto();

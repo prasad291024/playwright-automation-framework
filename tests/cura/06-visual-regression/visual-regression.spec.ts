@@ -1,6 +1,8 @@
 import { expect, test } from '../../../src/core/fixtures/test.fixture';
 import { user } from '../../../src/apps/cura/test-data/users';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 const CURA_USERNAME = process.env.CURA_USERNAME || user.username;
 const CURA_PASSWORD = process.env.CURA_PASSWORD || user.password;
 

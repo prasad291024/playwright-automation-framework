@@ -1,8 +1,3 @@
-/**
- * Playwright Test Fixture
- * Provides custom fixtures for page objects and utilities
- */
-
 import { test as base } from '@playwright/test';
 import { logger } from '../utils/logger';
 import {
