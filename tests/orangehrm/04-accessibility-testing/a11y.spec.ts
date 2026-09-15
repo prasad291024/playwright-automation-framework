@@ -22,6 +22,6 @@ test.describe('Accessibility: OrangeHRM', () => {
 
   test('@a11y - dashboard has proper heading structure', () => {
     // Would require login sequence - testing concept only
-    test.skip('Would require login sequence - testing concept only');
+    test.skip();
   });
 });
