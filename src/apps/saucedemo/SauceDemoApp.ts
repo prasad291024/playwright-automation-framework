@@ -61,4 +61,12 @@ export class SauceDemoApp {
     await this.cartPage.clickCheckout();
     // Would need to implement checkout steps
   }
+
+  /**
+   * Logout from the SauceDemo application.
+   * SauceDemo doesn't have a traditional logout, so we navigate back to the login page.
+   */
+  async logout(): Promise<void> {
+    await this.loginPage.goto();
+  }
 }

@@ -1,11 +1,12 @@
-import { expect, test } from '../../../src/core/fixtures/test.fixture';
-import { users } from '../../../src/apps/saucedemo/test-data/users';
+import { expect, test } from '../../../src/core/fixtures/auth.fixture';
 
 test.describe('Accessibility: SauceDemo', () => {
-  test('@a11y - login form controls are keyboard reachable', async ({ saucedemoApp }) => {
-    const page = saucedemoApp.loginPage.getPage();
-    await saucedemoApp.loginPage.goto();
+  test('@a11y - login form controls are keyboard reachable', async ({ authenticatedPage }) => {
+    // We start from inventory page due to auth fixture, need to go to login page
+    await authenticatedPage.context().clearCookies(); // Clear auth state
+    await authenticatedPage.reload(); // Reload to get to login page
 
+    const page = authenticatedPage;
     await page.keyboard.press('Tab');
     await expect(page.locator('#user-name')).toBeFocused();
 
@@ -16,11 +17,11 @@ test.describe('Accessibility: SauceDemo', () => {
     await expect(page.locator('#login-button')).toBeFocused();
   });
 
-  test('@a11y - inventory page exposes labeled product content', async ({ saucedemoApp }) => {
-    await saucedemoApp.login(users.standard_user.username, users.standard_user.password);
-    await saucedemoApp.loginPage.assertLoginSuccess();
+  test('@a11y - inventory page exposes labeled product content', async ({ authenticatedPage }) => {
+    // We're already authenticated, navigate to inventory page
+    await authenticatedPage.waitForURL(/.*inventory.*/);
 
-    const page = saucedemoApp.loginPage.getPage();
+    const page = authenticatedPage;
     await expect(page.getByText('Products')).toBeVisible();
 
     const images = page.locator('.inventory_item img');
