@@ -22,12 +22,13 @@ test.describe('@auth @shared - Authentication System', () => {
     await authenticatedPage.waitForURL(/.*inventory.*/);
 
     // Verify we can access app-specific functionality
-    await saucedemoApp.inventoryPage.verifyInventoryLoaded();
+    // TypeScript: saucedemoApp is guaranteed to be defined when appName === 'saucedemo'
+    await saucedemoApp!.inventoryPage.verifyInventoryLoaded();
 
     // Verify we can access the cart
-    await saucedemoApp.inventoryPage.addFirstProductToCart();
-    await saucedemoApp.cartPage.openCart();
-    await saucedemoApp.cartPage.verifyItemPresent();
+    await saucedemoApp!.inventoryPage.addFirstProductToCart();
+    await saucedemoApp!.cartPage.openCart();
+    await saucedemoApp!.cartPage.verifyItemPresent();
   });
 
   test('should have valid authenticated session for CURA', async ({
@@ -44,6 +45,7 @@ test.describe('@auth @shared - Authentication System', () => {
     await authenticatedPage.waitForURL(/.*appointment.*/);
 
     // Verify we can access app-specific functionality
+    // TypeScript: curaApp is guaranteed to be defined when appName === 'cura'
     await curaApp!.appointmentPage.verifyAppointmentPageVisible();
 
     // Verify we can access confirmation functionality
@@ -68,11 +70,12 @@ test.describe('@auth @shared - Authentication System', () => {
     await authenticatedPage.waitForURL(/.*dashboard.*/);
 
     // Verify we can access app-specific functionality
-    await orangeHrmApp.dashboardPage.verifyDashboardVisible();
+    // TypeScript: orangeHrmApp is guaranteed to be defined when appName === 'orangehrm'
+    await orangeHrmApp!.dashboardPage.verifyDashboardVisible();
 
     // Verify we can access a protected menu item
-    await orangeHrmApp.dashboardPage.navigateToMenu('Admin');
-    await orangeHrmApp.dashboardPage.verifyMenuItemVisible('User Management');
+    await orangeHrmApp!.dashboardPage.navigateToMenu('Admin');
+    await orangeHrmApp!.dashboardPage.verifyMenuItemVisible('User Management');
   });
 
   test('should reuse storage state when valid', async ({ authSession }) => {
