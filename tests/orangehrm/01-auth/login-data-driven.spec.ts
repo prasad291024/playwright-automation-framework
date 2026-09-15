@@ -1,4 +1,4 @@
-import { test } from '../../../src/core/fixtures/test.fixture';
+import { test } from '../../../src/core/fixtures/auth.fixture';
 
 const validScenario = {
   username: process.env.ORANGEHRM_USERNAME || 'Admin',
@@ -26,10 +26,12 @@ test.describe('OrangeHRM Login Validation', () => {
         return;
       }
 
-      await orangeHrmApp.goto();
+      // Start from login page (we need to logout first since auth fixture logs us in)
+      await orangeHrmApp!.logout(); // This will take us to login page
+      await orangeHrmApp!.goto();
 
-      await orangeHrmApp.loginPage.login(scenario.username, scenario.password);
-      await orangeHrmApp.loginPage.assertLoginFailure();
+      await orangeHrmApp!.loginPage.login(scenario.username, scenario.password);
+      await orangeHrmApp!.loginPage.assertLoginFailure();
     });
   }
 });

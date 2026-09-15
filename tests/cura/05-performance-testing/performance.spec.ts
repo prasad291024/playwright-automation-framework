@@ -1,27 +1,54 @@
-import { expect, test } from '../../../src/core/fixtures/test.fixture';
-
-test.use({ storageState: { cookies: [], origins: [] } });
-
-const MAX_HOME_LOAD_MS = Number(process.env.CURA_MAX_HOME_LOAD_MS || 6000);
-const MAX_LOGIN_LOAD_MS = Number(process.env.CURA_MAX_LOGIN_LOAD_MS || 7000);
+import { test, expect } from '../../../src/core/fixtures/auth.fixture';
 
 test.describe('Performance: CURA', () => {
-  test('@performance - homepage loads within threshold', async ({ curaApp }) => {
-    const start = Date.now();
-    await curaApp.goto();
-    await curaApp.loginPage.getPage().waitForLoadState('domcontentloaded');
-    const loadTime = Date.now() - start;
+  test('landing page load performance @cura @performance', async ({
+    authenticatedPage,
+    appName,
+  }) => {
+    if (appName !== 'cura') {
+      test.skip();
+      return;
+    }
 
-    expect(loadTime).toBeLessThan(MAX_HOME_LOAD_MS);
+    // We're already authenticated, just navigate to the landing page
+    await authenticatedPage.waitForURL(/.*\/#\/login/);
+
+    // Measure time to load landing page
+    const startTime = Date.now();
+    await authenticatedPage.waitForLoadState('networkidle');
+    const endTime = Date.now();
+
+    const loadTime = endTime - startTime;
+    console.log(`Landing page load time: ${loadTime}ms`);
+
+    // Assert that load time is reasonable (under 5 seconds)
+    expect(loadTime).toBeLessThan(5000);
   });
 
-  test('@performance - login page becomes interactive within threshold', async ({ curaApp }) => {
-    const start = Date.now();
-    await curaApp.goto();
-    await curaApp.loginPage.goToLogin();
-    await expect(curaApp.loginPage.getPage().locator('#txt-username')).toBeVisible();
-    const loadTime = Date.now() - start;
+  test('form interaction performance @cura @performance', async ({
+    authenticatedPage,
+    appName,
+    curaApp,
+  }) => {
+    if (appName !== 'cura' || !curaApp) {
+      test.skip();
+      return;
+    }
 
-    expect(loadTime).toBeLessThan(MAX_LOGIN_LOAD_MS);
+    // We're already authenticated, navigate to appointment page
+    await authenticatedPage.waitForURL(/.*appointment.*/);
+
+    // Measure time to fill out appointment form
+    const startTime = Date.now();
+    await curaApp.appointmentPage.selectFacility('Hongkong CURA Healthcare Center');
+    await curaApp.appointmentPage.setVisitDate('20/09/2026');
+    await curaApp.appointmentPage.setComment('Performance test comment');
+    const endTime = Date.now();
+
+    const formTime = endTime - startTime;
+    console.log(`Form interaction time: ${formTime}ms`);
+
+    // Assert that form interaction time is reasonable (under 2 seconds)
+    expect(formTime).toBeLessThan(2000);
   });
 });

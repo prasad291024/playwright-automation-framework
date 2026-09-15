@@ -58,4 +58,19 @@ export class OrangeHrmApp {
   async verifySearchResultsPresent(): Promise<void> {
     await this.dashboardPage.verifySearchResultsPresent();
   }
+
+  /**
+   * Logout from the OrangeHRM application.
+   */
+  async logout(): Promise<void> {
+    // Click on the user dropdown to reveal the logout option
+    await this.dashboardPage.verifyUserDropdownVisible();
+    await this.page.getByRole('button', { name: /user/i }).click();
+
+    // Click on the logout link
+    await this.page.getByRole('link', { name: /logout/i }).click();
+
+    // Wait for redirect to login page
+    await this.page.waitForURL(/\/auth\/login/i);
+  }
 }

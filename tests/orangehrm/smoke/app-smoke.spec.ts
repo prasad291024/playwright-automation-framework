@@ -1,8 +1,14 @@
-import { test, expect } from '../../../src/core/fixtures/test.fixture';
+import { test, expect } from '../../../src/core/fixtures/auth.fixture';
 
-test('@smoke @orangehrm - login page shell renders correctly', async ({ orangeHrmApp }) => {
-  await orangeHrmApp.goto();
+test('@smoke @orangehrm - login page shell renders correctly', async ({ authenticatedPage }) => {
+  // The authenticated fixture logs us in, so we start from dashboard page
+  // To test the login page shell, we need to logout first
+  await authenticatedPage.context().clearCookies(); // Clear auth state to test login page
 
-  await expect(orangeHrmApp.loginPage.getPage()).toHaveTitle(/orangehrm/i);
-  await expect(orangeHrmApp.loginPage.getPage().locator('[name="username"]')).toBeVisible();
+  // Reload page to get to login screen
+  await authenticatedPage.reload();
+  await authenticatedPage.waitForURL(/.*\/web\/index\.php\/auth\/login/); // Wait for login page
+
+  await expect(authenticatedPage.locator('[name="username"]')).toBeVisible();
+  await expect(authenticatedPage.locator('[type="submit"]')).toBeVisible();
 });

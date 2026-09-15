@@ -1,4 +1,4 @@
-import { test } from '../../../src/core/fixtures/test.fixture';
+import { test } from '../../../src/core/fixtures/auth.fixture';
 import { users } from '../../../src/apps/saucedemo/test-data/users';
 
 const invalidScenarios = [
@@ -16,10 +16,24 @@ const invalidScenarios = [
 
 test.describe('SauceDemo Login Validation', () => {
   for (const scenario of invalidScenarios) {
-    test(`@auth @saucedemo - login fails for ${scenario.name}`, async ({ saucedemoApp }) => {
-      await saucedemoApp.loginPage.goto();
-      await saucedemoApp.loginPage.login(scenario.username, scenario.password);
-      await saucedemoApp.loginPage.assertLoginFailure();
+    test(`@auth @saucedemo - login fails for ${scenario.name}`, async ({
+      saucedemoApp,
+      appName,
+    }) => {
+      if (appName !== 'saucedemo') {
+        test.skip();
+        return;
+      }
+      if (!saucedemoApp) {
+        test.skip();
+        return;
+      }
+
+      // Navigate to login page (we start on inventory page due to auth fixture)
+      await saucedemoApp!.logout(); // First logout to get to login page
+      await saucedemoApp!.loginPage.goto();
+      await saucedemoApp!.loginPage.login(scenario.username, scenario.password);
+      await saucedemoApp!.loginPage.assertLoginFailure();
     });
   }
 });

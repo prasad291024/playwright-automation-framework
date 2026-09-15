@@ -29,6 +29,31 @@ export class OrangeHrmDashboardPage extends BasePage {
   }
 
   /**
+   * Navigate to a menu item in the sidebar
+   * @param menuItem - The menu item to navigate to (e.g., 'Admin', 'PIM', 'Leave')
+   */
+  async navigateToMenu(menuItem: string): Promise<void> {
+    await this.stableClick(this.page.getByRole('link', { name: new RegExp(menuItem, 'i') }));
+    await this.page.waitForLoadState('networkidle');
+  }
+
+  /**
+   * Verify a menu option is visible in the sidebar
+   * @param menuOption - The menu option to verify (e.g., 'User Management', 'Job', 'Organization')
+   */
+  async verifyMenuOptionVisible(menuOption: string): Promise<void> {
+    await expect(this.page.getByRole('link', { name: new RegExp(menuOption, 'i') })).toBeVisible();
+  }
+
+  /**
+   * Verify a menu item is visible in the sidebar
+   * @param menuItem - The menu item to verify (e.g., 'Admin', 'PIM', 'Leave')
+   */
+  async verifyMenuItemVisible(menuItem: string): Promise<void> {
+    await expect(this.page.getByRole('link', { name: new RegExp(menuItem, 'i') })).toBeVisible();
+  }
+
+  /**
    * Navigate to the Users module under Admin.
    */
   async navigateToUsers(): Promise<void> {
@@ -37,6 +62,23 @@ export class OrangeHrmDashboardPage extends BasePage {
     await expect(this.page.getByRole('heading', { name: /users/i })).toBeVisible({
       timeout: this.appConfig.timeouts.navigation,
     });
+  }
+
+  /**
+   * Verify the user dropdown is visible
+   */
+  async verifyUserDropdownVisible(): Promise<void> {
+    await expect(this.page.getByRole('button', { name: /user/i })).toBeVisible();
+  }
+
+  /**
+   * Verify the page heading is visible
+   * @param headingText - The expected heading text
+   */
+  async verifyPageHeading(headingText: string): Promise<void> {
+    await expect(
+      this.page.getByRole('heading', { name: new RegExp(headingText, 'i') }),
+    ).toBeVisible();
   }
 
   /**
