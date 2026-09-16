@@ -65,10 +65,17 @@ export class OrangeHrmApp {
   async logout(): Promise<void> {
     // Click on the user dropdown to reveal the logout option
     await this.dashboardPage.verifyUserDropdownVisible();
-    await this.page.getByRole('button', { name: /user/i }).click();
+    const userDropdown = this.page
+      .locator('.oxd-userdropdown-tab')
+      .or(this.page.locator('.oxd-userdropdown'))
+      .or(this.page.getByRole('banner').getByRole('img', { name: /profile picture/i }));
+    await userDropdown.first().click();
 
     // Click on the logout link
-    await this.page.getByRole('link', { name: /logout/i }).click();
+    const logoutItem = this.page
+      .getByRole('menuitem', { name: /logout/i })
+      .or(this.page.getByRole('link', { name: /logout/i }));
+    await logoutItem.first().click();
 
     // Wait for redirect to login page
     await this.page.waitForURL(/\/auth\/login/i);

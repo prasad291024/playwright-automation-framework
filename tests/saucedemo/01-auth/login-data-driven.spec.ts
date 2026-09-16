@@ -1,5 +1,9 @@
-import { test } from '../../../src/core/fixtures/auth.fixture';
+import { test } from '../../../src/core/fixtures/test.fixture';
+import { resolveAppNameFromEnv } from '../../../src/core/auth/auth-session';
 import { users } from '../../../src/apps/saucedemo/test-data/users';
+
+// Override storageState to ensure we start fresh for login validation tests
+test.use({ storageState: { cookies: [], origins: [] } });
 
 const invalidScenarios = [
   {
@@ -16,10 +20,8 @@ const invalidScenarios = [
 
 test.describe('SauceDemo Login Validation', () => {
   for (const scenario of invalidScenarios) {
-    test(`@auth @saucedemo - login fails for ${scenario.name}`, async ({
-      saucedemoApp,
-      appName,
-    }) => {
+    test(`@auth @saucedemo - login fails for ${scenario.name}`, async ({ saucedemoApp }) => {
+      const appName = resolveAppNameFromEnv();
       if (appName !== 'saucedemo') {
         test.skip();
         return;
@@ -29,11 +31,10 @@ test.describe('SauceDemo Login Validation', () => {
         return;
       }
 
-      // Navigate to login page (we start on inventory page due to auth fixture)
-      await saucedemoApp!.logout(); // First logout to get to login page
-      await saucedemoApp!.loginPage.goto();
-      await saucedemoApp!.loginPage.login(scenario.username, scenario.password);
-      await saucedemoApp!.loginPage.assertLoginFailure();
+      // Start from clean unauthenticated state (test.fixture provides clean page)
+      await saucedemoApp.loginPage.goto();
+      await saucedemoApp.loginPage.login(scenario.username, scenario.password);
+      await saucedemoApp.loginPage.assertLoginFailure();
     });
   }
 });

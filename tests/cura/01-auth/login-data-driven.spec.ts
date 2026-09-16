@@ -1,4 +1,5 @@
-import { test } from '../../../src/core/fixtures/auth.fixture';
+import { test } from '../../../src/core/fixtures/test.fixture';
+import { resolveAppNameFromEnv } from '../../../src/core/auth/auth-session';
 import { user } from '../../../src/apps/cura/test-data/users';
 
 // Override storageState to ensure we start fresh for login validation tests
@@ -24,7 +25,8 @@ const invalidScenarios = [
 
 test.describe('CURA Login Validation', () => {
   for (const scenario of invalidScenarios) {
-    test(`@auth @cura - login fails for ${scenario.name}`, async ({ appName, curaApp }) => {
+    test(`@auth @cura - login fails for ${scenario.name}`, async ({ curaApp }) => {
+      const appName = resolveAppNameFromEnv();
       if (appName !== 'cura') {
         test.skip();
         return;
@@ -34,11 +36,9 @@ test.describe('CURA Login Validation', () => {
         return;
       }
 
-      // Start from login page (we need to logout first since auth fixture logs us in)
-      await curaApp.logout(); // This will take us to login page
+      // Start from clean unauthenticated state (test.fixture provides clean page)
       await curaApp.loginPage.goto();
       await curaApp.loginPage.goToLogin();
-
       await curaApp.loginPage.login(scenario.username, scenario.password);
       await curaApp.loginPage.assertLoginFailure();
     });

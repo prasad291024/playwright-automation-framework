@@ -1,23 +1,21 @@
-import { expect, test } from '../../../src/core/fixtures/auth.fixture';
+import { expect, test } from '../../../src/core/fixtures/test.fixture';
+
+test.use({ storageState: { cookies: [], origins: [] } });
 
 test.describe('Accessibility: OrangeHRM', () => {
-  test.beforeEach(async ({ authenticatedPage }) => {
-    // We're already authenticated, navigate to login page for testing
-    await test.step('Navigate to login page', async () => {
-      await authenticatedPage.context().clearCookies(); // Clear auth state
-      await authenticatedPage.reload(); // Reload to get to login page
-      await authenticatedPage.waitForURL(/.*\/web\/index\.php\/auth\/login/);
-    });
-  });
+  test('@a11y - login form controls are keyboard reachable', async ({ orangeHrmApp }) => {
+    await orangeHrmApp.loginPage.goto();
 
-  test('@a11y - login form fields are keyboard reachable', async ({ authenticatedPage }) => {
-    const page = authenticatedPage;
-    await expect(page.locator('[name="username"]')).toBeVisible();
-    await page.keyboard.press('Tab');
-    await expect(page.locator('[name="password"]')).toBeFocused();
+    await orangeHrmApp.loginPage.getPage().locator('[name="username"]').focus();
+    await expect(orangeHrmApp.loginPage.getPage().locator('[name="username"]')).toBeFocused();
 
-    await page.keyboard.press('Tab');
-    await expect(page.locator('[type="submit"]')).toBeFocused();
+    await orangeHrmApp.loginPage.getPage().keyboard.press('Tab');
+    await expect(orangeHrmApp.loginPage.getPage().locator('[name="password"]')).toBeFocused();
+
+    await orangeHrmApp.loginPage.getPage().keyboard.press('Tab');
+    await expect(
+      orangeHrmApp.loginPage.getPage().getByRole('button', { name: /login/i }),
+    ).toBeFocused();
   });
 
   test('@a11y - dashboard has proper heading structure', () => {

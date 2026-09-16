@@ -41,6 +41,7 @@ if (!testPath) {
 const env = {
   ...process.env,
   APP: app,
+  APP_NAME: app,
   TEST_SUITE: resolvedSuite,
   PLAYWRIGHT_HTML_REPORT: path.join('playwright-report', app, resolvedSuite),
   PLAYWRIGHT_JSON_OUTPUT_FILE: path.join('test-results', 'json', `${app}-${resolvedSuite}.json`),

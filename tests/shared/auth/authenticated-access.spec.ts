@@ -49,7 +49,7 @@ test.describe('@auth @shared - Authentication System', () => {
     await curaApp!.appointmentPage.verifyAppointmentPageVisible();
 
     // Verify we can access confirmation functionality
-    await curaApp!.appointmentPage.selectFacility('Hongkong Cura Healthcare Center');
+    await curaApp!.appointmentPage.selectFacility('Hongkong CURA Healthcare Center');
     await curaApp!.appointmentPage.setVisitDate('01/01/2025');
     await curaApp!.appointmentPage.setComment('Test appointment via automated test');
     await curaApp!.appointmentPage.bookAppointment();

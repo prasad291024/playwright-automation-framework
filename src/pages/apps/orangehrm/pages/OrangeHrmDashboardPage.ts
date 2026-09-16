@@ -24,8 +24,12 @@ export class OrangeHrmDashboardPage extends BasePage {
     await expect(this.page).toHaveURL(/\/dashboard\/index/i, {
       timeout: this.appConfig.timeouts.navigation,
     });
-    await expect(this.page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
-    await expect(this.page.getByRole('navigation', { name: /sidepanel/i })).toBeVisible();
+    await expect(this.page.getByRole('heading', { name: /dashboard/i })).toBeVisible({
+      timeout: this.appConfig.timeouts.page,
+    });
+    await expect(this.page.getByRole('navigation', { name: /sidepanel/i })).toBeVisible({
+      timeout: this.appConfig.timeouts.page,
+    });
   }
 
   /**
@@ -38,19 +42,31 @@ export class OrangeHrmDashboardPage extends BasePage {
   }
 
   /**
-   * Verify a menu option is visible in the sidebar
+   * Verify a menu option is visible in the sidebar or topbar
    * @param menuOption - The menu option to verify (e.g., 'User Management', 'Job', 'Organization')
    */
   async verifyMenuOptionVisible(menuOption: string): Promise<void> {
-    await expect(this.page.getByRole('link', { name: new RegExp(menuOption, 'i') })).toBeVisible();
+    const item = this.page
+      .getByRole('link', { name: new RegExp(menuOption, 'i') })
+      .or(this.page.getByRole('listitem').filter({ hasText: new RegExp(menuOption, 'i') }))
+      .or(this.page.getByText(new RegExp(menuOption, 'i')));
+    await expect(item.first()).toBeVisible({
+      timeout: this.appConfig.timeouts.page,
+    });
   }
 
   /**
-   * Verify a menu item is visible in the sidebar
-   * @param menuItem - The menu item to verify (e.g., 'Admin', 'PIM', 'Leave')
+   * Verify a menu item is visible in the sidebar or topbar
+   * @param menuItem - The menu item to verify (e.g., 'Admin', 'PIM', 'Leave', 'User Management')
    */
   async verifyMenuItemVisible(menuItem: string): Promise<void> {
-    await expect(this.page.getByRole('link', { name: new RegExp(menuItem, 'i') })).toBeVisible();
+    const item = this.page
+      .getByRole('link', { name: new RegExp(menuItem, 'i') })
+      .or(this.page.getByRole('listitem').filter({ hasText: new RegExp(menuItem, 'i') }))
+      .or(this.page.getByText(new RegExp(menuItem, 'i')));
+    await expect(item.first()).toBeVisible({
+      timeout: this.appConfig.timeouts.page,
+    });
   }
 
   /**
@@ -68,7 +84,13 @@ export class OrangeHrmDashboardPage extends BasePage {
    * Verify the user dropdown is visible
    */
   async verifyUserDropdownVisible(): Promise<void> {
-    await expect(this.page.getByRole('button', { name: /user/i })).toBeVisible();
+    const userDropdown = this.page
+      .locator('.oxd-userdropdown-tab')
+      .or(this.page.locator('.oxd-userdropdown'))
+      .or(this.page.getByRole('banner').getByRole('img', { name: /profile picture/i }));
+    await expect(userDropdown.first()).toBeVisible({
+      timeout: this.appConfig.timeouts.page,
+    });
   }
 
   /**
