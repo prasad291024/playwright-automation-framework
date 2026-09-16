@@ -21,7 +21,6 @@ test.describe('Accessibility: CURA', () => {
     await curaApp.loginPage.goToLogin();
     await expect(curaApp.loginPage.getPage().locator('#txt-username')).toBeVisible();
 
-    //await page.keyboard.press('Tab');
     await curaApp.loginPage.getPage().locator('#txt-username').focus();
     await expect(curaApp.loginPage.getPage().locator('#txt-username')).toBeFocused();
 

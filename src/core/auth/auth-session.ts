@@ -51,18 +51,18 @@ const resolveCredentials = (appName: AppName): LoginCredentials => {
   switch (appName) {
     case 'vwo':
       return {
-        email: process.env.VWO_EMAIL || process.env.USERNAME || '',
-        password: process.env.VWO_PASSWORD || process.env.PASSWORD || '',
+        email: process.env.VWO_EMAIL || '',
+        password: process.env.VWO_PASSWORD || '',
       };
     case 'cura':
       return {
-        username: process.env.CURA_USERNAME || process.env.USERNAME || 'John Doe',
-        password: process.env.CURA_PASSWORD || process.env.PASSWORD || 'ThisIsNotAPassword',
+        username: process.env.CURA_USERNAME || 'John Doe',
+        password: process.env.CURA_PASSWORD || 'ThisIsNotAPassword',
       };
     case 'saucedemo':
       return {
-        username: process.env.SAUCEDEMO_USERNAME || process.env.USERNAME || 'standard_user',
-        password: process.env.SAUCEDEMO_PASSWORD || process.env.PASSWORD || 'secret_sauce',
+        username: process.env.SAUCEDEMO_USERNAME || 'standard_user',
+        password: process.env.SAUCEDEMO_PASSWORD || 'secret_sauce',
       };
     case 'orangehrm':
       return {
@@ -102,6 +102,16 @@ export const getStorageStateStatus = (
       parsed.cookies.length === 0
     ) {
       return { reusable: false, reason: 'invalid' };
+    }
+
+    // Invalidate if any cookie has expired according to its expiration timestamp
+    const nowSec = Date.now() / 1000;
+    const hasExpiredCookie = (parsed.cookies as Array<{ expires?: number }>).some(
+      (cookie) =>
+        typeof cookie.expires === 'number' && cookie.expires > 0 && cookie.expires <= nowSec,
+    );
+    if (hasExpiredCookie) {
+      return { reusable: false, reason: 'stale' };
     }
   } catch {
     return { reusable: false, reason: 'invalid' };
@@ -214,6 +224,47 @@ export const ensureStorageState = async (
   return authenticated;
 };
 
+const resolveAuthenticatedRoute = (appName: AppName): string => {
+  switch (appName) {
+    case 'saucedemo':
+      return '/inventory.html';
+    case 'cura':
+      return '/index.php#appointment';
+    case 'orangehrm':
+      return '/web/index.php/dashboard/index';
+    default:
+      return '/';
+  }
+};
+
+const isSessionValid = async (page: Page, appName: AppName): Promise<boolean> => {
+  try {
+    switch (appName) {
+      case 'saucedemo': {
+        try {
+          await page.waitForSelector('.inventory_list, [data-test="error"], #login-button', {
+            timeout: 3000,
+          });
+        } catch {
+          // ignore timeout
+        }
+        return (
+          page.url().includes('inventory.html') &&
+          (await page.locator('.inventory_list').count()) > 0
+        );
+      }
+      case 'cura':
+        return (await page.locator('#combo_facility').count()) > 0;
+      case 'orangehrm':
+        return page.url().includes('dashboard') && !page.url().includes('auth/login');
+      default:
+        return true;
+    }
+  } catch {
+    return false;
+  }
+};
+
 export const createAuthenticatedSession = async (
   browser: Browser,
   appName: AppName,
@@ -229,6 +280,16 @@ export const createAuthenticatedSession = async (
   const page = await context.newPage();
 
   let authenticated = reusedStorageState;
+  if (reusedStorageState) {
+    // When storage state is reused, navigate to the authenticated route
+    // so tests don't start on about:blank or an unauthenticated root URL
+    await page.goto(resolveAuthenticatedRoute(appName));
+    const valid = await isSessionValid(page, appName);
+    if (!valid) {
+      console.log(`Saved session for ${appName} is expired on server. Performing fresh login...`);
+      authenticated = await ensureStorageState(page, appName, storageFile, true);
+    }
+  }
   if (!reusedStorageState) {
     authenticated = await ensureStorageState(page, appName, storageFile, true);
   }

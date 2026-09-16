@@ -62,7 +62,7 @@ export const test = base.extend<AuthFixtures>({
     if (appName === 'cura') {
       await use(new CuraApp(authenticatedPage));
     } else {
-      await use(undefined as unknown as CuraApp);
+      await use(undefined);
     }
   },
 
@@ -70,7 +70,7 @@ export const test = base.extend<AuthFixtures>({
     if (appName === 'saucedemo') {
       await use(new SauceDemoApp(authenticatedPage));
     } else {
-      await use(undefined as unknown as SauceDemoApp);
+      await use(undefined);
     }
   },
 
@@ -78,7 +78,7 @@ export const test = base.extend<AuthFixtures>({
     if (appName === 'orangehrm') {
       await use(new OrangeHrmApp(authenticatedPage));
     } else {
-      await use(undefined as unknown as OrangeHrmApp);
+      await use(undefined);
     }
   },
 });

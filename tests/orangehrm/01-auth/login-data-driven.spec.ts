@@ -1,4 +1,8 @@
 import { test } from '../../../src/core/fixtures/test.fixture';
+import { resolveAppNameFromEnv } from '../../../src/core/auth/auth-session';
+
+// Override storageState to ensure we start fresh for login validation tests
+test.use({ storageState: { cookies: [], origins: [] } });
 
 const validScenario = {
   username: process.env.ORANGEHRM_USERNAME || 'Admin',
@@ -21,13 +25,14 @@ const invalidScenarios = [
 test.describe('OrangeHRM Login Validation', () => {
   for (const scenario of invalidScenarios) {
     test(`@auth @orangehrm - login fails for ${scenario.name}`, async ({ orangeHrmApp }) => {
-      if (process.env.APP_NAME !== 'orangehrm') {
+      const appName = resolveAppNameFromEnv();
+      if (appName !== 'orangehrm') {
         test.skip();
         return;
       }
 
-      await orangeHrmApp.goto();
-
+      // Start from clean unauthenticated state (test.fixture provides clean page)
+      await orangeHrmApp.loginPage.goto();
       await orangeHrmApp.loginPage.login(scenario.username, scenario.password);
       await orangeHrmApp.loginPage.assertLoginFailure();
     });

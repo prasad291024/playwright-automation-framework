@@ -1,6 +1,8 @@
 import { expect, test } from '../../../src/core/fixtures/test.fixture';
 import { users } from '../../../src/apps/saucedemo/test-data/users';
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test.describe('Accessibility: SauceDemo', () => {
   test('@a11y - login form controls are keyboard reachable', async ({ saucedemoApp }) => {
     const page = saucedemoApp.loginPage.getPage();

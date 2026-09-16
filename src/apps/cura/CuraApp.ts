@@ -84,4 +84,22 @@ export class CuraApp {
   async assertConfirmationVisible(): Promise<void> {
     await this.confirmationPage.assertConfirmationVisible();
   }
+
+  /**
+   * Logout from the CURA application.
+   * This will navigate to the login page.
+   */
+  async logout(): Promise<void> {
+    // Try to click the logout link if visible
+    const logoutLink = this.page.locator('a[href*="logout"], text=Logout');
+    if (await logoutLink.isVisible()) {
+      await logoutLink.click();
+      // Wait for navigation to login page
+      await this.page.waitForURL(/.*login.*/);
+    } else {
+      // If we can't find logout, just go to the login page directly
+      await this.loginPage.goto();
+      await this.loginPage.goToLogin();
+    }
+  }
 }

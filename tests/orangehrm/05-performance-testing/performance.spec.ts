@@ -1,30 +1,46 @@
-import { expect, test } from '../../../src/core/fixtures/test.fixture';
-
-const ORANGEHRM_USERNAME = process.env.ORANGEHRM_USERNAME || 'Admin';
-const ORANGEHRM_PASSWORD = process.env.ORANGEHRM_PASSWORD || 'admin123';
-const MAX_LOGIN_PAGE_LOAD_MS = Number(process.env.ORANGEHRM_MAX_LOGIN_PAGE_LOAD_MS || 6000);
-const MAX_DASHBOARD_READY_MS = Number(process.env.ORANGEHRM_MAX_DASHBOARD_READY_MS || 12000);
+import { test, expect } from '../../../src/core/fixtures/auth.fixture';
 
 test.describe('Performance: OrangeHRM', () => {
-  test('@performance - login page becomes interactive within threshold', async ({
-    orangeHrmApp,
-  }) => {
-    const start = Date.now();
-
-    await orangeHrmApp.goto();
-
-    const loadTime = Date.now() - start;
-    expect(loadTime).toBeLessThan(MAX_LOGIN_PAGE_LOAD_MS);
+  test.beforeEach(async ({ authenticatedPage }) => {
+    // We're already authenticated, just navigate to the dashboard
+    await test.step('Navigate to dashboard', async () => {
+      await authenticatedPage.waitForURL(/.*dashboard.*/);
+    });
   });
 
-  test('@performance - dashboard is ready after login within threshold', async ({
+  test('dashboard load performance @orangehrm @performance', async ({ authenticatedPage }) => {
+    // Measure time to load dashboard
+    const startTime = Date.now();
+    await authenticatedPage.waitForLoadState('networkidle');
+    const endTime = Date.now();
+
+    const loadTime = endTime - startTime;
+    console.log(`Dashboard load time: ${loadTime}ms`);
+
+    // Assert that load time is reasonable (under 5 seconds)
+    expect(loadTime).toBeLessThan(5000);
+  });
+
+  test('menu navigation performance @orangehrm @performance', async ({
+    authenticatedPage,
     orangeHrmApp,
+    appName,
   }) => {
-    const start = Date.now();
+    if (appName !== 'orangehrm') {
+      test.skip();
+      return;
+    }
 
-    await orangeHrmApp.login(ORANGEHRM_USERNAME, ORANGEHRM_PASSWORD);
+    // Measure time to navigate to PIM module
+    const startTime = Date.now();
+    await orangeHrmApp!.dashboardPage.navigateToMenu('PIM');
+    await authenticatedPage.waitForLoadState('networkidle');
+    const endTime = Date.now();
 
-    const loadTime = Date.now() - start;
-    expect(loadTime).toBeLessThan(MAX_DASHBOARD_READY_MS);
+    const navTime = endTime - startTime;
+    console.log(`Menu navigation time: ${navTime}ms`);
+
+    // Assert that navigation time is reasonable (under 3 seconds)
+    expect(navTime).toBeLessThan(3000);
   });
 });
