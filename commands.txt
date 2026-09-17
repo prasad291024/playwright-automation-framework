@@ -1,0 +1,115 @@
+============================================================
+Playwright UI Automation Framework - Command Reference
+============================================================
+
+1. General Test Execution (npm scripts from package.json)
+------------------------------------------------------------
+npm test
+  Runs all active Playwright tests across all projects.
+
+npm run test:smoke
+  Runs tests matching the @smoke tag across all suites.
+
+npm run test:ui
+  Launches interactive Playwright UI mode with time-travel debugging.
+
+npm run test:debug
+  Runs tests in debug mode with Playwright Inspector.
+
+npm run test:headed
+  Executes tests with visible browser windows.
+
+npm run test:chromium
+  Runs tests using the Chromium project only.
+
+npm run test:firefox
+  Runs tests using the Firefox project only.
+
+npm run test:webkit
+  Runs tests using the WebKit (Safari) project only.
+
+npm run test:report
+  Opens the HTML test report from the last test execution.
+
+
+2. Granular App-Suite Runner (scripts/run-app-suite.cjs)
+------------------------------------------------------------
+Syntax:
+  node scripts/run-app-suite.cjs --app=<app> --suite=<suite> [--project=<browser>]
+
+SauceDemo Suites:
+  node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
+  node scripts/run-app-suite.cjs --app=saucedemo --suite=auth
+  node scripts/run-app-suite.cjs --app=saucedemo --suite=regression
+  node scripts/run-app-suite.cjs --app=saucedemo --suite=accessibility
+  node scripts/run-app-suite.cjs --app=saucedemo --suite=performance
+  node scripts/run-app-suite.cjs --app=saucedemo --suite=visual
+
+CURA Healthcare Suites:
+  node scripts/run-app-suite.cjs --app=cura --suite=smoke
+  node scripts/run-app-suite.cjs --app=cura --suite=auth
+  node scripts/run-app-suite.cjs --app=cura --suite=regression
+  node scripts/run-app-suite.cjs --app=cura --suite=accessibility
+  node scripts/run-app-suite.cjs --app=cura --suite=performance
+  node scripts/run-app-suite.cjs --app=cura --suite=visual
+
+OrangeHRM Suites:
+  node scripts/run-app-suite.cjs --app=orangehrm --suite=smoke
+  node scripts/run-app-suite.cjs --app=orangehrm --suite=auth
+  node scripts/run-app-suite.cjs --app=orangehrm --suite=regression
+  node scripts/run-app-suite.cjs --app=orangehrm --suite=accessibility
+  node scripts/run-app-suite.cjs --app=orangehrm --suite=performance
+  node scripts/run-app-suite.cjs --app=orangehrm --suite=visual
+
+Shared API Suites:
+  node scripts/run-app-suite.cjs --app=local --suite=shared-api
+
+
+3. Visual Baseline Snapshot Updates
+------------------------------------------------------------
+node scripts/run-app-suite.cjs --app=saucedemo --suite=visual -u
+node scripts/run-app-suite.cjs --app=cura --suite=visual -u
+node scripts/run-app-suite.cjs --app=orangehrm --suite=visual -u
+
+
+4. Code Quality & Pre-Commit Validation
+------------------------------------------------------------
+npm run typecheck
+  Validates TypeScript compilation in strict mode (tsc --noEmit).
+
+npm run lint
+  Runs ESLint across all TypeScript files.
+
+npm run lint:fix
+  Runs ESLint and automatically fixes fixable rule violations.
+
+npm run format:check
+  Checks whether all files conform to Prettier formatting.
+
+npm run format
+  Formats all files with Prettier.
+
+npm run pre-push
+  Runs combined lint and typecheck checks.
+
+
+5. Authentication & Storage State Management
+------------------------------------------------------------
+npx ts-node scripts/prepare-storage-states.ts
+  Pre-generates authentication cookies and sessions in storage-state/.
+
+# Bypass authentication bootstrap during local runs:
+# Unix:
+SKIP_GLOBAL_AUTH_SETUP=1 node scripts/run-app-suite.cjs --app=cura --suite=smoke
+# PowerShell:
+$env:SKIP_GLOBAL_AUTH_SETUP='1'; node scripts/run-app-suite.cjs --app=cura --suite=smoke
+
+
+6. Docker & Containerized Execution
+------------------------------------------------------------
+docker compose run test
+  Runs tests headlessly inside the official Playwright Docker container.
+
+docker compose run test-headed
+  Runs tests in container with display forwarding.
+============================================================

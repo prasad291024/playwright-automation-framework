@@ -1,451 +1,293 @@
-# Deployment & Production Guide
+# Deployment & CI/CD Pipeline Guide
 
-## Overview
-
-This guide covers deploying the Playwright Automation Framework to production environments, setting up CI/CD pipelines, and maintaining test suites in production.
+This guide covers deploying the Playwright UI Automation Framework in continuous integration pipelines, containerized environments, and production staging environments.
 
 ---
 
-## 1. Environment Setup
+## 1. Prerequisites & Environment Setup
 
-### Prerequisites
+### System Prerequisites
 
-- Node.js 18+ installed
-- npm or yarn package manager
-- Git for version control
-- GitHub account with repository access
+- **Node.js**: 20.x or higher
+- **npm**: 10.x or higher
+- **Docker**: Docker Desktop or Docker Engine (for containerized execution)
+- **Git**: 2.30+
 
-### Local Development Setup
+### Local Setup
 
 ```bash
-# Clone repository
+# 1. Clone the repository
 git clone https://github.com/yourusername/playwright-automation-framework.git
 cd playwright-automation-framework
 
-# Install dependencies
-npm install
+# 2. Install dependencies
+npm ci
 
-# Install Playwright browsers
-npx playwright install
+# 3. Install Playwright browser binaries and OS dependencies
+npx playwright install --with-deps chromium
 
-# Copy environment template
+# 4. Configure local environment variables
 cp .env.example .env
-
-# Update .env with your configuration
-# Edit: BASE_URL, API_BASE_URL, USERNAME, PASSWORD, etc.
-
-# Run tests locally
-npm test
 ```
 
 ---
 
-## 2. Production Configuration
+## 2. Configuration & Secrets Management
 
-### Environment Variables
+### Multi-App Configuration (`config/apps.json`)
 
-Create `.env.production` with production-specific values:
+The framework relies on `config/apps.json` to configure base URLs, authentication types, and timeout profiles across supported applications:
 
-```bash
-# Production URLs
-BASE_URL=https://your-production-app.com
-API_BASE_URL=https://api.your-production-app.com
-
-# Authentication
-USERNAME=${PROD_USERNAME}
-PASSWORD=${PROD_PASSWORD}
-
-# Execution Settings
-TEST_EXECUTION_ENV=PRODUCTION
-CI=true
-PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-
-# API Configuration
-ACTION_TIMEOUT=10000
-NAVIGATION_TIMEOUT=15000
-
-# Realtime Testing (if applicable)
-REALTIME_EMIT_PATH=https://api.your-app.com/api/realtime/emit
+```json
+{
+  "saucedemo": {
+    "baseUrl": "https://www.saucedemo.com",
+    "authType": "cookie",
+    "storageState": "storage-state/saucedemo.json",
+    "timeouts": { "action": 10000, "navigation": 30000 },
+    "retryStrategy": "standard"
+  },
+  "cura": {
+    "baseUrl": "https://katalon-demo-cura.herokuapp.com",
+    "authType": "session",
+    "storageState": "storage-state/cura.json",
+    "timeouts": { "action": 10000, "navigation": 30000 },
+    "retryStrategy": "standard"
+  },
+  "orangehrm": {
+    "baseUrl": "https://opensource-demo.orangehrmlive.com",
+    "authType": "session",
+    "storageState": "storage-state/orangehrm.json",
+    "timeouts": { "action": 15000, "navigation": 35000 },
+    "retryStrategy": "exponential"
+  },
+  "local": {
+    "baseUrl": "http://localhost:3000",
+    "authType": "none",
+    "timeouts": { "action": 5000, "navigation": 15000 },
+    "retryStrategy": "none"
+  }
+}
 ```
 
-### Secrets Management
+### Environment Variables & CI Secrets
 
-**Using GitHub Secrets:**
+In continuous integration (GitHub Actions, Jenkins), configure these secrets:
 
-1. Go to Repository → Settings → Secrets and Variables → Actions
-2. Add secrets:
-   - `PROD_USERNAME` - Production test user
-   - `PROD_PASSWORD` - Production test password
-   - `API_BASE_URL` - Production API endpoint
-   - `SLACK_WEBHOOK` - For notifications
-   - `DATABASE_URL` - If needed for setup/teardown
-
-**Reference in Workflows:**
-
-```yaml
-env:
-  USERNAME: ${{ secrets.PROD_USERNAME }}
-  PASSWORD: ${{ secrets.PROD_PASSWORD }}
-```
+| Secret / Env Var                            | Description                                               | Example / Default                         |
+| ------------------------------------------- | --------------------------------------------------------- | ----------------------------------------- |
+| `CI`                                        | Flags CI environment (adjusts retries, workers, timeouts) | `true`                                    |
+| `APP` / `APP_NAME`                          | Active application target                                 | `saucedemo`, `cura`, `orangehrm`, `local` |
+| `TEST_SUITE`                                | Target test suite                                         | `smoke`, `regression`, `auth`, `all`      |
+| `PLAYWRIGHT_WORKERS`                        | Parallel worker override                                  | `1` (in CI for stability)                 |
+| `PLAYWRIGHT_RETRIES`                        | Retry override                                            | `2` (in CI)                               |
+| `CURA_USERNAME` / `CURA_PASSWORD`           | CURA test credentials                                     | `John Doe` / `ThisIsNotAPassword`         |
+| `ORANGEHRM_USERNAME` / `ORANGEHRM_PASSWORD` | OrangeHRM test credentials                                | `Admin` / `admin123`                      |
+| `SAUCEDEMO_USERNAME` / `SAUCEDEMO_PASSWORD` | SauceDemo test credentials                                | `standard_user` / `secret_sauce`          |
 
 ---
 
-## 3. CI/CD Pipeline Deployment
+## 3. GitHub Actions CI/CD Pipeline
 
-### GitHub Actions Workflow
+The repository provides a robust, phased CI workflow in `.github/workflows/ci.yml`.
 
-The framework includes `.github/workflows/ci.yml` with:
+### Pipeline Architecture
 
-✅ **Features:**
+```
+┌────────────────────────────────────────────────────────┐
+│                   GitHub Trigger                       │
+│    (PR to main/develop, Push to main/develop/feature)  │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│                  Job 1: Install                        │
+│          Checkout, Node.js 20, npm ci,                 │
+│      Resolve test-scope (smoke on PR, full on push)    │
+└─────────────┬────────────────────────────┬─────────────┘
+              │                            │
+┌─────────────▼─────────────┐┌─────────────▼─────────────┐
+│       Job 2: Lint         ││     Job 3: Typecheck      │
+│  npm run lint             ││    npm run typecheck      │
+│  npm run format:check     ││      (tsc --noEmit)       │
+└─────────────┬─────────────┘└─────────────┬─────────────┘
+              │                            │
+┌─────────────▼────────────────────────────▼─────────────┐
+│                 Job 4: Code Quality Gate               │
+│               Summarize quality validation             │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│                    Job 5: Test                         │
+│       Install Chromium, run app-specific suites        │
+│       via node scripts/run-app-suite.cjs               │
+│       Upload JUnit, JSON, HTML & artifact results      │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│                Job 6: Publish Report                   │
+│          Download artifacts, build markdown run        │
+│          summary, upload consolidated CI artifacts     │
+└────────────────────────────────────────────────────────┘
+```
 
-- Staged jobs for install, lint, typecheck, test, and report publishing
-- Pull request validation with smoke scope
-- Broader push/manual run coverage
-- HTML, JSON, JUnit, and raw test artifact upload
-- Published run summaries for easier triage
+### Execution Matrix Scopes
 
-### Triggered Test Runs
+- **Pull Requests (`smoke` scope)**: Fast feedback running in under 5 minutes:
+  - `saucedemo:smoke`
+  - `cura:smoke`
+  - `orangehrm:smoke`
+  - `local:shared-api`
+- **Pushes / Manual Dispatch (`full` scope)**:
+  - `saucedemo`: `auth`, `smoke`, `regression`, `accessibility`, `shared-auth`
+  - `cura`: `auth`, `smoke`, `regression`, `shared-auth`
+  - `orangehrm`: `auth`, `smoke`, `regression`, `accessibility`, `shared-auth`
+  - `local`: `shared-api`
 
-The current GitHub Actions pipeline runs on:
-
-- pull requests to `main` and `develop`
-- pushes to `main`, `develop`, and `feature/**`
-- manual workflow dispatch
-
-### Manual Test Runs
-
-Trigger tests manually via GitHub UI:
-
-1. Go to Actions tab
-2. Select the `Playwright CI` workflow
-3. Click "Run workflow"
-4. Select branch and click "Run"
+_(Note: Visual regression and performance suites are omitted from the blocking CI matrix to avoid false positives from cross-platform rendering diffs and long execution times. They are run on-demand or via scheduled nightly jobs)._
 
 ---
 
-## 4. Docker Deployment
+## 4. Jenkins Declarative Pipeline (`Jenkinsfile.docker`)
 
-### Building Docker Image
+The framework includes a production-grade Jenkins pipeline using Playwright's official Docker container:
 
-```bash
-docker build -t playwright-tests:latest .
-```
+### Container Specifications
 
-### Running Tests in Docker
+- **Image**: `mcr.microsoft.com/playwright:v1.56.1-noble`
+- **Volume Mount**: Workspace mounted dynamically to `/workspace`
+- **Execution**: Cross-platform compatible (`sh` on Linux/macOS, `bat` on Windows)
+
+### Pipeline Stages
+
+1. **Preflight**: Verifies Docker daemon is running (`docker info`).
+2. **Install**: Pulls container image, creates report directories, and executes `npm ci`.
+3. **Lint & Typecheck**: Executes `npm run lint`, `npm run format:check`, and `npm run typecheck` inside container.
+4. **Test**: Executes Playwright tests with parameters:
+   - `TEST_SCOPE`: `smoke` vs. `full`
+   - `PLAYWRIGHT_PROJECT`: `chromium`, `firefox`, `webkit`, `saucedemo`, `cura`
+   - `APP`: Application profile from `config/apps.json`
+5. **Publish Report**: Publishes JUnit XML results (`test-results/junit/*.xml`) and HTML report (`playwright-report/jenkins`).
+6. **Archive Artifacts**: Retains traces, videos, and screenshots on failure.
+7. **Notify**: Posts build status and report links to Slack channel.
+
+---
+
+## 5. Docker & Containerized Execution
+
+### Local Docker Compose
+
+Run tests locally using Docker Compose to replicate CI container conditions:
 
 ```bash
 # Run headless tests
-docker-compose run test
+docker compose run test
 
-# Run tests with display (headed mode)
-docker-compose run --env HEADED=true test
+# Run tests in headed container (X11 / VNC forwarding)
+docker compose run test-headed
 
-# Run specific test file
-docker-compose run test npx playwright test tests/path/to/test.spec.ts
+# Run a specific app suite in container
+docker compose run test node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
 ```
 
-### Production Docker Workflow
-
-```dockerfile
-# In your Dockerfile
-FROM mcr.microsoft.com/playwright:v1.40.0-jammy
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-RUN npx playwright install --with-deps
-
-COPY . .
-
-# Run on container startup
-CMD ["npm", "test"]
-```
-
----
-
-## 5. Pre-Deployment Checklist
-
-Before deploying to production:
-
-- [ ] All tests pass locally: `npm test`
-- [ ] All linting checks pass: `npm run lint`
-- [ ] TypeScript compilation succeeds: `npm run typecheck`
-- [ ] Test data is production-ready
-- [ ] API endpoints verified in production
-- [ ] Database/service credentials configured
-- [ ] Slack webhook configured for notifications
-- [ ] GitHub secrets updated
-- [ ] Docker image builds successfully
-- [ ] Load/performance tested (if needed)
-
----
-
-## 6. Deployment Steps
-
-### Step 1: Prepare Release
+### Building the Dockerfile Directly
 
 ```bash
-# Create release branch
-git checkout -b release/v1.0.0
+# Build custom image
+docker build -t playwright-framework:v1.56.1 .
 
-# Update version in package.json
-npm version patch  # or minor/major
-
-# Commit and push
-git add .
-git commit -m "Release v1.0.0"
-git push origin release/v1.0.0
-```
-
-### Step 2: Create Pull Request
-
-- Create PR from release branch to main
-- Add release notes
-- Request code review
-- Ensure all CI checks pass
-
-### Step 3: Merge and Tag
-
-```bash
-# After PR approval, merge to main
-git checkout main
-git pull origin main
-git merge release/v1.0.0
-
-# Create git tag
-git tag -a v1.0.0 -m "Release version 1.0.0"
-git push origin main --tags
-```
-
-### Step 4: Monitor Deployment
-
-1. Monitor GitHub Actions for test results
-2. Check Slack notifications
-3. Review any failed tests
-4. Monitor production app for issues
-
----
-
-## 7. Post-Deployment
-
-### Monitoring & Alerts
-
-- **Daily Test Runs:** Automated via cron schedule
-- **PR Validations:** Automatic on every pull request
-- **Slack Notifications:** Sent on test failures
-- **HTML Reports:** Artifacts uploaded for 7 days
-
-### Troubleshooting
-
-**Tests Failing in Production:**
-
-1. Check test execution logs in GitHub Actions
-2. Download HTML report from artifacts
-3. Review test videos for failure cause
-4. Check if production environment is healthy
-5. Verify credentials and API endpoints
-6. Update selectors if UI changed (get latest screenshots)
-
-**Flaky Tests:**
-
-1. Identify tests that fail intermittently
-2. Review test logs and videos
-3. Add explicit waits instead of implicit
-4. Increase timeouts if necessary
-5. Mock external dependencies if possible
-
-**Performance Issues:**
-
-1. Check navigation timeouts
-2. Verify network connectivity
-3. Monitor API response times
-4. Scale CI/CD resources if needed
-
----
-
-## 8. Maintenance & Updates
-
-### Regular Maintenance Tasks
-
-**Weekly:**
-
-- Review test failure reports
-- Check for flaky tests
-- Monitor CI/CD performance
-
-**Monthly:**
-
-- Update Playwright version: `npm update @playwright/test`
-- Review and update test data
-- Check dependency security: `npm audit`
-- Clean up old test artifacts
-
-**Quarterly:**
-
-- Review and update test coverage
-- Optimize slow tests
-- Archive test reports
-- Plan new test scenarios
-
-### Updating Playwright Version
-
-```bash
-# Check current version
-npm list @playwright/test
-
-# Update to latest
-npm update @playwright/test
-
-# Test with new version
-npm test
-
-# Commit changes
-git add package.json package-lock.json
-git commit -m "Upgrade Playwright to v1.x"
+# Run tests headlessly
+docker run --rm --ipc=host \
+  -v "$(pwd)/test-results:/app/test-results" \
+  -v "$(pwd)/playwright-report:/app/playwright-report" \
+  playwright-framework:v1.56.1 npm test
 ```
 
 ---
 
-## 9. Troubleshooting Guide
+## 6. Authentication & Storage State Lifecycle
 
-### Common Issues
+The framework uses session state caching (`storage-state/{app}.json`) to avoid repetitive UI logins:
 
-#### Issue: Tests timeout in CI but pass locally
-
-**Solution:**
-
-- Increase timeout in `playwright.config.ts`
-- Check CI environment network connectivity
-- Mock slower APIs
-- Run tests with more debug output
-
-#### Issue: Port conflicts in Docker
-
-**Solution:**
-
-```bash
-# Kill process on port 3000
-Kill -9 $(lsof -t -i:3000)
-
-# Or use different port
-docker-compose -p different_name run test
+```
+┌────────────────────────────────────────────────────────┐
+│                   Test Initiation                      │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│      Does storage-state/{app}.json exist & valid?      │
+└─────────────┬────────────────────────────┬─────────────┘
+              │ Yes                        │ No / Expired
+┌─────────────▼─────────────┐┌─────────────▼─────────────┐
+│  Reuse existing cookies   ││  Execute login via UI POM │
+│   & session in context    ││  Save state to file       │
+└─────────────┬─────────────┘└─────────────┬─────────────┘
+              │                            │
+┌─────────────▼────────────────────────────▼─────────────┐
+│               Run Test Specification                   │
+└────────────────────────────────────────────────────────┘
 ```
 
-#### Issue: Secrets not available in workflow
+### Managing Storage States in CI/CD
 
-**Solution:**
+1. **Storage State Regeneration**:
+   Run the preparation script to pre-generate all storage states before test execution:
+   ```bash
+   npx ts-node scripts/prepare-storage-states.ts
+   ```
+2. **Bypassing Storage State**:
+   For clean unauthenticated validation or to debug session bootstrap issues:
 
-- Verify secret exists in GitHub Settings
-- Check secret name matches exactly
-- Verify `${{ secrets.SECRET_NAME }}` syntax
-- Secrets must be referenced in job/step
+   ```bash
+   # Unix:
+   SKIP_GLOBAL_AUTH_SETUP=1 node scripts/run-app-suite.cjs --app=cura --suite=smoke
 
-#### Issue: Storage state not
-
-persisting
-
-**Solution:**
-
-```bash
-# Regenerate storage state
-rm storage-state/<app>.json
-npm run test  # This will trigger global-setup
-```
-
-For local debugging, you can bypass the auth bootstrap layer entirely when you do not need saved login state:
-
-```bash
-SKIP_GLOBAL_AUTH_SETUP=1
-```
+   # PowerShell:
+   $env:SKIP_GLOBAL_AUTH_SETUP='1'; node scripts/run-app-suite.cjs --app=cura --suite=smoke
+   ```
 
 ---
 
-## 10. Scaling & Performance Optimization
+## 7. Performance & Stability Optimization in CI
 
-### Running Tests in Parallel
+### Worker & Concurrency Management
 
-Tests run in parallel by default. Configure workers:
+- In local development, Playwright auto-detects logical CPU cores (`workers: undefined`).
+- In CI environments, `playwright.config.ts` defaults to `workers: 1` to prevent CPU throttling, resource starvation, and timing-induced flakiness:
+  ```typescript
+  if (process.env.CI) return 1;
+  ```
+- Workers can be overridden via `PLAYWRIGHT_WORKERS=2` if high-concurrency cloud runners are used.
 
-```typescript
-// playwright.config.ts
-fullyParallel: true,
-workers: process.env.CI ? 4 : undefined,
-```
+### Retry Strategy
 
-### Reducing CI/CD Time
+- In CI environments, retries default to `2` to handle temporary network blips:
+  ```typescript
+  retries: process.env.CI ? 2 : 0;
+  ```
+- Traces are captured on first retry (`trace: 'on-first-retry'`) to conserve disk space while ensuring failed tests produce debugging traces.
 
-```bash
-# Run only changed tests
-npm test -- --grep "@smoke"
+### Artifact Retention Policies
 
-# Run on subset of projects
-npm test -- --project=chromium
-```
-
-### Cost Optimization
-
-- Use scheduled runs instead of every commit
-- Run full suite on main, quick smoke tests on PRs
-- Archive old test artifacts (7-day retention)
+- GitHub Actions artifacts (`junit-results`, `json-results`, `playwright-html-report`, `raw-test-results`) are retained for **30 days**.
+- Jenkins retains the last 20 builds via `buildDiscarder(logRotator(numToKeepStr: '20'))`.
 
 ---
 
-## 11. Security Best Practices
+## 8. Deployment Troubleshooting
 
-✅ **DO:**
+### Common Pipeline Issues
 
-- Store secrets in GitHub Secrets
-- Use HTTPS for all URLs
-- Rotate credentials regularly
-- Audit dependency security
+#### 1. Tests Time Out in CI but Pass Locally
 
-❌ **DON'T:**
+- **Cause**: CI runners typically have fewer CPU cores and memory than developer laptops.
+- **Fix**: Verify single-worker execution (`workers: 1`), ensure action timeouts in `config/apps.json` are sufficient (10-15s), and ensure `page.waitForLoadState('networkidle')` is accompanied by fallback element assertions.
 
-- Commit `.env` file
-- Expose credentials in logs
-- Use weak passwords for test accounts
-- Disable SSL verification in production
+#### 2. Visual Regression Differences Across Environments
 
----
+- **Cause**: Different OS font-rendering engines (Ubuntu in CI vs. Windows/macOS locally) produce pixel-level anti-aliasing diffs.
+- **Fix**: Generate baselines using the Docker container (`docker compose run test ... -u`) or run visual suites on dedicated matching agent types.
 
-## Contact & Support
+#### 3. Storage State Permissions in Docker
 
-For deployment issues:
-
-1. Check troubleshooting guide above
-2. Review test execution logs
-3. Contact team lead
-4. Create GitHub issue with detailed reproduction steps
-
----
-
-## Appendix: Useful Commands
-
-```bash
-# Run all tests
-npm test
-
-# Run specific test file
-npx playwright test tests/path/to/test.spec.ts
-
-# Run tests matching pattern
-npx playwright test --grep "login"
-
-# Run in headed mode (see browser)
-npm run test:headed
-
-# Debug specific test
-npx playwright test path/to/test.spec.ts --debug
-
-# Run with specific browser
-npx playwright test --project=firefox
-
-# Update snapshots (visual regression)
-npx playwright test --update-snapshots
-
-# Generate coverage report
-npx playwright test --reporter=coverage
-
-# View HTML report
-npx playwright show-report
-```
+- **Cause**: Volume mounting directories created by root inside the container may fail when running with non-root users.
+- **Fix**: `Jenkinsfile.docker` uses `--ipc=host` and creates output directories before container launch (`mkdir -p test-results/json test-results/junit playwright-report`).

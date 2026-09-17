@@ -1,314 +1,145 @@
 # Production Readiness Checklist
 
-Complete this checklist before deploying to production.
+This checklist defines the operational, architectural, and quality standards required to certify the Playwright UI Automation Framework for production-grade CI/CD and regression execution.
 
 ---
 
-## Phase 1: Code Quality & Testing
+## 1. Code Quality & Static Analysis Gates
 
-### Unit & Integration Tests
+All core framework and test code must satisfy automated quality checks:
 
-- [ ] All tests pass locally: `npm test`
-- [ ] All tests pass in CI/CD pipeline
-- [ ] Test coverage > 80% for critical paths
-- [ ] No flaky or intermittent tests
-- [ ] API integration tests validated
-- [ ] Error scenarios covered
-- [ ] Edge cases tested (null, empty, large data)
-
-### Code Quality
-
-- [ ] ESLint passes: `npm run lint`
-- [ ] Prettier formatting consistent: `npm run format`
-- [ ] TypeScript strict mode passes: `npm run typecheck`
-- [ ] No TODO or FIXME comments in final code
-- [ ] No console.log() statements in production code
-- [ ] Code complexity reviewed (functions < 50 lines)
-- [ ] Cyclomatic complexity reasonable
-
-### Security
-
-- [ ] No hardcoded credentials or secrets
-- [ ] `.env` file not committed
-- [ ] Secrets stored in GitHub Actions secrets
-- [ ] Dependencies audited: `npm audit`
-- [ ] No known vulnerabilities in dependencies
-- [ ] API endpoints use HTTPS
-- [ ] CORS headers properly configured
-- [ ] Input validation implemented
-- [ ] SQL injection prevention checked (if applicable)
+- [ ] **TypeScript Strict Compilation**: `npm run typecheck` (`tsc --noEmit`) passes with zero compiler errors.
+- [ ] **ESLint Static Analysis**: `npm run lint` passes with no errors or unhandled warnings.
+- [ ] **Code Formatting**: `npm run format:check` verifies that all TypeScript, JSON, and Markdown files comply with Prettier rules.
+- [ ] **Pre-Commit Enforcement**: Husky (v9.1.7) and `lint-staged` are active and prevent unformatted or lint-failing commits.
+- [ ] **Pre-Push Validation**: `npm run pre-push` (`npm run lint && npm run typecheck`) executes cleanly.
+- [ ] **Code Cleanliness**: Zero temporary `console.log`, `page.pause()`, or `.only` test filters exist in the codebase.
 
 ---
 
-## Phase 2: Performance & Reliability
+## 2. Multi-App Architecture & Suite Verification
 
-### Performance Testing
+Active application suites must be verified across their designated test scopes:
 
-- [ ] Page load time < 5 seconds
-- [ ] API response time < 2 seconds for average cases
-- [ ] Database queries optimized
-- [ ] No N+1 query problems
-- [ ] Bundle sizes reasonable
-- [ ] Memory usage stable (no leaks)
-- [ ] Load testing conducted (if applicable)
+### SauceDemo E-Commerce
 
-### Reliability & Stability
+- [ ] `01-auth` suite passes: `node scripts/run-app-suite.cjs --app=saucedemo --suite=auth`
+- [ ] `smoke` suite passes: `node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke`
+- [ ] `regression` suite passes: `node scripts/run-app-suite.cjs --app=saucedemo --suite=regression`
+- [ ] `04-accessibility-testing` suite verified: `node scripts/run-app-suite.cjs --app=saucedemo --suite=accessibility`
+- [ ] `05-performance-testing` suite verified: `node scripts/run-app-suite.cjs --app=saucedemo --suite=performance`
+- [ ] `06-visual-regression` baselines established: `node scripts/run-app-suite.cjs --app=saucedemo --suite=visual`
 
-- [ ] Tests run successfully on all supported browsers (Chromium, Firefox, WebKit)
-- [ ] Tests run successfully on all supported OS (Windows, Mac, Linux)
-- [ ] Retry mechanisms for flaky operations
-- [ ] Timeouts configured appropriately
-- [ ] Error handling comprehensive
-- [ ] Graceful degradation for network failures
-- [ ] Database connection pooling configured
+### CURA Healthcare Service
 
----
+- [ ] `01-auth` suite passes: `node scripts/run-app-suite.cjs --app=cura --suite=auth`
+- [ ] `smoke` suite passes: `node scripts/run-app-suite.cjs --app=cura --suite=smoke`
+- [ ] `regression` suite passes: `node scripts/run-app-suite.cjs --app=cura --suite=regression`
+- [ ] `04-accessibility-testing` suite verified: `node scripts/run-app-suite.cjs --app=cura --suite=accessibility`
+- [ ] `05-performance-testing` suite verified: `node scripts/run-app-suite.cjs --app=cura --suite=performance`
+- [ ] `06-visual-regression` baselines established: `node scripts/run-app-suite.cjs --app=cura --suite=visual`
 
-## Phase 3: Documentation & Knowledge Transfer
+### OrangeHRM Enterprise HRMS
 
-### Code Documentation
+- [ ] `01-auth` suite passes: `node scripts/run-app-suite.cjs --app=orangehrm --suite=auth`
+- [ ] `smoke` suite passes: `node scripts/run-app-suite.cjs --app=orangehrm --suite=smoke`
+- [ ] `regression` suite passes: `node scripts/run-app-suite.cjs --app=orangehrm --suite=regression`
+- [ ] `04-accessibility-testing` suite verified: `node scripts/run-app-suite.cjs --app=orangehrm --suite=accessibility`
+- [ ] `05-performance-testing` suite verified: `node scripts/run-app-suite.cjs --app=orangehrm --suite=performance`
+- [ ] `06-visual-regression` baselines established: `node scripts/run-app-suite.cjs --app=orangehrm --suite=visual`
 
-- [ ] README.md updated with latest info
-- [ ] DEPLOYMENT.md complete and tested
-- [ ] CODE_REVIEW.md guidelines established
-- [ ] API documentation current
-- [ ] Test data documented
-- [ ] Configuration options documented
-- [ ] Architecture decision records (ADR) created if needed
+### Shared Framework Services
 
-### Operational Documentation
-
-- [ ] Runbook created for common issues
-- [ ] Troubleshooting guide prepared
-- [ ] Monitoring/alerting setup documented
-- [ ] Incident response plan documented
-- [ ] On-call procedures defined
-- [ ] Escalation path defined
-
-### Knowledge Transfer
-
-- [ ] Team trained on framework
-- [ ] Team trained on deployment process
-- [ ] Team trained on troubleshooting
-- [ ] Documentation accessible to all
-- [ ] Video walkthroughs recorded (optional)
+- [ ] Shared auth session tests pass: `node scripts/run-app-suite.cjs --app=saucedemo --suite=shared-auth`
+- [ ] Shared API contract tests pass: `node scripts/run-app-suite.cjs --app=local --suite=shared-api`
+- [ ] JSON schema validation passes against all schemas in `schemas/`
 
 ---
 
-## Phase 4: Infrastructure & DevOps
+## 3. Anti-Flakiness & Reliability Verification
 
-### CI/CD Pipeline
-
-- [ ] GitHub Actions workflows configured
-- [ ] All checks passing consistently
-- [ ] Test artifacts uploaded properly
-- [ ] Notifications working (Slack, email)
-- [ ] Secrets properly configured
-- [ ] Build caching optimized
-- [ ] Pipeline performance acceptable (< 30 minutes)
-
-### Docker & Containerization
-
-- [ ] Docker image builds successfully
-- [ ] Dockerfile optimized
-- [ ] Docker Compose configured for local dev
-- [ ] Container runs successfully in CI
-- [ ] Container runs successfully in production-like env
-- [ ] Image size reasonable (< 2GB)
-- [ ] Security scanning complete on image
-
-### Monitoring & Logging
-
-- [ ] Logging configured properly
-- [ ] Log aggregation set up (if applicable)
-- [ ] Error reporting configured (Sentry, Rollbar, etc.)
-- [ ] Performance monitoring set up
-- [ ] Uptime monitoring configured
-- [ ] Alert thresholds defined
-- [ ] Dashboard created for monitoring
+- [ ] **No Hardcoded Delays**: The entire test suite contains zero instances of `page.waitForTimeout()`.
+- [ ] **Web-First Matchers**: All assertions use auto-retrying matchers (`await expect(...).toBeVisible()`).
+- [ ] **Locator Resilience**: All page objects prioritize `data-testid` and ARIA roles over fragile CSS classes or XPath.
+- [ ] **Network Synchronization**: Dynamic network wait strategies (`waitForNetworkStable`, `waitForLoadState('networkidle')`) are used for asynchronous transitions.
+- [ ] **Test Idempotency**: Tests can be re-run indefinitely without manual state cleanup.
 
 ---
 
-## Phase 5: Environment Configuration
+## 4. Authentication & Storage State Management
 
-### Development Environment
-
-- [ ] `.env.example` template complete
-- [ ] Local development setup well-documented
-- [ ] Setup takes < 15 minutes for new developers
-- [ ] Development servers configured
-- [ ] Database seeding working
-
-### Staging Environment
-
-- [ ] Staging environment accessible
-- [ ] Staging data mirrors production (anonymized)
-- [ ] Staging tests pass completely
-- [ ] Staging URLs configured
-- [ ] Staging secrets configured
-- [ ] Staging database ready
-- [ ] Staging API endpoints working
-
-### Production Environment
-
-- [ ] Production URLs finalized
-- [ ] Production credentials in GitHub Secrets
-- [ ] Production API endpoints verified
-- [ ] Production database configured
-- [ ] Backup/recovery tested
-- [ ] High availability configured (if needed)
-- [ ] CDN configured (if needed)
+- [ ] **Storage State Generation**: `scripts/prepare-storage-states.ts` runs cleanly and generates valid session files:
+  - `storage-state/saucedemo.json`
+  - `storage-state/cura.json`
+  - `storage-state/orangehrm.json`
+- [ ] **Session Reuse**: Authenticated test suites successfully leverage cached storage states via `src/core/fixtures/auth.fixture.ts`.
+- [ ] **Negative Auth Isolation**: Unauthenticated tests explicitly clear cookies/state (`test.use({ storageState: { cookies: [], origins: [] } })`).
+- [ ] **Storage State Bypass**: Framework supports `SKIP_GLOBAL_AUTH_SETUP=1` for debugging.
 
 ---
 
-## Phase 6: Data & Privacy
+## 5. CI/CD Pipeline & Containerization
 
-### Data Handling
+### GitHub Actions (`.github/workflows/ci.yml`)
 
-- [ ] Test data complies with privacy laws
-- [ ] PII properly masked in logs
-- [ ] Data retention policies defined
-- [ ] Data backup strategy implemented
-- [ ] Data recovery procedures tested
-- [ ] GDPR compliance checked (if applicable)
-- [ ] Data encryption in transit
-- [ ] Data encryption at rest (if sensitive)
+- [ ] Pipeline runs on Node.js 20.
+- [ ] Pull Request matrix runs smoke scope in under 5 minutes.
+- [ ] Full CI push matrix completes all functional suites with zero failures.
+- [ ] Concurrency controls are active (`cancel-in-progress: true`).
+- [ ] CI retries are configured (`PLAYWRIGHT_RETRIES=2` in CI).
+- [ ] Artifacts (HTML report, JSON, JUnit XML) are retained for 30 days.
 
-### Compliance
+### Jenkins Pipeline (`Jenkinsfile.docker`)
 
-- [ ] Security audit completed
-- [ ] Penetration testing conducted (if required)
-- [ ] SOC 2 compliance verified (if required)
-- [ ] HIPAA compliance verified (if required)
-- [ ] Audit trail logging configured
-- [ ] Compliance documentation attached
+- [ ] Pipeline passes using `mcr.microsoft.com/playwright:v1.56.1-noble`.
+- [ ] Parameterized execution (`TEST_SCOPE`, `PLAYWRIGHT_PROJECT`, `APP`) verified.
+- [ ] HTML reports and JUnit XML results are published.
+- [ ] Slack notifications trigger on success and failure.
 
----
+### Docker Environment
 
-## Phase 7: Deployment & Rollback
-
-### Pre-Deployment
-
-- [ ] Deployment plan documented
-- [ ] Rollback plan documented
-- [ ] Deployment schedule confirmed
-- [ ] Team availability confirmed
-- [ ] Maintenance window scheduled
-- [ ] Stakeholders notified
-- [ ] Health checks defined
-
-### Deployment Process
-
-- [ ] Deployment procedure tested in staging
-- [ ] Database migrations tested
-- [ ] Config changes applied
-- [ ] Environment variables updated
-- [ ] Secrets rotated
-- [ ] Feature flags configured
-- [ ] Blue-green or canary deployment ready
-
-### Post-Deployment
-
-- [ ] Smoke tests run successfully
-- [ ] User acceptance testing (UAT) passed
-- [ ] Performance metrics within SLA
-- [ ] Error rates acceptable
-- [ ] Monitoring dashboards show green
-- [ ] No critical alerts triggered
-- [ ] Users report no issues
+- [ ] `Dockerfile` builds successfully without warnings.
+- [ ] `docker compose run test` executes tests headlessly in container.
+- [ ] Output directories (`test-results/`, `playwright-report/`) mount correctly without permission errors.
 
 ---
 
-## Phase 8: Training & Support
+## 6. Secrets & Security Configuration
 
-### User Support
-
-- [ ] Support team trained
-- [ ] Help desk documentation created
-- [ ] FAQ created
-- [ ] Video tutorials created (optional)
-- [ ] Chat/Slack support channel setup
-- [ ] Support ticket process defined
-- [ ] SLA for support response defined
-
-### Maintenance Plan
-
-- [ ] Maintenance schedule established
-- [ ] Patch management process defined
-- [ ] Update strategy documented
-- [ ] Feature development roadmap shared
-- [ ] Feedback collection mechanism
-- [ ] Continuous improvement process
+- [ ] **Zero Hardcoded Secrets**: No passwords, API keys, or personal credentials committed in Git.
+- [ ] **Git Exclusion**: `.env`, `.env.local`, and `storage-state/` are properly listed in `.gitignore`.
+- [ ] **CI Secrets Configured**: GitHub Actions secrets configured:
+  - `CURA_USERNAME`, `CURA_PASSWORD`
+  - `ORANGEHRM_USERNAME`, `ORANGEHRM_PASSWORD`
+  - `SAUCEDEMO_USERNAME`, `SAUCEDEMO_PASSWORD`
+- [ ] **Dependency Audit**: `npm audit` shows zero critical or high vulnerabilities.
 
 ---
 
-## Phase 9: Sign-Off & Launch
+## 7. Reporting & Triage Capabilities
 
-### Final Review
-
-- [ ] Product Owner sign-off obtained
-- [ ] Security sign-off obtained
-- [ ] Operations sign-off obtained
-- [ ] Legal/Compliance sign-off obtained
-- [ ] CTO/Architecture sign-off obtained
-- [ ] All blockers resolved
-- [ ] Go/No-Go decision made
-
-### Launch
-
-- [ ] Deployment executed
-- [ ] Post-deployment validation complete
-- [ ] Monitoring active
-- [ ] On-call team aware
-- [ ] Launch announcement made
-- [ ] Documentation links shared
-- [ ] Success metrics established
+- [ ] **Segmented HTML Reports**: HTML reports are generated per app and suite under `playwright-report/<app>/<suite>/index.html`.
+- [ ] **JUnit XML Generation**: Valid JUnit XML generated at `test-results/junit/<app>-<suite>.xml` for CI aggregation.
+- [ ] **JSON Results Generation**: JSON reports generated at `test-results/json/<app>-<suite>.json`.
+- [ ] **Artifact Capture on Failure**: Screenshots (`only-on-failure`), videos (`retain-on-failure`), and traces (`on-first-retry`) captured and archived.
 
 ---
 
-## Post-Launch Checklist
+## 8. Documentation Alignment
 
-### Week 1
-
-- [ ] Monitor error rates and performance
-- [ ] Address any user-reported issues
-- [ ] Verify backup/recovery procedures
-- [ ] Check log files for anomalies
-- [ ] Monitor resource utilization
-- [ ] Review cost/infrastructure usage
-
-### Month 1
-
-- [ ] Conduct production readiness review
-- [ ] Gather user feedback
-- [ ] Analyze performance metrics
-- [ ] Plan improvements/optimizations
-- [ ] Update documentation based on learnings
-- [ ] Conduct team retrospective
-
-### Ongoing
-
-- [ ] Regular health checks
-- [ ] Security scanning
-- [ ] Dependency updates
-- [ ] Performance optimization
-- [ ] Scalability planning
-- [ ] Disaster recovery drills
+- [ ] [`docs/FRAMEWORK_GUIDE.md`](./FRAMEWORK_GUIDE.md) reflects current architecture, App Facades, and utilities.
+- [ ] [`docs/TEST_STRATEGY.md`](./TEST_STRATEGY.md) accurately defines the PR and Full CI execution matrices.
+- [ ] [`docs/CONTRIBUTING.md`](./CONTRIBUTING.md) reflects multi-app workflow, runner commands, and PR checklist.
+- [ ] [`docs/DEPLOYMENT.md`](./DEPLOYMENT.md) accurately details GitHub Actions, Jenkins Docker, and container setups.
+- [ ] [`docs/CODE_REVIEW.md`](./CODE_REVIEW.md) outlines mandatory reviewer checks and Playwright standards.
+- [ ] [`docs/ONBOARDING.md`](./ONBOARDING.md) provides a clean entry point and learning track for new engineers.
 
 ---
 
-## Sign-Off
+## Production Certification Sign-Off
 
-- **Product Owner:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
-- **Technical Lead:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
-- **QA Lead:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
-- **DevOps/Infrastructure:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
-- **Security Officer:** **\*\*\*\***\_**\*\*\*\*** Date: **\_**
-
----
-
-## Notes
-
-```
-[Add any additional notes or observations here]
-```
+| Role                      | Name / Title | Date | Status       |
+| ------------------------- | ------------ | ---- | ------------ |
+| **QA / Automation Lead**  |              |      | [ ] APPROVED |
+| **Tech Lead / Architect** |              |      | [ ] APPROVED |
+| **DevOps / CI Engineer**  |              |      | [ ] APPROVED |

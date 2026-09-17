@@ -1,161 +1,144 @@
-# Code Review Checklist
+# Code Review Checklist & Standards
 
-This checklist ensures code quality, consistency, and best practices across the Playwright framework.
-
-## Pre-Merge Requirements
-
-### Code Quality
-
-- [ ] All tests pass locally: `npm test`
-- [ ] No linting errors: `npm run lint`
-- [ ] Prettier formatting applied: `npm run format`
-- [ ] TypeScript strict mode passes: `npm run typecheck`
-- [ ] No console.log() or debug statements left in code
-- [ ] No hardcoded URLs, credentials, or sensitive data
-
-### Test Coverage
-
-- [ ] New code has corresponding tests
-- [ ] Test names are descriptive and follow naming conventions
-- [ ] Tests follow Arrange-Act-Assert pattern
-- [ ] No test.only() or test.skip() left in commits
-- [ ] Edge cases are covered (empty state, errors, boundary values)
-
-### Page Object Model & Architecture
-
-- [ ] New page objects extend `BasePage`
-- [ ] Page objects implement relevant interfaces from `src/interface/pages.interface.ts`
-- [ ] Selectors use preferred priority: testId > role > placeholder > text
-- [ ] No query selectors hardcoded in tests (use centralized selectors)
-- [ ] Page navigation methods use `goto()` or `navigateTo()`
-
-### API Testing
-
-- [ ] API calls use `ApiHelper` with schema validation
-- [ ] Response schemas added to `schemas/` directory
-- [ ] API error scenarios tested
-- [ ] Request/response payloads typed
-- [ ] Base URLs use environment variables
-
-### Documentation
-
-- [ ] README or comments explain non-obvious test logic
-- [ ] Complex selectors documented with rationale
-- [ ] Test data sources documented (fixtures, API, etc.)
-- [ ] Any custom utilities have JSDoc comments
-
-### Git & Commit
-
-- [ ] Commits are atomic (single feature/fix per commit)
-- [ ] Commit messages follow format: "Brief description + details"
-- [ ] Branch name follows convention: `feature/`, `bugfix/`, `docs/`
-- [ ] No merge conflicts
-- [ ] Branch is up-to-date with main
-
-### Performance & Reliability
-
-- [ ] No hardcoded waits (use `waitForLoadState()`, `waitForSelector()`)
-- [ ] Timeouts are reasonable and set via playwright.config.ts
-- [ ] Tests work reliably multiple runs (no flakiness)
-- [ ] Network/API mocking handled properly
-
-### Accessibility & UI Best Practices
-
-- [ ] New UI features are keyboard navigable
-- [ ] ARIA labels considered for dynamic elements
-- [ ] Color contrast is sufficient
-- [ ] Tests don't rely on visual positioning alone
-
-### Dependencies
-
-- [ ] New packages are necessary and justified
-- [ ] Dev vs prod dependencies correctly specified
-- [ ] No duplicate or conflicting versions
-- [ ] Security vulnerabilities checked: `npm audit`
+This checklist establishes code quality, architectural consistency, and Playwright best practices across the UI Automation Framework.
 
 ---
 
-## Review Checklist (For Reviewers)
+## 1. Pre-Merge Quality Gates (Author Checklist)
 
-### Functionality
+### Automated Verification
 
-- [ ] Changes accomplish stated goal
-- [ ] Code solves the problem, not a symptom
-- [ ] Logic is clear and maintainable
-- [ ] No workarounds or hacks without explanation
+Before submitting or requesting review on a pull request, the author must confirm that all automated checks pass locally:
 
-### Testing Quality
-
-- [ ] Tests are focused and not testing framework
-- [ ] Test assertions verify meaningful behavior
-- [ ] Setup/teardown is minimal and clean
-- [ ] Tests are independent and can run in any order
-
-### Code Style & Consistency
-
-- [ ] Follows existing patterns in codebase
-- [ ] Consistent with TypeScript strict mode
-- [ ] Variable/function names are clear
-- [ ] No code duplication (reuse existing utilities)
-
-### Security
-
-- [ ] No credentials exposed
-- [ ] `.env` not committed
-- [ ] Sensitive data logged only in CI/CD
-- [ ] External API calls handle errors gracefully
-
-### Documentation
-
-- [ ] Changes documented if needed
-- [ ] Complex logic explained with comments
-- [ ] Public APIs have JSDoc
+- [ ] **Typecheck**: `npm run typecheck` (`tsc --noEmit`) passes with zero errors.
+- [ ] **Lint**: `npm run lint` (`eslint . --ext .ts`) passes with zero warnings or errors.
+- [ ] **Format**: `npm run format:check` (`prettier --check .`) confirms all files follow Prettier formatting.
+- [ ] **Test Execution**: Targeted app suites pass using `node scripts/run-app-suite.cjs --app=<app> --suite=<suite>`.
+- [ ] **Clean Commits**: No `console.log`, `test.only`, or temporary debugging pauses left in committed code.
 
 ---
 
-## Common Issues to Look For
+## 2. Multi-App Architecture & Organization
 
-⚠️ **High Priority**
+Verify that the code complies with the multi-application framework design:
 
-- Hardcoded credentials or sensitive data
-- Tests that flake intermittently
-- Framework code directly in test files
-- test.only() or test.skip() in production code
+### Folder Structure & Naming
 
-⚠️ **Medium Priority**
-
-- Missing or incomplete test data
-- Inconsistent selector strategies
-- No schema validation for API responses
-- Overly long or complex tests (refactor into smaller pieces)
-
-✅ **Nice to Have**
-
-- Performance metrics captured
-- Edge cases documented
-- Accessibility considerations noted
+- [ ] **Page Objects**: App-specific page objects are placed in `src/pages/apps/{app}/pages/` (e.g. `src/pages/apps/saucedemo/pages/SauceDemoLoginPage.ts`).
+- [ ] **App Facades**: High-level workflows are exposed through the app facade in `src/apps/{app}/{App}App.ts` (e.g. `SauceDemoApp`, `CuraApp`, `OrangeHrmApp`).
+- [ ] **Test Suites**: Tests are categorized under `tests/{app}/{suite-type}/` matching one of the standard 6 suite types:
+  - `01-auth/`: Negative-path authentication and credential boundary validation.
+  - `smoke/`: Fast happy-path login and shell checks.
+  - `regression/`: Complete end-to-end workflows.
+  - `04-accessibility-testing/`: Accessibility audits.
+  - `05-performance-testing/`: Timing and performance audits.
+  - `06-visual-regression/`: Pixel-diff screenshot comparisons.
+- [ ] **Shared Suites**: Cross-application tests live under `tests/shared/auth` or `tests/shared/api`.
+- [ ] **Templates**: Educational or reference examples live in `tests/templates/` and use the `*.template.ts` naming convention so Playwright ignores them during active runs.
+- [ ] **Suite Registry**: If adding a new suite or app, `config/apps.json` and `config/test-suites.json` are properly updated.
 
 ---
 
-## Approval Process
+## 3. Page Object Model & Locator Standards
 
-### Minimum Approvals Required
+### BasePage Inheritance
 
-- 1 approval for documentation-only changes
-- 2 approvals for code changes affecting tests/framework
-- 1 approval from maintainer for infrastructure/CI changes
+- [ ] Page objects extend `BasePage` from `src/pages/base/BasePage.ts` and pass the typed `AppName`.
+- [ ] Page classes implement relevant contracts from `src/interface/pages.interface.ts` where applicable.
+- [ ] Navigation methods implement `goto()` or `waitForPageLoad()`.
 
-### Merge Criteria
+### Locator Priority Strategy
 
-✅ All checks must pass:
+- [ ] Selectors adhere to the resilient locator hierarchy:
+  1. `getByTestId('...')` (Preferred for custom UI components)
+  2. `getByRole('...', { name: ... })` (Preferred for accessible semantic elements)
+  3. `getByPlaceholder('...')` (For text input fields)
+  4. `getByText('...')` (For static labels and alerts)
+  5. `locator('css')` (Fallback only when semantic locators are impossible)
+- [ ] No fragile XPath locators (e.g. `/html/body/div[2]/div[1]/button`).
+- [ ] No hardcoded selectors inside test files; all locators are encapsulated inside page objects or `src/utils/selectors.ts`.
 
-- GitHub Actions CI/CD pipeline
-- Code review approval(s)
-- No merge conflicts
-- Commit history is clean
+---
 
-### Post-Merge
+## 4. Playwright Anti-Flakiness & Reliability
 
-- [ ] Monitor CI/CD for new failures
-- [ ] Watch for flaky test reports
-- [ ] Update related documentation if needed
+### Assertions
+
+- [ ] **Web-First Assertions**: All UI assertions use Playwright's retrying matchers:
+
+  ```typescript
+  // ✅ GOOD: Automatically retries until timeout
+  await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
+
+  // ❌ BAD: Evaluates once and fails immediately
+  expect(await page.getByRole('button', { name: 'Submit' }).isVisible()).toBeTruthy();
+  ```
+
+- [ ] Negative assertions use retrying matchers: `await expect(locator).toBeHidden()` or `await expect(locator).not.toBeVisible()`.
+
+### Timing & Synchronization
+
+- [ ] **No Hardcoded Sleeps**: `page.waitForTimeout()` is strictly prohibited in production tests.
+- [ ] Dynamic wait strategies are used instead:
+  - `page.waitForURL(...)`
+  - `locator.waitFor({ state: 'visible' })`
+  - `waitForNetworkStable(page)` from `src/core/utils/waitUtils.ts`
+  - `expectWithRetry` or `stableClick` from `src/utils/flakeHelper.ts` for flaky third-party components.
+
+---
+
+## 5. Fixtures, Auth & Session Reuse
+
+- [ ] **Correct Fixture Selection**:
+  - Unauthenticated tests (login error validation, shell checks) import `test` from `src/core/fixtures/test.fixture.ts`.
+  - Authenticated tests (regression, smoke, dashboards) import `test` from `src/core/fixtures/auth.fixture.ts` and leverage `authenticatedPage` or authenticated App Facades.
+- [ ] **Storage State Handling**:
+  - Tests do not hardcode authentication credentials in tests.
+  - Storage states are referenced via `storage-state/{app}.json` and managed through `src/core/auth/auth-session.ts`.
+  - Negative auth tests override storage state with clean cookies:
+    ```typescript
+    test.use({ storageState: { cookies: [], origins: [] } });
+    ```
+
+---
+
+## 6. API Testing & Schema Validation
+
+- [ ] API requests use `ApiHelper` (`src/utils/apiHelper.ts`).
+- [ ] Response payloads are validated against JSON Schemas in `schemas/` using `schemaValidator.validateOrThrow(...)`.
+- [ ] TypeScript interfaces in `src/interface/api.interface.ts` match the JSON schemas.
+- [ ] Negative API status codes (400, 401, 404, 500) are explicitly asserted.
+
+---
+
+## 7. Reviewer Checklist
+
+When reviewing a pull request, evaluate:
+
+### Code Maintainability
+
+- [ ] Does this PR add unnecessary technical debt or code duplication?
+- [ ] Could existing utilities (`randomUtils`, `waitUtils`, `flakeHelper`) be used instead of new custom functions?
+- [ ] Are variable names and test descriptions clear and self-documenting?
+
+### Test Independence
+
+- [ ] Can the new tests run in isolation?
+- [ ] Do tests clean up any created state or operate idempotently?
+- [ ] Will tests pass if executed in parallel workers?
+
+### Security & Secrets
+
+- [ ] Are any passwords, API tokens, or real user emails committed in code?
+- [ ] Are all credentials sourced from environment variables or `test-data/users.ts`?
+
+---
+
+## 8. Approval & Merge Policy
+
+| Change Type                       | Required Approvals                      | Required CI Checks                        |
+| --------------------------------- | --------------------------------------- | ----------------------------------------- |
+| **Documentation Only**            | 1 Reviewer                              | Lint & Format checks                      |
+| **Test Addition / Modification**  | 1 Reviewer (QA / SDET)                  | Lint, Typecheck, PR Smoke Suites          |
+| **Framework Core / Architecture** | 2 Reviewers (including Lead/Maintainer) | Full CI Suite Matrix                      |
+| **CI / Docker / Infrastructure**  | 1 Maintainer Approval                   | Full CI Pipeline + Container verification |

@@ -125,10 +125,10 @@ These suites are active but not part of the default CI matrix today:
 - `cura:accessibility`
 - `cura:performance`
 - `cura:visual`
-- `saucedemo:performance`
-- `saucedemo:visual`
 - `orangehrm:performance`
 - `orangehrm:visual`
+- `saucedemo:performance`
+- `saucedemo:visual`
 
 Reason:
 
