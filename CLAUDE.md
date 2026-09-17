@@ -2,162 +2,148 @@
 
 ## Quick Reference
 
-This file serves as a quick reference guide. For comprehensive documentation, please see the `docs/` folder.
+This file serves as a quick reference guide for AI assistants and engineers. For comprehensive documentation, please see the `docs/` folder.
 
 ## Documentation Structure
 
-All detailed documentation has been moved to the `docs/` folder for better organization:
+All detailed documentation is organized within the `docs/` folder:
 
 ### Core Documentation
-- [`docs/FRAMEWORK_INDEX.md`](docs/FRAMEWORK_INDEX.md) - Complete implementation index and quick start guide
-- [`docs/TEST_STRATEGY.md`](docs/TEST_STRATEGY.md) - Test suite organization, CI execution policies, and ownership rules
-- [`docs/PRODUCTION_READINESS.md`](docs/PRODUCTION_READINESS.md) - Production deployment checklist
-- [`docs/STRUCTURE_REFACTORING.md`](docs/STRUCTURE_REFACTORING.md) - Details about the project structure refactoring
-- [`docs/FRAMEWORK_TODO.md`](docs/FRAMEWORK_TODO.md) - Current improvement checklist
+- [`docs/FRAMEWORK_GUIDE.md`](docs/FRAMEWORK_GUIDE.md) - Unified architectural guide, App Facade pattern, fixtures, and runner usage
+- [`docs/ONBOARDING.md`](docs/ONBOARDING.md) - Developer onboarding pathways, step-by-step tutorials, and milestone checklist
+- [`docs/README.md`](docs/README.md) - Test suite structure overview, active vs. template suite mapping, and reporting conventions
+- [`docs/TEST_STRATEGY.md`](docs/TEST_STRATEGY.md) - Test strategy, CI execution matrix (smoke vs. full), and suite ownership rules
+- [`docs/PRODUCTION_READINESS.md`](docs/PRODUCTION_READINESS.md) - Production deployment audit checklist
+- [`docs/STRUCTURE_REFACTORING.md`](docs/STRUCTURE_REFACTORING.md) - Details of the multi-app architectural migration
+- [`docs/FRAMEWORK_TODO.md`](docs/FRAMEWORK_TODO.md) - Enhancement roadmap and prioritized action items
 
-### Implementation Guides
-- [`docs/FRAMEWORK_IMPLEMENTATION.md`](docs/FRAMEWORK_IMPLEMENTATION.md) - Detailed code samples and implementation details
-- [`docs/PRODUCTION_FRAMEWORK_SUMMARY.md`](docs/PRODUCTION_FRAMEWORK_SUMMARY.md) - Complete architecture guide
-- [`docs/playwright-best-practices.md`](docs/playwright-best-practices.md) - Playwright-specific best practices
+### Implementation & Quality Guides
+- [`docs/PRODUCTION_FRAMEWORK_SUMMARY.md`](docs/PRODUCTION_FRAMEWORK_SUMMARY.md) - Architecture summary and implemented capabilities
+- [`docs/playwright-best-practices.md`](docs/playwright-best-practices.md) - Playwright locator, assertion, and fixture best practices
+- [`docs/FLAKINESS_REDUCTION.md`](docs/FLAKINESS_REDUCTION.md) - Timing strategies, FlakeHelper, and network stability patterns
+- [`docs/QUALITY_GATES.md`](docs/QUALITY_GATES.md) - Verification gates across pre-commit, pull requests, and scheduled runs
+- [`docs/QUICK_REFERENCE.md`](docs/QUICK_REFERENCE.md) - Command cheatsheet, app credentials, and locator rules
 
-### Setup & Configuration
-- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) - Deployment instructions
-- [`docs/docker-desktop-guide.md`](docs/docker-desktop-guide.md) - Docker Desktop setup guide
-- [`docs/jenkins-docker-setup.md`](docs/jenkins-docker-setup.md) - Jenkins with Docker setup
-- [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) - Code review guidelines
-- [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) - Contribution guidelines
-- [`docs/SECURITY.md`](docs/SECURITY.md) - Security considerations
+### Setup, CI/CD & Operations
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) - CI/CD pipeline triggers, secret configuration, and Docker container execution
+- [`docs/docker-desktop-guide.md`](docs/docker-desktop-guide.md) - Local container execution via Docker Desktop and Compose
+- [`docs/jenkins-docker-setup.md`](docs/jenkins-docker-setup.md) - Jenkins declarative pipeline configuration with Docker agent
+- [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) - Pull request review checklist and quality criteria
+- [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) - Contribution standards, branching model, and PR workflow
+- [`docs/SECURITY.md`](docs/SECURITY.md) - Credential management, vulnerability scanning, and secure test practices
 
 ## Quick Start Commands
 
-For immediate reference, here are the most commonly used commands:
-
-### Running Tests
-- **Default test run**: `npm test`
-- **SauceDemo suites**:
-  - All: `npm run test:saucedemo`
-  - Smoke: `npm run test:saucedemo:smoke`
-  - Regression: `npm run test:saucedemo:regression`
-  - Auth: `npm run test:saucedemo:auth`
-  - Accessibility: `npm run test:saucedemo:a11y`
-  - Performance: `npm run test:saucedemo:perf`
-  - Visual Regression: `npm run test:saucedemo:visual`
-  - Visual Regression Update: `npm run test:saucedemo:visual:update`
-- **CURA Healthcare suites**:
-  - All: `npm run test:cura`
-  - Smoke: `npm run test:cura:smoke`
-  - Regression: `npm run test:cura:regression`
-  - Auth: `npm run test:cura:auth`
-  - Accessibility: `npm run test:cura:a11y`
-  - Performance: `npm run test:cura:perf`
-  - Visual Regression: `npm run test:cura:visual`
-  - Visual Regression Update: `npm run test:cura:visual:update`
-- **OrangeHRM suites**:
-  - All: `npm run test:orangehrm`
-  - Smoke: `npm run test:orangehrm:smoke`
-  - Regression: `npm run test:orangehrm:regression`
-  - Auth: `npm run test:orangehrm:auth`
-  - Accessibility: `npm run test:orangehrm:a11y`
-  - Performance: `npm run test:orangehrm:perf`
-  - Visual Regression: `npm run test:orangehrm:visual`
-  - Visual Regression Update: `npm run test:orangehrm:visual:update`
-- **API tests**: `npm run test:api`
-- **Run a single test file**: `npx playwright test tests/saucedemo/smoke/app-smoke.spec.ts`
-- **Run tests matching a title tag**: `npx playwright test -g "@smoke"`
-- **Run with specific browser**: `npx playwright test --project=chromium`
-- **Interactive UI mode**: `npm run test:ui`
-- **Debug mode**: `npm run test:debug`
-
-### Visual Regression Testing Special Commands
-When updating visual baselines, use the app-specific update commands:
+### Running Tests via Multi-App Suite Runner
+App-specific suites are executed using the custom orchestrator:
 ```bash
-# For SauceDemo
-npm run test:saucedemo:visual:update
+# General syntax
+node scripts/run-app-suite.cjs --app=<app> --suite=<suite> [--project=<browser>]
 
-# For CURA
-npm run test:cura:visual:update
+# SauceDemo
+node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
+node scripts/run-app-suite.cjs --app=saucedemo --suite=regression
+node scripts/run-app-suite.cjs --app=saucedemo --suite=auth
+node scripts/run-app-suite.cjs --app=saucedemo --suite=accessibility
+node scripts/run-app-suite.cjs --app=saucedemo --suite=performance
+node scripts/run-app-suite.cjs --app=saucedemo --suite=visual
 
-# For OrangeHRM
-npm run test:orangehrm:visual:update
+# CURA Healthcare
+node scripts/run-app-suite.cjs --app=cura --suite=smoke
+node scripts/run-app-suite.cjs --app=cura --suite=regression
+node scripts/run-app-suite.cjs --app=cura --suite=auth
+node scripts/run-app-suite.cjs --app=cura --suite=accessibility
+node scripts/run-app-suite.cjs --app=cura --suite=performance
+node scripts/run-app-suite.cjs --app=cura --suite=visual
+
+# OrangeHRM
+node scripts/run-app-suite.cjs --app=orangehrm --suite=smoke
+node scripts/run-app-suite.cjs --app=orangehrm --suite=regression
+node scripts/run-app-suite.cjs --app=orangehrm --suite=auth
+node scripts/run-app-suite.cjs --app=orangehrm --suite=accessibility
+node scripts/run-app-suite.cjs --app=orangehrm --suite=performance
+node scripts/run-app-suite.cjs --app=orangehrm --suite=visual
+
+# Shared Suites
+node scripts/run-app-suite.cjs --app=local --suite=shared-auth
+node scripts/run-app-suite.cjs --app=local --suite=shared-api
 ```
 
-If local storage-state bootstrap interferes during visual baseline generation:
+### Standard npm Scripts
+- **Default test run**: `npm test`
+- **Interactive UI mode**: `npm run test:ui`
+- **Debug mode**: `npm run test:debug`
+- **Headed mode**: `npm run test:headed`
+- **Smoke tag execution**: `npm run test:smoke`
+- **Browser-specific**: `npm run test:chromium`, `npm run test:firefox`, `npm run test:webkit`
+- **HTML Report viewer**: `npm run test:report`
+
+### Visual Regression Snapshot Updates
+To update visual snapshot baselines, pass the `-u` flag to the suite runner:
 ```bash
-SKIP_GLOBAL_AUTH_SETUP=1 npm run test:cura:visual:update
-# or on PowerShell:
-# $env:SKIP_GLOBAL_AUTH_SETUP='1'; npm.cmd run test:cura:visual:update
+node scripts/run-app-suite.cjs --app=saucedemo --suite=visual -u
+node scripts/run-app-suite.cjs --app=cura --suite=visual -u
+node scripts/run-app-suite.cjs --app=orangehrm --suite=visual -u
 ```
 
 ### Code Quality & Validation
 - **Typecheck**: `npm run typecheck` (`tsc --noEmit`)
 - **Linting**: `npm run lint` / `npm run lint:fix`
 - **Formatting**: `npm run format` / `npm run format:check`
-- **CI pipeline check**: `npm run test:ci`
+- **Pre-push Gate**: `npm run pre-push`
 
 ## Environment Variables
 
-The framework uses environment variables for configuration and credentials:
+The framework uses environment variables defined in `.env` (refer to `.env.example`):
 
-### Required for All Apps
-- `APP_NAME` - Specifies which application to test (saucedemo, cura, orangehrm, local)
+### Application Credentials
+- `SAUCEDEMO_USERNAME`, `SAUCEDEMO_PASSWORD`
+- `CURA_USERNAME`, `CURA_PASSWORD`
+- `ORANGEHRM_USERNAME`, `ORANGEHRM_PASSWORD`
 
-### SauceDemo Credentials
-- `SAUCEDEMO_USERNAME` - Username for SauceDemo login
-- `SAUCEDEMO_PASSWORD` - Password for SauceDemo login
-
-### CURA Healthcare Credentials
-- `CURA_USERNAME` - Username for CURA login
-- `CURA_PASSWORD` - Password for CURA login
-
-### OrangeHRM Credentials
-- `ORANGEHRM_USERNAME` - Username for OrangeHRM login
-- `ORANGEHRM_PASSWORD` - Password for OrangeHRM login
-
-### Configuration
-- `ENVIRONMENT` - Deployment environment (default: local)
-- `BASE_URL_*` - Override base URL for specific apps
-- `HEADLESS` - Run in headless mode (default: true)
-- `TRACE` - Enable Playwright tracing (on/off/retain-on-failure)
-
-### CI/CD
-- `CI` - Set to true when running in CI environment
-- `PLAYWRIGHT_WORKERS` - Number of parallel workers
-- `PLAYWRIGHT_RETRIES` - Number of test retries
-
-Create a `.env` file in the project root based on `.env.example` to manage these variables.
+### Configuration Overrides
+- `APP_NAME` - Specifies default app scope (`saucedemo`, `cura`, `orangehrm`, `local`)
+- `ENVIRONMENT` - Target environment (`local`, `dev`, `staging`, `prod`)
+- `HEADLESS` - Boolean flag for headless execution (`true` / `false`)
+- `SKIP_GLOBAL_AUTH_SETUP` - Set to `1` to bypass pre-test global auth bootstrap
+- `CI` - Set to `true` in CI environments to enforce single-worker, retries, and forbidden test.only
 
 ## Project Structure (High-Level)
 
-For detailed structure, see [`docs/STRUCTURE_REFACTORING.md`](docs/STRUCTURE_REFACTORING.md):
+For detailed architectural diagrams, see [`docs/ARCHITECTURE_VISUAL_GUIDE.md`](docs/ARCHITECTURE_VISUAL_GUIDE.md):
 
 ```
-framework/
-├── config/                     # JSON-based app registry and test suite paths
-├── globals/                    # Global setup and teardown hooks
-├── schemas/                    # JSON schemas for API validation
-├── scripts/                    # Custom suite runner and git hooks
+├── config/                     # JSON configuration (apps.json, test-suites.json)
+├── globals/                    # Global setup (global-setup.ts) and teardown hooks
+├── schemas/                    # JSON schemas for API response validation
+├── scripts/                    # Custom suite runner (run-app-suite.cjs) and git hooks
 ├── src/
-│   ├── config/                 # App configuration types and AppRegistry
-│   ├── core/                   # Custom test fixtures, session management, and logger
-│   ├── pages/                  # Page Object Model classes organized by app
-│   └── utils/                  # Flakiness helpers, API clients, and schema validator
-├── tests/                      # Test specs segmented by app
-└── .auth/                      # Authentication storage states (gitignored)
+│   ├── apps/                   # App Facades (SauceDemoApp, CuraApp, OrangeHrmApp)
+│   ├── config/                 # AppRegistry and environment configuration loaders
+│   ├── core/                   # Fixtures (test.fixture.ts, auth.fixture.ts) & logger
+│   ├── pages/
+│   │   ├── apps/{app}/pages/   # Page Object Models per target application
+│   │   └── base/               # Multi-app BasePage abstract class
+│   └── utils/                  # Flakiness helpers, API client, and schema validators
+├── tests/                      # App-specific test suites & shared suites
+│   ├── saucedemo/
+│   ├── cura/
+│   ├── orangehrm/
+│   ├── shared/
+│   └── templates/              # Reusable suite templates (.template.ts)
+└── storage-state/              # Persisted session state ({app}.json, gitignored)
 ```
 
 ## Getting Started
 
-For complete getting started instructions, see [`docs/FRAMEWORK_INDEX.md`](docs/FRAMEWORK_INDEX.md):
+For full step-by-step onboarding, see [`docs/ONBOARDING.md`](docs/ONBOARDING.md):
 
 1. Clone the repository
 2. Install dependencies: `npm install`
-3. Environment Setup: Create `.env` file based on `.env.example` if needed
-4. Run tests: See the commands above or refer to the detailed documentation
+3. Environment Setup: Copy `.env.example` to `.env` and set credentials
+4. Verify code quality: `npm run typecheck && npm run lint`
+5. Run smoke tests: `node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke`
 
-## Contributing
+## Contributing & Reviews
 
-Please see [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) for guidelines on contributing to this framework.
-
-## License
-
-This project is licensed under the ISC License.
+Please see [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) and [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) for contribution rules and pull request review checklists.

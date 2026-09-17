@@ -1,318 +1,303 @@
-# Contributing to Playwright Automation Framework
+# Contributing to the Playwright Automation Framework
 
-Thank you for contributing to this project! This document provides guidelines for development, testing, and submitting changes.
+Thank you for contributing to this project! This document outlines guidelines for development, test authoring, code quality, and submitting pull requests.
 
 ---
 
 ## 🚀 Getting Started
 
-1. **Fork and clone** the repository:
+### 1. Fork and Clone
 
-   ```bash
-   git clone https://github.com/your-username/playwright-framework.git
-   cd playwright-framework
-   ```
+```bash
+git clone https://github.com/your-username/playwright-framework.git
+cd playwright-framework
+```
 
-2. **Create a feature branch**:
+### 2. Branching Strategy
 
-   ```bash
-   git checkout -b feature/your-feature-name
-   # or
-   git checkout -b fix/your-bug-fix
-   ```
+Create a feature branch from `develop` (or `main` depending on release flow):
 
-3. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+```bash
+git checkout -b feature/your-feature-name
+# or
+git checkout -b fix/your-bug-fix
+```
+
+### 3. Install Dependencies & Browsers
+
+```bash
+npm install
+npx playwright install --with-deps chromium
+```
+
+### 4. Setup Environment
+
+Copy `.env.example` to `.env` and configure local credentials:
+
+```bash
+cp .env.example .env
+```
 
 ---
 
-## 📋 Development Workflow
+## 📋 Architecture & Development Workflow
 
-### Before writing code:
+The framework is a **multi-application** test automation architecture supporting SauceDemo, CURA Healthcare, OrangeHRM, and shared API services.
 
-- Review existing page objects in `src/pages/`
-- Check test examples in `tests/`
-- Ensure your feature aligns with the Page Object Model architecture
+### Core Architectural Layers
 
-### Writing tests:
-
-1. Place new test files in `tests/` with `*.spec.ts` extension
-2. Use descriptive test names: `test('should verify user can login with valid credentials')`
-3. Follow the Page Object Model pattern:
-
-   ```typescript
-   import { test, expect } from '@playwright/test';
-   import { LoginPage } from '../src/pages/LoginPage';
-
-   test('User login flow', async ({ page }) => {
-     const loginPage = new LoginPage(page);
-     await loginPage.navigate();
-     await loginPage.fillUsername('user@example.com');
-     await loginPage.fillPassword('password123');
-     await loginPage.clickLoginButton();
-     // assertions...
-   });
-   ```
-
-4. Use **role-based** and **testId** locators (in order of preference):
-
-   ```typescript
-   // ✅ GOOD: Role-based selector
-   await page.getByRole('button', { name: /login/i }).click();
-
-   // ✅ GOOD: Test ID selector
-   await page.getByTestId('login-button').click();
-
-   // ⚠️ AVOID: CSS selectors (brittle)
-   await page.locator('.btn.btn-primary').click();
-   ```
+1. **Page Objects (`src/pages/apps/{app}/pages/`)**:
+   - Every page object extends `BasePage` from `src/pages/base/BasePage.ts`.
+   - Never hardcode element selectors in test files.
+   - Follow locator priority: `getByTestId` > `getByRole` > `getByPlaceholder` > `getByText` > `locator('css')`.
+2. **App Facades (`src/apps/{app}/{App}App.ts`)**:
+   - Each app provides a facade (`SauceDemoApp`, `CuraApp`, `OrangeHrmApp`) that encapsulates page objects and provides high-level composite workflows (e.g. `login()`, `bookAppointment()`).
+3. **Fixtures (`src/core/fixtures/`)**:
+   - **`test.fixture.ts`**: Use for tests requiring an unauthenticated browser context (e.g., negative login validation, public landing page checks).
+   - **`auth.fixture.ts`**: Use for tests requiring an authenticated session. Reuses saved session cookies from `storage-state/{app}.json` or logs in automatically.
+4. **Test Suites (`tests/{app}/{suite-type}/`)**:
+   - Tests are strictly organized by application and suite type:
+     - `01-auth/`: Credential boundary and error validation tests.
+     - `smoke/`: Fast happy-path confidence checks.
+     - `regression/`: Complete end-to-end workflows.
+     - `04-accessibility-testing/`: Axe-core accessibility audits.
+     - `05-performance-testing/`: Navigation timing and performance benchmarks.
+     - `06-visual-regression/`: Pixel-diff screenshot comparisons.
+   - Shared cross-app tests live under `tests/shared/auth` and `tests/shared/api`.
+   - Reusable reference templates live under `tests/templates/` with `*.template.ts` extensions.
 
 ---
 
 ## 🧪 Testing Guidelines
 
-### Running tests:
+### Running Tests
+
+#### NPM Scripts (`package.json`)
 
 ```bash
-# Run all tests
+# Run all active tests across all projects
 npm test
 
-# Run specific test file
-npx playwright test tests/auth.spec.ts
+# Run tests matching smoke tag
+npm run test:smoke
 
-# Run tests matching a pattern
-npx playwright test --grep "login"
+# Interactive UI mode (Playwright Test Runner)
+npm run test:ui
 
-# Run with headed browser
+# Interactive debug mode (Playwright Inspector)
+npm run test:debug
+
+# Run tests in headed browser
 npm run test:headed
 
-# Run in debug mode
-npx playwright test --debug
+# Run with specific browser
+npm run test:chromium
+npm run test:firefox
+npm run test:webkit
+
+# View HTML report
+npm run test:report
 ```
 
-### Test structure:
+#### Granular App-Suite Runner (`scripts/run-app-suite.cjs`)
+
+When working on a specific application, use the custom runner to target that suite with dedicated reports:
+
+```bash
+# Syntax: node scripts/run-app-suite.cjs --app=<app> --suite=<suite> [--project=<browser>]
+
+# SauceDemo suites
+node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
+node scripts/run-app-suite.cjs --app=saucedemo --suite=auth
+node scripts/run-app-suite.cjs --app=saucedemo --suite=regression
+
+# CURA suites
+node scripts/run-app-suite.cjs --app=cura --suite=smoke
+node scripts/run-app-suite.cjs --app=cura --suite=regression
+
+# OrangeHRM suites
+node scripts/run-app-suite.cjs --app=orangehrm --suite=smoke
+node scripts/run-app-suite.cjs --app=orangehrm --suite=regression
+
+# Shared API suites
+node scripts/run-app-suite.cjs --app=local --suite=shared-api
+```
+
+#### Updating Visual Baselines
+
+```bash
+# Update visual snapshots for a specific app
+node scripts/run-app-suite.cjs --app=saucedemo --suite=visual -u
+node scripts/run-app-suite.cjs --app=cura --suite=visual -u
+node scripts/run-app-suite.cjs --app=orangehrm --suite=visual -u
+```
+
+---
+
+## ✍️ Authoring Page Objects & Tests
+
+### Example: Writing a Page Object
 
 ```typescript
-import { test, expect } from '@playwright/test';
+// src/pages/apps/saucedemo/pages/SauceDemoLoginPage.ts
+import { expect, Locator, Page } from '@playwright/test';
+import { BasePage } from '../../../base/BasePage';
+import { AppName } from '../../../../config/app.config';
 
-test.describe('Login Feature', () => {
-  test.beforeEach(async ({ page }) => {
-    // Setup before each test
-  });
+export class SauceDemoLoginPage extends BasePage {
+  private readonly usernameInput: Locator;
+  private readonly passwordInput: Locator;
+  private readonly loginButton: Locator;
 
-  test('should display login form', async ({ page }) => {
-    // Arrange
-    const loginPage = new LoginPage(page);
+  constructor(page: Page) {
+    super(page, 'saucedemo' as AppName);
+    this.usernameInput = this.page.locator('#user-name');
+    this.passwordInput = this.page.locator('#password');
+    this.loginButton = this.page.locator('#login-button');
+  }
 
-    // Act
-    await loginPage.navigate();
+  async goto(): Promise<void> {
+    await this.page.goto(this.appConfig.baseUrl);
+    await this.waitForPageLoad();
+    await expect(this.usernameInput).toBeVisible();
+  }
 
-    // Assert
-    await expect(loginPage.getUsernameInput()).toBeVisible();
-  });
+  async login(username: string, password: string): Promise<void> {
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(password);
+    await this.loginButton.click();
+  }
+}
+```
 
-  test.afterEach(async ({ page }) => {
-    // Cleanup after each test
-  });
+### Example: Writing a Smoke Test using App Facade
+
+```typescript
+// tests/saucedemo/smoke/app-smoke.spec.ts
+import { test, expect } from '../../../src/core/fixtures/test.fixture';
+
+test('@smoke @saucedemo - login page shell renders correctly', async ({ saucedemoApp }) => {
+  await saucedemoApp.goto();
+
+  await expect(saucedemoApp.loginPage.getPage()).toHaveTitle(/swag labs/i);
+  await expect(
+    saucedemoApp.loginPage.getPage().getByText(/accepted usernames are:/i),
+  ).toBeVisible();
+});
+```
+
+### Example: Writing an Authenticated Flow
+
+```typescript
+// tests/saucedemo/smoke/login.spec.ts
+import { test } from '../../../src/core/fixtures/auth.fixture';
+
+test('@smoke @saucedemo - user can login successfully', async ({
+  authenticatedPage,
+  saucedemoApp,
+  appName,
+}) => {
+  if (appName !== 'saucedemo' || !saucedemoApp) {
+    test.skip();
+    return;
+  }
+
+  await authenticatedPage.waitForURL(/.*inventory.*/);
+  await saucedemoApp.inventoryPage.verifyInventoryLoaded();
 });
 ```
 
 ---
 
-## 📝 Code Style & Quality
+## 📝 Code Style & Quality Gates
 
-### Linting and Formatting:
+All contributions must strictly adhere to the project quality gates:
 
-All code must pass linting checks before committing:
+### Local Verification
 
 ```bash
-# Check for issues
+# TypeScript type check (strict mode)
+npm run typecheck
+
+# ESLint inspection
 npm run lint
 
-# Auto-fix issues
+# Auto-fix lint issues
 npm run lint:fix
 
-# Format code
+# Prettier format check
+npm run format:check
+
+# Auto-format files
 npm run format
 
-# Type check
-npm run typecheck
+# Pre-push combined check
+npm run pre-push
 ```
 
-### Code style rules:
+### Conventions
 
-- **TypeScript:** Strict mode enabled (`tsconfig.json`)
-- **Linter:** ESLint with TypeScript support
-- **Formatter:** Prettier (2-space indentation)
-- **Line endings:** LF (auto-fixed on commit)
-
-### Naming conventions:
-
-- **Page classes:** `LoginPage`, `DashboardPage` (PascalCase)
-- **Test files:** `auth.spec.ts`, `users.api.spec.ts` (kebab-case)
-- **Methods:** `login()`, `navigateTo()` (camelCase)
-- **Constants:** `BASE_URL`, `TIMEOUT_MS` (UPPER_SNAKE_CASE)
-- **Variables:** `username`, `isLoading` (camelCase)
+- **Naming**:
+  - Page Classes: `SauceDemoLoginPage`, `CuraAppointmentPage` (PascalCase with app prefix).
+  - Facades: `SauceDemoApp`, `CuraApp`, `OrangeHrmApp` (PascalCase).
+  - Test specs: `login-data-driven.spec.ts`, `add-to-cart.spec.ts` (kebab-case).
+  - Methods: `login()`, `bookAppointment()`, `verifyInventoryLoaded()` (camelCase).
+- **TypeScript**: Strict mode enabled. Do not use `any` without documented necessity.
+- **Flakiness Prevention**:
+  - Never use hardcoded sleeps like `page.waitForTimeout()`.
+  - Always use web-first assertions: `await expect(locator).toBeVisible()`.
+  - Use `waitForNetworkStable()` or `flakeHelper` utilities for complex asynchronous transitions.
 
 ---
 
-## 🔀 Git Workflow
+## 🔀 Git Workflow & Commit Guidelines
 
-### Commit messages:
+### Conventional Commits
 
-Follow conventional commits format:
+Commit messages must follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
 ```
-<type>(<scope>): <description>
+<type>(<scope>): <short description>
 
-<optional-body>
-<optional-footer>
+[optional body]
+[optional footer]
 ```
 
-**Types:**
+**Allowed Types:**
 
-- `feat:` New feature
-- `fix:` Bug fix
-- `refactor:` Code restructuring
-- `test:` Test additions/changes
-- `docs:` Documentation
-- `ci:` CI/CD changes
-- `chore:` Build, dependencies, etc.
+- `feat:` New test feature, page object, or utility
+- `fix:` Bug fix in test logic, locator, or framework
+- `refactor:` Code refactoring without behavioral change
+- `test:` Test additions, adjustments, or baseline refreshes
+- `docs:` Documentation updates
+- `ci:` Pipeline, workflow, or Docker changes
+- `chore:` Dependency or tooling updates
 
 **Examples:**
 
-- `feat(login): add password recovery flow`
-- `fix(selectors): update dashboard button locator`
-- `test(api): add user schema validation tests`
-- `docs(readme): update installation instructions`
+- `feat(cura): add appointment confirmation verification`
+- `fix(saucedemo): update cart item locator for responsive view`
+- `docs(contributing): update multi-app contribution guidelines`
 
-### Pre-commit hooks:
+### Pre-Commit Hooks
 
-**Husky** automatically runs:
-
-1. ESLint (auto-fixes)
-2. Prettier (formats)
-
-If checks fail, the commit is rejected. Fix issues and try again.
-
-### Before pushing:
-
-```bash
-# Ensure all checks pass
-npm run lint
-npm run format
-npm run typecheck
-
-# Run tests locally
-npm test
-```
+Husky and `lint-staged` automatically run ESLint and Prettier on staged files. Commits will be rejected if checks fail.
 
 ---
 
-## 🐳 Docker Development
+## 📋 Pull Request Checklist
 
-Test in Docker to ensure consistency with CI:
+Before submitting your PR, verify the following:
 
-```bash
-# Build and run tests in Docker
-docker-compose up test
+- [ ] Branch created from latest `develop` or `main`.
+- [ ] `npm run typecheck` passes with zero errors.
+- [ ] `npm run lint` passes cleanly.
+- [ ] `npm run format:check` passes.
+- [ ] Targeted app suites pass via `node scripts/run-app-suite.cjs --app=<app> --suite=<suite>`.
+- [ ] Page objects extend `src/pages/base/BasePage.ts`.
+- [ ] Selectors follow resilient priority order (no fragile XPath/CSS locators).
+- [ ] No hardcoded sleeps (`page.waitForTimeout`), credentials, or `.env` files committed.
+- [ ] Commit messages follow conventional commit format.
+- [ ] Documentation updated to reflect changes.
 
-# View test results
-open test-results/  # or explore in your file system
-```
-
----
-
-## 📊 Page Object Model Architecture
-
-### Creating a new page object:
-
-```typescript
-import { Page } from '@playwright/test';
-import { BasePage } from './BasePage';
-import { SELECTORS_BY_TESTID } from '../utils/selectors';
-
-export interface IMyPage {
-  navigate(): Promise<void>;
-  fillField(value: string): Promise<void>;
-  submitForm(): Promise<void>;
-}
-
-export class MyPage extends BasePage implements IMyPage {
-  constructor(page: Page) {
-    super(page);
-  }
-
-  async navigate(): Promise<void> {
-    await this.goto('/my-page');
-    await this.waitForPageLoad();
-  }
-
-  async fillField(value: string): Promise<void> {
-    await this.getByTestId(SELECTORS_BY_TESTID.myPage.field).fill(value);
-  }
-
-  async submitForm(): Promise<void> {
-    await this.getByRole('button', { name: /submit/i }).click();
-  }
-}
-```
-
----
-
-## 🔍 API Testing
-
-API tests use **schema validation** with JSON schemas:
-
-```typescript
-import { test, expect } from '@playwright/test';
-import { apiHelper } from '../src/utils/apiHelper';
-
-test('Get user by ID', async () => {
-  // Automatically validates response against user.schema.json
-  const user = await apiHelper.getUser(1);
-
-  expect(user).toHaveProperty('id');
-  expect(user).toHaveProperty('name');
-  expect(user).toHaveProperty('email');
-});
-```
-
----
-
-## 📚 Resources
-
-- [Playwright Documentation](https://playwright.dev/)
-- [Page Object Model Best Practices](https://playwright.dev/docs/pom)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [ESLint Configuration](https://eslint.org/docs/rules/)
-- [Prettier Documentation](https://prettier.io/docs/)
-
----
-
-## ❓ Questions or Issues?
-
-- Check [GitHub Issues](https://github.com/your-org/playwright-framework/issues)
-- Review existing test examples
-- Refer to Playwright documentation
-
----
-
-## 📋 Checklist before submitting PR
-
-- [ ] Branch created from `main` or `develop`
-- [ ] All tests pass locally: `npm test`
-- [ ] Linting passes: `npm run lint`
-- [ ] Code formatted: `npm run format`
-- [ ] TypeScript compiles: `npm run typecheck`
-- [ ] Commit messages follow conventional format
-- [ ] PR description explains changes
-- [ ] No debug code or console logs
-- [ ] Related tests added/updated
-- [ ] Documentation updated if needed
-
----
-
-Thanks for contributing! 🎉
+See [`docs/CODE_REVIEW.md`](./CODE_REVIEW.md) for reviewer criteria.

@@ -18,7 +18,7 @@
 │  │           Test Suite 1: Login Tests                  │   │
 │  │  ┌────────────────────────────────────────────────┐  │   │
 │  │  │ Test: "User can login with valid credentials" │  │   │
-│  │  │  1. Create LoginPage object                   │  │   │
+│  │  │  1. Create [App]LoginPage object              │  │   │
 │  │  │  2. Call page.goto()                          │  │   │
 │  │  │  3. Call page.login(user, pass)               │  │   │
 │  │  │  4. Assert success                            │  │   │

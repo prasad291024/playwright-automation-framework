@@ -1,712 +1,332 @@
-# 📖 Quick Reference Guide
+# Playwright Framework - Quick Reference & Cheat Sheet
 
-Your **cheat sheet** for common tasks and patterns in the framework.
+Your rapid copy-paste reference guide for commands, patterns, assertions, and utilities across the multi-app framework.
 
 ---
 
-## 🏃 Quick Start Commands
+## 1. Quick Start Commands
+
+### General NPM Scripts (`package.json`)
 
 ```bash
-# Install dependencies
-npm install
-npx playwright install
+npm test                  # Run all active tests across all configured projects
+npm run test:smoke        # Run tests tagged with @smoke
+npm run test:ui           # Launch interactive UI mode with time-travel debugging
+npm run test:debug        # Run with Playwright Inspector attached
+npm run test:headed       # Run tests with visible browser windows
+npm run test:report       # Open the HTML test report
+npm run test:chromium     # Run only Chromium browser project
+npm run test:firefox      # Run only Firefox browser project
+npm run test:webkit       # Run only WebKit (Safari) browser project
+```
 
-# Run all tests
-npm test
+### Granular App-Suite Runner (`scripts/run-app-suite.cjs`)
 
-# Run with visible browser
-npm test:headed
+```bash
+# Syntax: node scripts/run-app-suite.cjs --app=<app> --suite=<suite> [--project=<browser>]
 
-# Run specific test file
-npm test -- tests/01-fundamentals/login.spec.ts
+# SauceDemo suites
+node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
+node scripts/run-app-suite.cjs --app=saucedemo --suite=auth
+node scripts/run-app-suite.cjs --app=saucedemo --suite=regression
+node scripts/run-app-suite.cjs --app=saucedemo --suite=accessibility
+node scripts/run-app-suite.cjs --app=saucedemo --suite=performance
+node scripts/run-app-suite.cjs --app=saucedemo --suite=visual
 
-# Run tests matching pattern
-npm test -- -g "Login"
+# CURA Healthcare suites
+node scripts/run-app-suite.cjs --app=cura --suite=smoke
+node scripts/run-app-suite.cjs --app=cura --suite=regression
 
-# Debug mode (interactive)
-npm test:debug -- tests/01-fundamentals/login.spec.ts
+# OrangeHRM suites
+node scripts/run-app-suite.cjs --app=orangehrm --suite=smoke
+node scripts/run-app-suite.cjs --app=orangehrm --suite=regression
 
-# UI Mode (visual test runner)
-npm test:ui
+# Shared API suites
+node scripts/run-app-suite.cjs --app=local --suite=shared-api
+```
 
-# View HTML report
-npx playwright show-report
+### Snapshot Baseline Updates
 
-# Check code style
-npm run lint
-npm run lint:fix
+```bash
+node scripts/run-app-suite.cjs --app=saucedemo --suite=visual -u
+node scripts/run-app-suite.cjs --app=cura --suite=visual -u
+node scripts/run-app-suite.cjs --app=orangehrm --suite=visual -u
+```
 
-# Check TypeScript types
-npm run typecheck
+### Code Quality & Git Hooks
 
-# Format code
-npm run format
+```bash
+npm run typecheck         # TypeScript strict compilation check (tsc --noEmit)
+npm run lint              # ESLint inspection
+npm run lint:fix          # ESLint auto-fix
+npm run format:check      # Prettier formatting verification
+npm run format            # Prettier auto-formatting
+npm run pre-push          # Combined pre-push quality check
 ```
 
 ---
 
-## 📝 Writing a Simple Test - Complete Example
+## 2. Test Authoring Patterns
+
+### Pattern A: Smoke Test with App Facade (`test.fixture.ts`)
 
 ```typescript
-// tests/example.spec.ts
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../src/pages/LoginPage';
-import { assertLoginSuccess } from '../src/utils/assertions';
+// tests/saucedemo/smoke/app-smoke.spec.ts
+import { test, expect } from '../../../src/core/fixtures/test.fixture';
 
-test('User can login with valid credentials', async ({ page }) => {
-  // ARRANGE: Setup
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
+test('@smoke @saucedemo - login shell renders correctly', async ({ saucedemoApp }) => {
+  await saucedemoApp.goto();
 
-  // ACT: Perform action
-  await loginPage.login('user@example.com', 'password123');
-
-  // ASSERT: Verify result
-  await assertLoginSuccess(page);
-});
-```
-
----
-
-## 📄 Creating a New Page Object - Step-by-Step
-
-### Step 1: Create the class file
-
-```typescript
-// src/pages/YourPage.ts
-import { BasePage } from './BasePage';
-import { IYourPage } from '../interface/pages.interface';
-import { SELECTORS_BY_TESTID } from '../utils/selectors';
-
-export class YourPage extends BasePage implements IYourPage {
-  // Your code here
-}
-```
-
-### Step 2: Implement goto() method
-
-```typescript
-async goto(): Promise<void> {
-  await this.navigateTo('/your-page-path');
-  await this.waitForPageLoad();
-}
-```
-
-### Step 3: Add action methods
-
-```typescript
-async fillNameField(name: string): Promise<void> {
-  await this.getByTestId(SELECTORS_BY_TESTID.yourPage.nameInput).fill(name);
-}
-
-async clickSaveButton(): Promise<void> {
-  await this.getByRole('button', { name: /save/i }).click();
-}
-
-async updateName(name: string): Promise<void> {
-  await this.fillNameField(name);
-  await this.clickSaveButton();
-  await this.page.waitForLoadState('networkidle');
-}
-```
-
-### Step 4: Add assertion methods
-
-```typescript
-async assertNameUpdated(name: string): Promise<void> {
+  await expect(saucedemoApp.loginPage.getPage()).toHaveTitle(/swag labs/i);
   await expect(
-    this.getByTestId(SELECTORS_BY_TESTID.yourPage.nameDisplay)
-  ).toContainText(name);
-}
-
-async assertSaveSuccess(): Promise<void> {
-  await expect(
-    this.getByText(/success|changes saved/i)
+    saucedemoApp.loginPage.getPage().getByText(/accepted usernames are:/i),
   ).toBeVisible();
-}
+});
 ```
 
-### Step 5: Export from index.ts
+### Pattern B: Authenticated Test with Session Reuse (`auth.fixture.ts`)
 
 ```typescript
-// src/pages/index.ts - Add this line
-export { YourPage } from './YourPage';
+// tests/saucedemo/smoke/login.spec.ts
+import { test } from '../../../src/core/fixtures/auth.fixture';
+
+test('@smoke @saucedemo - user can login successfully', async ({
+  authenticatedPage,
+  saucedemoApp,
+  appName,
+}) => {
+  if (appName !== 'saucedemo' || !saucedemoApp) {
+    test.skip();
+    return;
+  }
+
+  await authenticatedPage.waitForURL(/.*inventory.*/);
+  await saucedemoApp.inventoryPage.verifyInventoryLoaded();
+});
 ```
 
-### Step 6: Create interface
+### Pattern C: Data-Driven Login Validation (`01-auth`)
 
 ```typescript
-// src/interface/pages.interface.ts - Add this
-export interface IYourPage extends IBasePage {
-  goto(): Promise<void>;
-  fillNameField(name: string): Promise<void>;
-  clickSaveButton(): Promise<void>;
-  updateName(name: string): Promise<void>;
-  assertNameUpdated(name: string): Promise<void>;
-  assertSaveSuccess(): Promise<void>;
-}
+// tests/saucedemo/01-auth/login-data-driven.spec.ts
+import { test } from '../../../src/core/fixtures/test.fixture';
+import { users } from '../../../src/apps/saucedemo/test-data/users';
+
+test.use({ storageState: { cookies: [], origins: [] } }); // Isolate from stored cookies
+
+const scenarios = [
+  { name: 'invalid password', username: users.standard_user.username, password: 'wrong_password' },
+  {
+    name: 'locked out user',
+    username: users.locked_out_user.username,
+    password: users.locked_out_user.password,
+  },
+];
+
+test.describe('Login Validation', () => {
+  for (const scenario of scenarios) {
+    test(`fails for ${scenario.name}`, async ({ saucedemoApp }) => {
+      await saucedemoApp.loginPage.goto();
+      await saucedemoApp.loginPage.login(scenario.username, scenario.password);
+      await saucedemoApp.loginPage.assertLoginFailure();
+    });
+  }
+});
 ```
 
----
-
-## 🧪 Writing Data-Driven Tests - Pattern
-
-### Step 1: Create test data JSON
-
-```json
-{
-  "validUsers": [
-    { "username": "user1@example.com", "password": "pass123" },
-    { "username": "admin@example.com", "password": "adminpass" }
-  ],
-  "invalidUsers": [{ "username": "wrong@example.com", "password": "badpass" }]
-}
-```
-
-### Step 2: Use in test
+### Pattern D: API Contract Testing with JSON Schema Validation
 
 ```typescript
-import testUsers from '../../test-data/fixtures/login.testUsers.json';
-
-// Data-driven for valid users
-for (const user of testUsers.validUsers) {
-  test(`Login succeeds for ${user.username}`, async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login(user.username, user.password);
-    await assertLoginSuccess(page);
-  });
-}
-
-// Data-driven for invalid users
-for (const user of testUsers.invalidUsers) {
-  test(`Login fails for ${user.username}`, async ({ page }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login(user.username, user.password);
-    await assertLoginFailure(page);
-  });
-}
-```
-
----
-
-## 🔗 Writing API Tests - Pattern
-
-### Basic GET with validation
-
-```typescript
+// tests/shared/api/user-api.spec.ts
 import { test, expect } from '@playwright/test';
-import { ApiHelper } from '../../src/utils/apiHelper';
-import type { User } from '../../src/interface/api.interface';
+import { ApiHelper } from '../../../src/utils/apiHelper';
+import { schemaValidator } from '../../../src/utils/schemaValidator';
 
-test('GET user by ID with schema validation', async ({ request }) => {
-  const apiHelper = new ApiHelper(request, 'https://api.example.com');
+test('GET /api/users/2 validates schema', async ({ request }) => {
+  const api = new ApiHelper(request, 'https://reqres.in');
+  const response = await api.get('/api/users/2', 'user.schema.json');
 
-  // GET and validate
-  const { data, status } = await apiHelper.get<User>('/users/1', 'user.schema.json');
-
-  // Assertions
-  expect(status).toBe(200);
-  expect(data.id).toBe(1);
-  expect(data.email).toContain('@');
-});
-```
-
-### POST with payload and validation
-
-```typescript
-test('POST create user', async ({ request }) => {
-  const apiHelper = new ApiHelper(request, 'https://api.example.com');
-
-  const newUser = {
-    name: 'John Doe',
-    email: 'john@example.com',
-    username: 'johndoe',
-  };
-
-  const { data, status } = await apiHelper.post<User>('/users', newUser, 'user.schema.json');
-
-  expect(status).toBe(201);
-  expect(data.id).toBeDefined();
+  expect(response.status).toBe(200);
+  schemaValidator.validateOrThrow(response.data, 'user.schema.json');
 });
 ```
 
 ---
 
-## 🔍 Selector Priority Cheat Sheet
+## 3. Creating Page Objects & App Facades
+
+### Step 1: Create Page Object
+
+Extend `BasePage` from `src/pages/base/BasePage.ts`:
 
 ```typescript
-// 1️⃣ PREFERRED: data-testid
-await this.getByTestId('username-field').fill('john@example.com');
+// src/pages/apps/saucedemo/pages/SauceDemoInventoryPage.ts
+import { expect, Locator, Page } from '@playwright/test';
+import { BasePage } from '../../../base/BasePage';
+import { AppName } from '../../../../config/app.config';
 
-// 2️⃣ GOOD: Role-based (accessible)
-await this.getByRole('button', { name: /login/i }).click();
-await this.getByRole('textbox', { name: /password/i }).fill('password');
+export class SauceDemoInventoryPage extends BasePage {
+  private readonly inventoryList: Locator;
+  private readonly firstAddToCartBtn: Locator;
 
-// 3️⃣ OKAY: Placeholder text
-await this.getByPlaceholder('Enter email').fill('john@example.com');
+  constructor(page: Page) {
+    super(page, 'saucedemo' as AppName);
+    this.inventoryList = this.page.locator('.inventory_list');
+    this.firstAddToCartBtn = this.page.locator('.inventory_item button').first();
+  }
 
-// 4️⃣ OKAY: Visible text
-await this.getByText('Login').click();
-await this.getByText(/welcome|dashboard/i).first();
+  async goto(): Promise<void> {
+    await this.page.goto(`${this.appConfig.baseUrl}/inventory.html`);
+    await this.waitForPageLoad();
+  }
 
-// 5️⃣ LAST RESORT: CSS selector (brittle)
-await this.locator('#username').fill('john@example.com');
-await this.locator('.button-primary').click();
+  async addFirstProductToCart(): Promise<void> {
+    await this.firstAddToCartBtn.click();
+  }
+
+  async verifyInventoryLoaded(): Promise<void> {
+    await expect(this.inventoryList).toBeVisible();
+  }
+}
+```
+
+### Step 2: Wire Page into App Facade
+
+```typescript
+// src/apps/saucedemo/SauceDemoApp.ts
+import { Page } from '@playwright/test';
+import { SauceDemoLoginPage } from '../../pages/apps/saucedemo/pages/SauceDemoLoginPage';
+import { SauceDemoInventoryPage } from '../../pages/apps/saucedemo/pages/SauceDemoInventoryPage';
+
+export class SauceDemoApp {
+  readonly loginPage: SauceDemoLoginPage;
+  readonly inventoryPage: SauceDemoInventoryPage;
+
+  constructor(private readonly page: Page) {
+    this.loginPage = new SauceDemoLoginPage(page);
+    this.inventoryPage = new SauceDemoInventoryPage(page);
+  }
+
+  async goto(): Promise<void> {
+    await this.loginPage.goto();
+  }
+}
 ```
 
 ---
 
-## ✅ Common Assertions Cheat Sheet
+## 4. Selector Priority Cheat Sheet
+
+```typescript
+// 1️⃣ BEST: data-testid (resilient, immune to redesigns)
+await page.getByTestId('submit-order').click();
+
+// 2️⃣ EXCELLENT: ARIA Role (accessible, reflects user intent)
+await page.getByRole('button', { name: /checkout|submit/i }).click();
+await page.getByRole('textbox', { name: /username/i }).fill('admin');
+
+// 3️⃣ GOOD: Placeholder
+await page.getByPlaceholder('Enter your password').fill('secret');
+
+// 4️⃣ GOOD: Visible Text
+await page.getByText('Thank you for your order!').click();
+
+// 5️⃣ LAST RESORT: Scoped CSS (never use absolute XPath)
+await page.locator('.cart_item .item_price').first();
+```
+
+---
+
+## 5. Common Web-First Assertions
 
 ```typescript
 // Visibility
-await expect(element).toBeVisible();
-await expect(element).not.toBeVisible();
+await expect(locator).toBeVisible();
+await expect(locator).toBeHidden();
 
-// Text content
-await expect(element).toContainText('Login successful');
-await expect(element).toHaveText('Exact text');
-
-// Attributes
-await expect(element).toHaveAttribute('href', '/dashboard');
-await expect(element).toHaveAttribute('disabled');
+// Text Content
+await expect(locator).toHaveText('Exact String');
+await expect(locator).toContainText(/substring|regex/i);
 
 // State
-await expect(element).toBeEnabled();
-await expect(element).toBeDisabled();
-await expect(element).toBeChecked();
-await expect(element).toHaveFocus();
+await expect(locator).toBeEnabled();
+await expect(locator).toBeDisabled();
+await expect(locator).toBeChecked();
 
-// Count
-await expect(page.locator('button')).toHaveCount(5);
-await expect(page.locator('li')).toHaveCount(10);
+// Input Values
+await expect(locator).toHaveValue('admin123');
 
-// URL & Title
-await expect(page).toHaveURL('/dashboard');
-await expect(page).toHaveURL(/\/dashboard/);
-await expect(page).toHaveTitle('Dashboard');
+// Element Counts
+await expect(page.locator('.cart_item')).toHaveCount(3);
 
-// Forms
-await expect(input).toHaveValue('john@example.com');
-
-// Classes
-await expect(element).toHaveClass('active');
-await expect(element).toHaveClass(/btn-/);
+// Page Properties
+await expect(page).toHaveURL(/.*inventory\.html/);
+await expect(page).toHaveTitle(/Swag Labs/i);
 ```
 
 ---
 
-## 🎯 Debugging Patterns
-
-### Pattern 1: Pause Execution
+## 6. Flakiness Reduction Helpers (`src/utils/flakeHelper.ts`)
 
 ```typescript
-test('Debug with pause', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
+import {
+  stableClick,
+  stableFill,
+  resilientType,
+  findElement,
+  expectWithRetry,
+} from '../../src/utils/flakeHelper';
 
-  await page.pause(); // ⏸️ Pauses here - inspect with console
+// Stable Click: Retries if element detaches during click
+await stableClick(page.getByRole('button', { name: 'Submit' }));
 
-  await loginPage.login('user@example.com', 'password');
-});
+// Stable Fill: Verifies input value after filling
+await stableFill(page.getByPlaceholder('Email'), 'user@test.com');
 
-// Run: npm test:debug
-```
+// Resilient Type: Slower character-by-character typing for masked inputs
+await resilientType(page.getByPlaceholder('Date'), '30/11/2026', { delayBetweenCharsMs: 50 });
 
-### Pattern 2: Add Logs
+// Multiple Selector Fallback: Returns first matching locator
+const btn = await findElement(page, [
+  page.getByTestId('login-btn'),
+  page.getByRole('button', { name: 'Log In' }),
+  '#login-button',
+]);
+await btn.click();
 
-```typescript
-test('Debug with logs', async ({ page }) => {
-  console.log('Current URL:', page.url());
-  console.log('Page title:', await page.title());
-
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-
-  const element = page.locator('h1');
-  console.log('Header text:', await element.textContent());
-
-  await loginPage.login('user@example.com', 'password');
-});
-```
-
-### Pattern 3: Screenshots
-
-```typescript
-test('Debug with screenshot', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  await loginPage.goto();
-
-  // Take screenshot for inspection
-  await page.screenshot({ path: 'screenshot.png' });
-
-  await loginPage.login('user@example.com', 'password');
-});
-```
-
-### Pattern 4: Check Element State
-
-```typescript
-test('Check element state', async ({ page }) => {
-  const button = page.locator('button');
-
-  const isVisible = await button.isVisible();
-  const isEnabled = await button.isEnabled();
-  const text = await button.textContent();
-  const html = await button.innerHTML();
-  const classes = await button.getAttribute('class');
-
-  console.log({ isVisible, isEnabled, text, html, classes });
-});
+// Expect with Retry: Polling dynamic content
+await expectWithRetry(
+  async () => {
+    await expect(page.locator('.badge')).toHaveText('1');
+  },
+  { maxAttempts: 4, delayMs: 500 },
+);
 ```
 
 ---
 
-## 🔧 Environment Variables
-
-### Setup .env file
-
-```bash
-# .env file in project root
-BASE_URL=https://localhost:3000
-USERNAME=test@example.com
-PASSWORD=testpassword123
-API_BASE_URL=https://api.example.com
-TEST_ENV=qa
-```
-
-### Access in code
-
-```typescript
-import { getEnv } from '../src/utils/envHelper';
-
-const baseUrl = getEnv('BASE_URL', 'https://example.com');
-const username = getEnv('USERNAME') || 'default@example.com';
-const password = getEnv('PASSWORD');
-
-// Or direct access
-const env = process.env.BASE_URL || 'https://example.com';
-```
-
----
-
-## 📊 JSON Schema Quick Pattern
-
-### Create a simple schema
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "User",
-  "type": "object",
-  "required": ["id", "name", "email"],
-  "properties": {
-    "id": {
-      "type": "integer",
-      "description": "User ID"
-    },
-    "name": {
-      "type": "string",
-      "minLength": 1
-    },
-    "email": {
-      "type": "string",
-      "format": "email"
-    },
-    "phone": {
-      "type": "string",
-      "description": "Optional phone"
-    }
-  }
-}
-```
-
-### Use in test
-
-```typescript
-import { schemaValidator } from '../../src/utils/schemaValidator';
-
-test('Validate user schema', async ({ request }) => {
-  const response = await request.get('https://api.example.com/users/1');
-  const user = await response.json();
-
-  // This throws error if invalid
-  schemaValidator.validateOrThrow(user, 'user.schema.json');
-
-  // Or get result without throwing
-  const result = schemaValidator.validate(user, 'user.schema.json');
-  expect(result.isValid).toBe(true);
-});
-```
-
----
-
-## 🗂️ File Organization Best Practices
-
-### Proper structure
+## 7. File Organization Quick Map
 
 ```
 src/
-├── pages/
-│   ├── BasePage.ts                    ← Base
-│   ├── LoginPage.ts                   ← Feature pages
-│   ├── DashboardPage.ts
-│   ├── ProfilePage.ts
-│   └── index.ts                       ← Exports
-│
-├── interface/
-│   ├── pages.interface.ts              ← Page contracts
-│   ├── api.interface.ts                ← API types
-│   └── common.interface.ts             ← Shared types
-│
-└── utils/
-    ├── selectors.ts            ← Centralized selectors
-    ├── apiHelper.ts            ← API client
-    ├── schemaValidator.ts      ← Schema validation
-    ├── assertions.ts           ← Common assertions
-    ├── logger.ts               ← Logging
-    ├── envHelper.ts            ← Env variables
-    ├── formatDate.ts           ← Utilities
-    └── waitForElement.ts       ← Custom wait conditions
+├── apps/{app}/                  # App Facades ({App}App.ts) & test-data/users.ts
+├── pages/apps/{app}/pages/      # App Page Objects extending BasePage
+├── pages/base/BasePage.ts       # Multi-app BasePage (AppRegistry + flakeHelper)
+├── core/fixtures/               # test.fixture.ts (clean) & auth.fixture.ts (session)
+├── core/auth/auth-session.ts    # Session token & storage state manager
+├── core/utils/                  # logger.ts, randomUtils.ts, waitUtils.ts
+├── utils/                       # flakeHelper.ts, apiHelper.ts, schemaValidator.ts
+└── config/                      # app.config.ts (AppRegistry) & static configs
+
+tests/
+├── {app}/                       # 6 suites: 01-auth, smoke, regression, a11y, perf, visual
+├── shared/                      # auth/, api/
+└── templates/                   # *.template.ts (quarantined)
+
+config/
+├── apps.json                    # Declarative app URLs & timeouts
+└── test-suites.json             # Suite runner path mappings
+
+storage-state/
+└── {app}.json                   # Saved session states
 ```
-
----
-
-## 🏃 Common Test Patterns
-
-### Pattern 1: Simple Test
-
-```typescript
-test('Feature works', async ({ page }) => {
-  // Arrange
-  const page = new MyPage(page);
-  await page.goto();
-
-  // Act
-  await page.doSomething();
-
-  // Assert
-  await page.assertSuccess();
-});
-```
-
-### Pattern 2: Error Testing
-
-```typescript
-test('Error is handled', async ({ page }) => {
-  const page = new MyPage(page);
-  await page.goto();
-
-  await page.doInvalidAction();
-
-  await expect(page.locator('.error')).toBeVisible();
-  await expect(page.locator('.error')).toContainText('Invalid');
-});
-```
-
-### Pattern 3: Conditional Testing
-
-```typescript
-test('Conditional flow', async ({ page }) => {
-  const page = new MyPage(page);
-  await page.goto();
-
-  const result = await page.locator('.message').textContent();
-
-  if (result?.includes('success')) {
-    await expect(page.locator('.dashboard')).toBeVisible();
-  } else {
-    await expect(page.locator('.error')).toBeVisible();
-  }
-});
-```
-
-### Pattern 4: Looped Testing
-
-```typescript
-test('Test multiple items', async ({ page }) => {
-  const page = new MyPage(page);
-  await page.goto();
-
-  const items = await page.locator('li').all();
-
-  for (const item of items) {
-    const text = await item.textContent();
-    expect(text).toHaveLength(text!.length > 0);
-  }
-});
-```
-
----
-
-## 🚀 Page Object Methods Cheat Sheet
-
-```typescript
-// Navigation
-page.goto(url, options);
-page.navigateTo(path);
-page.goBack();
-page.goForward();
-page.reload();
-
-// Waiting
-page.waitForLoadState('networkidle' | 'domcontentloaded' | 'load');
-page.waitForSelector(selector, options);
-page.waitForFunction(() => boolean);
-
-// Finding elements
-page.locator(selector);
-page.getByTestId(id);
-page.getByRole(role, options);
-page.getByPlaceholder(text);
-page.getByText(text);
-page.getByLabel(text);
-
-// Interactions
-locator.click(options);
-locator.fill(value);
-locator.type(text);
-locator.select(value);
-locator.check();
-locator.uncheck();
-locator.focus();
-locator.hover();
-locator.dragTo(target);
-
-// Assertions (with await)
-expect(locator).toBeVisible();
-expect(locator).toHaveText(text);
-expect(locator).toHaveValue(value);
-expect(page).toHaveURL(url);
-expect(page).toHaveTitle(title);
-
-// Getting info
-locator.textContent();
-locator.inputValue();
-locator.getAttribute(name);
-locator.innerHTML();
-locator.isVisible();
-locator.isEnabled();
-locator.count();
-
-// Screenshots & Videos
-page.screenshot(options);
-page.video()?.path();
-```
-
----
-
-## 📋 File Naming Conventions
-
-```
-✅ GOOD:
-- login.spec.ts        (test file)
-- LoginPage.ts         (page object)
-- ILoginPage.ts        (interface)
-- user.schema.json     (schema)
-- login.testUsers.json (test data)
-
-❌ BAD:
-- test.ts             (vague)
-- LP.ts               (abbreviated)
-- test_login.spec.ts  (underscores)
-- LOGIN_SPEC.TS       (uppercase)
-```
-
----
-
-## 🔑 Key Takeaways
-
-| Concept         | Key Point                                 |
-| --------------- | ----------------------------------------- |
-| **BasePage**    | Share common methods, extend don't repeat |
-| **Interfaces**  | Define contracts, ensure consistency      |
-| **Selectors**   | Prefer data-testid, then role, avoid CSS  |
-| **Assertions**  | Use expect(), be specific                 |
-| **Data**        | Keep external, JSON files not code        |
-| **Async/Await** | Never forget, causes all flakiness        |
-| **AAA**         | Every test: Arrange, Act, Assert          |
-| **DRY**         | Don't Repeat Yourself, reuse code         |
-| **Focus**       | One thing per test                        |
-| **Names**       | Describe what and expected result         |
-
----
-
-## 🆘 Troubleshooting
-
-### Test is failing randomly (flaky test)
-
-**Cause**: Timing issues or improper waits
-
-**Solution**:
-
-```typescript
-// ❌ Wrong
-const text = element.textContent(); // No await!
-
-// ✅ Correct - wait for element first
-await expect(element).toBeVisible();
-const text = await element.textContent();
-```
-
-### Selector not found
-
-**Cause**: Wrong selector or element not rendered yet
-
-**Solution**:
-
-```typescript
-// ✅ Use more resilient selector
-await page.getByTestId('user-name').fill('john'); // Instead of CSS
-
-// ✅ Wait for it first
-await expect(page.locator('input')).toBeVisible();
-await page.locator('input').fill('john');
-```
-
-### Test hangs/times out
-
-**Cause**: Infinite wait or wrong wait condition
-
-**Solution**:
-
-```typescript
-// ✅ Set timeout
-await page.waitForSelector('.modal', { timeout: 5000 });
-
-// ✅ Wait for right condition
-await page.waitForLoadState('networkidle'); // Not 'load'
-```
-
-### Type error in test
-
-**Cause**: Missing type annotation or wrong type
-
-**Solution**:
-
-```typescript
-// ✅ Use type from interface
-const { data: user } = await apiHelper.get<User>('/users/1');
-
-// ✅ Add types to variables
-const username: string = 'john@example.com';
-const userId: number = 123;
-```
-
----
-
-## 📚 When in Doubt
-
-1. **Check existing patterns** - Look for similar tests
-2. **Read the code** - Open LoginPage, DashboardPage, etc.
-3. **Read the docs** - Reference guides in project
-4. **Run debug mode** - `npm test:debug`
-5. **Add console.log** - Log what you're testing
-6. **Take screenshot** - Visual inspection
-7. **Ask a team member** - Pair programming or code review
-
----
-
-Good luck! 🎯

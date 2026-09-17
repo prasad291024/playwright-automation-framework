@@ -9,29 +9,38 @@ See `docs/TEST_STRATEGY.md` for CI scope, suite ownership rules, and rollout gui
 
 ## App-Specific Suites
 
+Each supported app owns its own runnable suites under `tests/<app>/...`:
+
+**SauceDemo:**
+
 - `tests/saucedemo/01-auth`: SauceDemo negative and edge-case authentication coverage
 - `tests/saucedemo/smoke`: Fast SauceDemo happy-path login and shell coverage
 - `tests/saucedemo/regression`: Broader SauceDemo flows
 - `tests/saucedemo/04-accessibility-testing`: SauceDemo accessibility coverage
 - `tests/saucedemo/05-performance-testing`: SauceDemo performance coverage
 - `tests/saucedemo/06-visual-regression`: SauceDemo visual regression coverage
+
+**CURA Healthcare:**
+
 - `tests/cura/01-auth`: CURA negative and edge-case authentication coverage
 - `tests/cura/smoke`: Fast CURA happy-path smoke coverage
 - `tests/cura/regression`: Broader CURA appointment flows
 - `tests/cura/04-accessibility-testing`: CURA accessibility coverage
 - `tests/cura/05-performance-testing`: CURA performance coverage
 - `tests/cura/06-visual-regression`: CURA visual regression coverage
+
+**OrangeHRM:**
+
 - `tests/orangehrm/01-auth`: OrangeHRM negative and edge-case authentication coverage
 - `tests/orangehrm/smoke`: OrangeHRM happy-path smoke coverage
+- `tests/orangehrm/regression`: Broader OrangeHRM flows
 - `tests/orangehrm/04-accessibility-testing`: OrangeHRM accessibility coverage
 - `tests/orangehrm/05-performance-testing`: OrangeHRM performance coverage
 - `tests/orangehrm/06-visual-regression`: OrangeHRM visual regression coverage
 
-## Archived App Coverage
+## Template Suites
 
-- `tests/templates/apps/vwo.com/01-auth`: Archived VWO auth template kept for future reactivation when valid org-owned credentials are available
-
-## Numbered Templates
+Reusable examples and learning/reference material live under `tests/templates/`:
 
 - `tests/templates/01-fundamentals`: Login and setup templates
 - `tests/templates/02-interactions`: UI interaction templates
@@ -43,6 +52,9 @@ See `docs/TEST_STRATEGY.md` for CI scope, suite ownership rules, and rollout gui
 - `tests/templates/08-performance-testing`: Performance-testing templates
 - `tests/templates/09-accessibility-testing`: Accessibility-testing templates
 - `tests/templates/10-visual-regression`: Visual-regression templates
+- `tests/templates/apps/vwo.com/01-auth`: Archived VWO auth template kept for future reactivation when valid org-owned credentials are available
+
+Template files use `*.template.ts` so Playwright does not execute them as active coverage.
 
 ## Suite Intent
 
@@ -57,5 +69,7 @@ See `docs/TEST_STRATEGY.md` for CI scope, suite ownership rules, and rollout gui
 - JUnit reports are written to `test-results/junit/<app>-<suite>.xml`
 - Playwright attachments are written to `test-results/artifacts/<app>/<suite>`
 - Visual snapshot baselines live alongside the owning visual suite under `*-snapshots/`
-- Use `npm run test:visual:update` to refresh app-owned visual baselines on the current platform
-- Template files are stored as `*.template.ts` so Playwright does not execute them
+- Use app-specific update commands to refresh visual baselines:
+  - `node scripts/run-app-suite.cjs --app=saucedemo --suite=visual -u`
+  - `node scripts/run-app-suite.cjs --app=cura --suite=visual -u`
+  - `node scripts/run-app-suite.cjs --app=orangehrm --suite=visual -u`
