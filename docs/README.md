@@ -91,10 +91,6 @@ The framework separates **business-level test scenarios** from **UI interaction,
         └─────────────────────────────────────────┘
 
 
-```
-
-
-```markdown
 
 ```
 ### Architectural Principles
