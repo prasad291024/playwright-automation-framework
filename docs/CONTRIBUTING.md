@@ -300,4 +300,4 @@ Before submitting your PR, verify the following:
 - [ ] Commit messages follow conventional commit format.
 - [ ] Documentation updated to reflect changes.
 
-See [`docs/CODE_REVIEW.md`](./CODE_REVIEW.md) for reviewer criteria.
+See [`docs/CODE_REVIEW.md`](https://github.com/prasad291024/playwright-automation-framework/blob/main/docs/CODE_REVIEW.md) for reviewer criteria.
