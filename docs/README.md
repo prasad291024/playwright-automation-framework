@@ -258,11 +258,6 @@ tests/
 
 ```
 
-```text
-tests/templates/
-```
-
-Template files use the `*.template.ts` convention so they are not executed as active test coverage.
 
 
 ## 🚀 Getting Started
