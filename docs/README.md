@@ -401,7 +401,7 @@ Reusable examples and learning/reference material are maintained separately unde
 
 Template files use `*.template.ts` so Playwright does not execute them as active coverage.
 
-## Suite Intent
+### Suite Intent
 
 - `01-auth` suites focus on negative-path and validation coverage so they do not duplicate smoke login tests.
 - `smoke` suites own the fast happy-path login and shell checks used for quick confidence.
