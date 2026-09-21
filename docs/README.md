@@ -15,11 +15,10 @@ The framework brings together:
 > **Portfolio note:** This repository is an engineering demonstration of automation architecture and quality practices. It is not a representation of any specific employer's production test framework.
 
 
-
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/prasad291024/playwright-automation-framework/playwright.yml?label=CI)](https://github.com/prasad291024/playwright-automation-framework/actions)
-[![License](https://img.shields.io/github/license/prasad291024/playwright-automation-framework)](https://github.com/prasad291024/playwright-automation-framework/blob/main/LICENSE)
+[![CI](https://github.com/prasad291024/playwright-automation-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad291024/playwright-automation-framework/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/prasad291024/playwright-automation-framework/actions/workflows/codeql.yml/badge.svg)](https://github.com/prasad291024/playwright-automation-framework/actions/workflows/codeql.yml)
 
 
 ## 📚 Contents
@@ -35,6 +34,24 @@ The framework brings together:
 - [Quality & Reliability](#-quality--reliability)
 - [Technology Stack](#️-technology-stack)
 
+
+
+## 📌 Project Status
+
+**Active engineering portfolio project**
+
+This repository is continuously refined to demonstrate practical approaches to:
+
+- Playwright-based test automation
+- Framework architecture and maintainability
+- Authentication and session management
+- Cross-browser and parallel execution
+- Test reliability and failure diagnostics
+- Visual, accessibility, and performance testing
+- CI/CD execution with GitHub Actions and Jenkins
+- Containerized test execution
+
+> The framework is intended as a public engineering demonstration and learning/reference project. It does not represent the internal automation framework or proprietary implementation of any employer.
 
 
 
@@ -60,17 +77,23 @@ This framework focuses on the engineering practices required to build maintainab
 
 ## 💡 Why This Framework?
 
-The goal of this project is to demonstrate how a Playwright test suite can evolve into a maintainable automation framework with clear separation of responsibilities.
+A Playwright test suite can start as a collection of automated scenarios and gradually become difficult to maintain as applications, browsers, environments, and test coverage grow.
 
-The framework focuses on:
+This project demonstrates an approach to managing that complexity through clear separation of responsibilities and reusable framework components.
 
-- **Maintainability** — reusable components and clear ownership between tests, pages, fixtures, helpers, and configuration
-- **Reliability** — predictable synchronization, controlled test data, isolated browser contexts, and failure diagnostics
-- **Scalability** — support for multiple applications, suites, browsers, and configurable execution
-- **Developer Feedback** — useful reports and artifacts that make failures easier to investigate
-- **Continuous Testing** — integration with CI/CD pipelines for repeatable automated execution
+### Engineering Goals
 
-The project is intentionally structured as a portfolio and engineering demonstration rather than representing a production system from a specific organization.
+- **Maintainability** — keep test intent separate from UI implementation and framework infrastructure.
+- **Reliability** — make failures easier to reproduce, diagnose, and resolve.
+- **Scalability** — support multiple applications, test suites, browsers, and configurable execution.
+- **Fast Feedback** — use appropriate execution strategies, reporting, and CI integration to shorten the feedback loop.
+- **Reusability** — centralize authentication, session management, common utilities, and test-data handling.
+- **Continuous Testing** — integrate automated execution into GitHub Actions and Jenkins workflows.
+
+The project is intentionally structured as a **public engineering demonstration** rather than representing a production system from a specific organization.
+
+
+
 
 
 
