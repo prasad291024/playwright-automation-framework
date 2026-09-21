@@ -16,6 +16,30 @@ The framework brings together:
 
 
 
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
+[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/prasad291024/playwright-automation-framework/playwright.yml?label=CI)](https://github.com/prasad291024/playwright-automation-framework/actions)
+[![License](https://img.shields.io/github/license/prasad291024/playwright-automation-framework)](https://github.com/prasad291024/playwright-automation-framework/blob/main/LICENSE)
+
+
+## 📚 Contents
+
+- [What This Project Demonstrates](#-what-this-project-demonstrates)
+- [Why This Framework](#-why-this-framework)
+- [Framework Architecture](#-framework-architecture)
+- [Framework Capabilities](#-framework-capabilities)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [CI/CD & Execution](#-cicd--execution)
+- [Test Strategy & Suite Organization](#-test-strategy--suite-organization)
+- [Quality & Reliability](#-quality--reliability)
+- [Technology Stack](#️-technology-stack)
+
+
+
+
+
+
 ## 🎯 What This Project Demonstrates
 
 This framework focuses on the engineering practices required to build maintainable and reliable test automation systems.
@@ -107,73 +131,76 @@ The framework separates **business-level test scenarios** from **UI interaction,
 
 ## 🚀 Framework Capabilities
 
-| Capability | Implementation |
+| Engineering Area | Implementation |
 |---|---|
-| **Browser Automation** | Playwright with configurable browser projects |
-| **Page Object Model** | Dedicated page classes for reusable UI interactions |
-| **Test Fixtures** | Reusable authentication, browser context, and test setup |
-| **Session Management** | Storage-state based authentication and session reuse |
-| **Parallel Execution** | Configurable Playwright workers |
+| **UI Automation** | Playwright with reusable Page Objects and configurable browser projects |
+| **Test Architecture** | Page Object Model, fixtures, shared helpers, test-data separation, and application-specific suites |
+| **Authentication & Sessions** | Reusable authentication setup and storage-state based session reuse |
+| **Execution Engineering** | Configurable workers, retries, timeouts, browser projects, and execution scopes |
 | **Cross-Browser Testing** | Chromium, Firefox, and WebKit support |
-| **Test Data Management** | Environment-aware and reusable test data |
-| **API Validation** | Shared API utilities and API health checks |
-| **Visual Regression** | Screenshot-based visual validation with baselines |
-| **Accessibility Testing** | Dedicated accessibility test suites |
+| **API Validation** | Shared API utilities and API health-check coverage |
+| **Visual Testing** | Screenshot-based visual regression with baseline management |
+| **Accessibility Testing** | Dedicated accessibility-oriented test suites |
 | **Performance Testing** | Dedicated performance-oriented test suites |
-| **Failure Diagnostics** | Screenshots, traces, videos/logs and test reports |
-| **Reporting** | HTML, JSON and JUnit reporting |
-| **Containerization** | Docker-based execution |
-| **CI/CD** | GitHub Actions and Jenkins integration |
-| **Multi-Application Support** | SauceDemo, CURA Healthcare and OrangeHRM suites |
+| **Failure Diagnostics** | Screenshots, traces, videos, logs, and structured test reports |
+| **Test Reporting** | HTML, JSON, and JUnit reports |
+| **Containerized Execution** | Docker-based test execution |
+| **CI/CD Integration** | GitHub Actions and Jenkins execution |
+| **Multi-Application Architecture** | SauceDemo, CURA Healthcare, and OrangeHRM test suites |
 
 
 ## 📁 Project Structure
+
+The repository is organized around framework components, execution infrastructure, and application-specific test suites.
 
 ```text
 playwright-automation-framework/
 │
 ├── .github/                  # GitHub Actions workflows
 ├── .husky/                   # Git hooks
+│
 ├── config/                   # Environment and execution configuration
 ├── docs/                     # Framework and testing documentation
 ├── globals/                  # Shared global definitions
 ├── helpers/                  # Reusable helper utilities
-├── jenkins/                  # Jenkins-related configuration
-├── schemas/                  # Data/schema definitions
-├── scripts/                  # Test execution and utility scripts
-├── selectors/                # Shared selectors
+├── jenkins/                 # Jenkins configuration
+├── schemas/                 # Data and schema definitions
+├── scripts/                 # Test execution and utility scripts
+├── selectors/               # Shared selectors
+│
 ├── src/
-│   ├── pages/                # Page Object implementations
-│   ├── fixtures/             # Reusable Playwright fixtures
-│   ├── helpers/              # Framework-level helpers
-│   ├── environment/          # Environment-specific configuration
-│   └── tests/                # Application test suites
+│   ├── pages/               # Page Object implementations
+│   ├── fixtures/            # Reusable Playwright fixtures
+│   ├── helpers/             # Framework-level helpers
+│   ├── environment/         # Environment-specific configuration
+│   └── tests/               # Application test suites
 │
-├── test-data/                # Test data
-├── tests/                    # Executable test suites and templates
+├── test-data/               # Test data
+├── tests/                   # Executable suites and template/reference tests
 │
-├── Dockerfile
-├── docker-compose.yml
-├── Jenkinsfile.docker
-├── playwright.config.ts
-├── package.json
+├── Dockerfile               # Containerized execution
+├── docker-compose.yml       # Docker orchestration
+├── Jenkinsfile.docker      # Jenkins pipeline definition
+├── playwright.config.ts     # Playwright execution configuration
+├── package.json             # Project dependencies and scripts
 └── README.md
 ```
 
 ### Test Organization
 
-Application-specific tests are organized by application and test intent, with shared authentication and API coverage separated from application-specific suites.
+The test suite is organized by **shared capabilities, application-specific coverage, and reusable reference templates**.
 
 ```text
 tests/
+│
 ├── shared/
-│   ├── auth/
-│   └── api/
+│   ├── auth/                         # Shared authentication coverage
+│   └── api/                          # Shared API coverage and health checks
 │
 ├── saucedemo/
-│   ├── 01-auth/
-│   ├── smoke/
-│   ├── regression/
+│   ├── 01-auth/                      # Authentication edge cases
+│   ├── smoke/                        # Fast happy-path coverage
+│   ├── regression/                   # Broader functional coverage
 │   ├── 04-accessibility-testing/
 │   ├── 05-performance-testing/
 │   └── 06-visual-regression/
@@ -186,16 +213,27 @@ tests/
 │   ├── 05-performance-testing/
 │   └── 06-visual-regression/
 │
-└── orangehrm/
-    ├── 01-auth/
-    ├── smoke/
-    ├── regression/
-    ├── 04-accessibility-testing/
-    ├── 05-performance-testing/
-    └── 06-visual-regression/
-```
+├── orangehrm/
+│   ├── 01-auth/
+│   ├── smoke/
+│   ├── regression/
+│   ├── 04-accessibility-testing/
+│   ├── 05-performance-testing/
+│   └── 06-visual-regression/
+│
+└── templates/
+    ├── fundamentals/
+    ├── interactions/
+    ├── test-organization/
+    ├── advanced-features/
+    ├── page-object-model/
+    ├── api-testing/
+    ├── smoke-testing/
+    ├── performance-testing/
+    ├── accessibility-testing/
+    └── visual-regression/
 
-Template and learning/reference examples are maintained separately under:
+```
 
 ```text
 tests/templates/
@@ -208,58 +246,54 @@ Template files use the `*.template.ts` convention so they are not executed as ac
 
 ### Prerequisites
 
+Install the following before running the framework:
+
 - Node.js
 - npm
 - Git
 - Playwright browser dependencies
+- Docker *(optional, for containerized execution)*
 
-For containerized execution:
-
-- Docker
-
-### Installation
-
-Clone the repository:
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/prasad291024/playwright-automation-framework.git
-
 cd playwright-automation-framework
 ```
 
-Install dependencies:
+### 2. Install Dependencies
 
 ```bash
 npm install
 ```
 
-Install Playwright browsers:
+### 3. Install Playwright Browsers
 
 ```bash
 npx playwright install
 ```
 
-### Environment Configuration
+### 4. Configure the Environment
 
-Create the required environment configuration based on the provided example:
+Create the local environment configuration from the provided example:
 
 ```bash
 cp .env.example .env
 ```
 
-Update the environment-specific values as required.
+Update the required environment-specific values.
 
-> Never commit credentials, tokens, or other secrets to the repository.
+> ⚠️ Never commit credentials, tokens, or other secrets to the repository.
 
-### Run Tests
+### 5. Run Tests
 
-Run the default test suite:
+Run the default Playwright test suite:
 
 ```bash
 npx playwright test
 ```
 
-Run tests with the Playwright UI:
+Run tests using Playwright UI mode:
 
 ```bash
 npx playwright test --ui
@@ -271,19 +305,15 @@ Run a specific browser project:
 npx playwright test --project=chromium
 ```
 
-Run tests with a specific number of workers:
+Run with a specific number of workers:
 
 ```bash
 npx playwright test --workers=1
 ```
 
-### View the HTML Report
+### 6. Run an Application-Specific Suite
 
-```bash
-npx playwright show-report
-```
-
-For application-specific execution, use the repository's suite runner:
+Use the repository's suite runner:
 
 ```bash
 node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
@@ -291,15 +321,33 @@ node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
 
 Replace the application and suite values according to the supported test suites.
 
+### 7. View the HTML Report
+
+```bash
+npx playwright show-report
+```
+
+### Execution Examples
+
+| Use Case | Command |
+|---|---|
+| Full/default suite | `npx playwright test` |
+| Interactive debugging | `npx playwright test --ui` |
+| Chromium | `npx playwright test --project=chromium` |
+| Controlled parallelism | `npx playwright test --workers=1` |
+| Application smoke suite | `node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke` |
+| HTML report | `npx playwright show-report` |
 
 
 ## 🔄 CI/CD & Execution
 
-The framework supports automated test execution through both **GitHub Actions** and **Jenkins**.
+The framework is designed for repeatable automated execution through **GitHub Actions** and **Jenkins**, with configurable test scopes, browser projects, reporting, and execution parameters.
 
 ### GitHub Actions
 
-The repository includes workflows for automated validation and test execution, including:
+The repository includes workflows for automated validation and test execution.
+
+The CI workflow can include:
 
 - Dependency installation
 - Code quality checks
@@ -309,27 +357,27 @@ The repository includes workflows for automated validation and test execution, i
 - Test reporting
 - Artifact collection
 
-Pull-request and push workflows can use different execution scopes so that faster feedback can be obtained during development while broader suites can be executed when required.
-
-
+Pull-request and push workflows can use different execution scopes, allowing faster feedback during development while broader suites can be executed when required.
 
 ### Jenkins
 
 Jenkins execution is supported through the repository's Jenkins configuration and Docker-based execution flow.
 
-The pipeline supports configurable execution parameters such as:
+The pipeline supports configurable parameters such as:
 
-- Application
-- Browser
-- Test scope
-- Execution timeout
-- Test reports and artifacts
+| Parameter | Purpose |
+|---|---|
+| **Application** | Select the application under test |
+| **Browser** | Select the Playwright browser project |
+| **Test Scope** | Control which test suite or scope is executed |
+| **Execution Timeout** | Control pipeline execution limits |
+| **Reports & Artifacts** | Preserve execution results for investigation |
 
 ### Execution Strategy
 
 The framework supports configurable parallel execution through Playwright workers.
 
-Parallel execution can reduce feedback time, but the optimal worker count depends on factors such as:
+Parallel execution can reduce feedback time, but the optimal worker count depends on:
 
 - Test-data isolation
 - Shared application state
@@ -339,122 +387,129 @@ Parallel execution can reduce feedback time, but the optimal worker count depend
 
 The goal is therefore not simply to maximize the number of workers, but to balance **execution speed with test reliability**.
 
+### Execution Model
 
+```text
+Developer Change
+       │
+       ▼
+Pull Request / Push
+       │
+       ▼
+CI Validation
+       │
+       ├── Code Quality
+       ├── Type Checking
+       └── Automated Tests
+                    │
+                    ▼
+          Reports & Artifacts
+                    │
+                    ▼
+             Failure Analysis
+```
 
-### Jenkins
+> **Engineering principle:** Faster test execution is valuable only when the resulting feedback remains reliable and actionable.
 
-Jenkins execution is supported through the repository's Jenkins configuration and Docker-based execution flow.
-
-The pipeline supports configurable execution parameters such as:
-
-- Application
-- Browser
-- Test scope
-- Execution timeout
-- Test reports and artifacts
-
-### Execution Strategy
-
-The framework supports configurable parallel execution through Playwright workers.
-
-Parallel execution can reduce feedback time, but the optimal worker count depends on factors such as:
-
-- Test-data isolation
-- Shared application state
-- Environment capacity
-- API and database contention
-- CI runner resources
-
-The goal is therefore not simply to maximize the number of workers, but to balance **execution speed with test reliability**.
 
 
 
 
 ## 🧪 Test Strategy & Suite Organization
 
-See `docs/TEST_STRATEGY.md` for CI scope, suite ownership rules, and rollout guidance.
+The framework organizes tests by **application, test intent, and execution purpose**, while keeping shared capabilities and reusable reference material separate.
 
-### Shared Suites
+See `docs/TEST_STRATEGY.md` for additional details on CI scope, suite ownership, and execution guidance.
 
-- `tests/shared/auth`: Shared authentication fixture and storage-state coverage
-- `tests/shared/api`: Shared API coverage and API health checks
+### Test Layers
 
-### Application-Specific Suites
+| Test Layer | Purpose |
+|---|---|
+| **Shared** | Reusable authentication and API-oriented coverage |
+| **Smoke** | Fast happy-path checks for rapid feedback |
+| **Regression** | Broader application workflow coverage |
+| **Accessibility** | Accessibility-oriented validation |
+| **Performance** | Performance-oriented test scenarios |
+| **Visual Regression** | Screenshot-based UI consistency checks |
+| **Templates** | Reusable learning and reference examples |
 
-Each supported app owns its own runnable suites under `tests/<app>/...`:
+### Suite Organization
 
-**SauceDemo:**
+Each supported application owns its runnable suites under:
 
-- `tests/saucedemo/01-auth`: SauceDemo negative and edge-case authentication coverage
-- `tests/saucedemo/smoke`: Fast SauceDemo happy-path login and shell coverage
-- `tests/saucedemo/regression`: Broader SauceDemo flows
-- `tests/saucedemo/04-accessibility-testing`: SauceDemo accessibility coverage
-- `tests/saucedemo/05-performance-testing`: SauceDemo performance coverage
-- `tests/saucedemo/06-visual-regression`: SauceDemo visual regression coverage
+```text
+tests/<application>/
+```
 
-**CURA Healthcare:**
+Current application coverage includes:
 
-- `tests/cura/01-auth`: CURA negative and edge-case authentication coverage
-- `tests/cura/smoke`: Fast CURA happy-path smoke coverage
-- `tests/cura/regression`: Broader CURA appointment flows
-- `tests/cura/04-accessibility-testing`: CURA accessibility coverage
-- `tests/cura/05-performance-testing`: CURA performance coverage
-- `tests/cura/06-visual-regression`: CURA visual regression coverage
+- **SauceDemo**
+- **CURA Healthcare**
+- **OrangeHRM**
 
-**OrangeHRM:**
-
-- `tests/orangehrm/01-auth`: OrangeHRM negative and edge-case authentication coverage
-- `tests/orangehrm/smoke`: OrangeHRM happy-path smoke coverage
-- `tests/orangehrm/regression`: Broader OrangeHRM flows
-- `tests/orangehrm/04-accessibility-testing`: OrangeHRM accessibility coverage
-- `tests/orangehrm/05-performance-testing`: OrangeHRM performance coverage
-- `tests/orangehrm/06-visual-regression`: OrangeHRM visual regression coverage
-
-### Template & Learning Suites
-
-Reusable examples and learning/reference material are maintained separately under `tests/templates/`:
-
-- `tests/templates/01-fundamentals`: Login and setup templates
-- `tests/templates/02-interactions`: UI interaction templates
-- `tests/templates/03-test-organization`: Naming and organization templates
-- `tests/templates/04-advanced-features`: Search and realtime templates
-- `tests/templates/05-page-object-model`: Generic POM templates
-- `tests/templates/06-api-testing`: API testing templates
-- `tests/templates/07-smoke-testing`: Smoke-testing templates
-- `tests/templates/08-performance-testing`: Performance-testing templates
-- `tests/templates/09-accessibility-testing`: Accessibility-testing templates
-- `tests/templates/10-visual-regression`: Visual-regression templates
-- `tests/templates/apps/vwo.com/01-auth`: Archived VWO auth template kept for future reactivation when valid org-owned credentials are available
-
-Template files use `*.template.ts` so Playwright does not execute them as active coverage.
+Each application follows a consistent organization around authentication, smoke, regression, and specialized testing where applicable.
 
 ### Suite Intent
 
-- `01-auth` suites focus on negative-path and validation coverage so they do not duplicate smoke login tests.
-- `smoke` suites own the fast happy-path login and shell checks used for quick confidence.
+- `01-auth` suites focus on negative-path and authentication validation scenarios.
+- `smoke` suites focus on fast happy-path checks used for quick confidence.
+- `regression` suites contain broader application workflows.
+- Specialized suites address accessibility, performance, and visual validation.
+
+### Template & Learning Suites
+
+Reusable examples and reference material are maintained separately under:
+
+```text
+tests/templates/
+```
+
+These templates cover areas such as:
+
+- Test fundamentals
+- UI interactions
+- Test organization
+- Page Object Model
+- API testing
+- Smoke testing
+- Performance testing
+- Accessibility testing
+- Visual regression
+
+Template files use the `*.template.ts` convention so Playwright does not execute them as active test coverage.
 
 ### Reporting & Artifact Conventions
 
-- App-specific suite runs should use `scripts/run-app-suite.cjs`
-- HTML reports are written to `playwright-report/<app>/<suite>`
-- JSON reports are written to `test-results/json/<app>-<suite>.json`
-- JUnit reports are written to `test-results/junit/<app>-<suite>.xml`
-- Playwright attachments are written to `test-results/artifacts/<app>/<suite>`
-- Visual snapshot baselines live alongside the owning visual suite under `*-snapshots/`
-- Use app-specific update commands to refresh visual baselines:
-  - `node scripts/run-app-suite.cjs --app=saucedemo --suite=visual -u`
-  - `node scripts/run-app-suite.cjs --app=cura --suite=visual -u`
-  - `node scripts/run-app-suite.cjs --app=orangehrm --suite=visual -u`
+Application-specific suite execution should use the repository's suite runner:
+
+```bash
+node scripts/run-app-suite.cjs --app=<application> --suite=<suite>
+```
+
+Execution artifacts are organized by application and suite:
+
+| Artifact | Location |
+|---|---|
+| **HTML Reports** | `playwright-report/<app>/<suite>` |
+| **JSON Reports** | `test-results/json/<app>-<suite>.json` |
+| **JUnit Reports** | `test-results/junit/<app>-<suite>.xml` |
+| **Playwright Attachments** | `test-results/artifacts/<app>/<suite>` |
+| **Visual Snapshots** | `*-snapshots/` alongside the owning visual suite |
+
+Visual baselines can be refreshed using the application-specific suite runner when required.
+
+
+
 
 
 
 ## 🔍 Quality & Reliability
 
-The framework is designed to make automation failures easier to reproduce, diagnose, and resolve.
+The framework treats test reliability as an engineering concern rather than simply a test-execution problem.
 
 ### Failure Diagnostics
 
-Test execution can preserve artifacts such as:
+When tests fail, execution can preserve artifacts that help reproduce and investigate the failure:
 
 - Screenshots
 - Playwright traces
@@ -464,40 +519,76 @@ Test execution can preserve artifacts such as:
 - JUnit reports
 - Execution logs
 
-These artifacts provide additional context when a test fails in local or CI execution.
+These artifacts provide additional context for both local and CI failures.
 
 ### Flaky Test Investigation
 
 Flaky failures should be investigated rather than hidden through repeated retries.
 
-Common areas of investigation include:
+Common investigation areas include:
 
-- Locator stability
-- Synchronization and dynamic application state
-- Timeouts
-- Authentication or session state
-- Test-data dependencies
-- Shared application state
-- API or database dependencies
-- CI/environment resource constraints
+- **Locator stability**
+- **Synchronization and dynamic application state**
+- **Timeout configuration**
+- **Authentication and session state**
+- **Test-data dependencies**
+- **Shared application state**
+- **API and database dependencies**
+- **CI and environment resource constraints**
 
-Retries can provide temporary resilience, but the underlying cause should be investigated when failures are reproducible or persistent.
+Retries can provide temporary resilience, but persistent or reproducible failures should be investigated at their source.
 
-### Parallel Execution Considerations
+### Parallel Execution & Isolation
 
-Parallel execution can improve feedback time, but tests need appropriate isolation.
+Parallel execution can improve feedback time, but reliable parallelism requires appropriate isolation.
 
 Potential sources of instability include:
 
 - Shared test data
 - Race conditions
 - Environment contention
-- API/database limits
-- Resource constraints on CI runners
+- API or database limits
+- CI runner resource constraints
 
-The framework therefore treats parallelism as an execution strategy that must be balanced with reliability.
+The framework therefore treats parallelism as a balance between:
+
+```text
+                 Fast Feedback
+                      ▲
+                      │
+                      │
+        ┌─────────────┼─────────────┐
+        │             │             │
+        │     Execution Strategy    │
+        │             │             │
+        ▼             │             ▼
+   More Workers   ─────┼─────   More Isolation
+        │             │             │
+        └─────────────┼─────────────┘
+                      │
+                      ▼
+                Reliable Results
+```
+
+> **Reliability principle:** Increasing execution speed is useful only when test results remain trustworthy and actionable.
 
 
 
+## 🛠️ Technology Stack
+
+| Category | Technologies |
+|---|---|
+| **Language** | TypeScript / JavaScript |
+| **UI Automation** | Playwright |
+| **Test Architecture** | Page Object Model, Fixtures |
+| **API Testing** | Playwright API utilities |
+| **Test Execution** | Playwright Test |
+| **Browsers** | Chromium, Firefox, WebKit |
+| **Test Data** | Environment-driven and reusable test data |
+| **Reporting** | HTML, JSON, JUnit |
+| **Containerization** | Docker, Docker Compose |
+| **CI/CD** | GitHub Actions, Jenkins |
+| **Version Control** | Git, GitHub |
+| **Code Quality** | ESLint, TypeScript checks, Git hooks |
 
 
