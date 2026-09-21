@@ -1,20 +1,37 @@
 # 🎭 Playwright Automation Framework
 
-A TypeScript-based **end-to-end test automation framework** built with Playwright, designed to demonstrate maintainable framework architecture, reliable test execution, reusable automation components, and CI/CD integration.
+A **TypeScript-based Playwright automation framework** demonstrating how end-to-end test automation can be structured for **maintainability, reliability, scalability, and fast feedback**.
 
-The framework supports multiple web applications and organizes automation around reusable **Page Objects, fixtures, authentication/session management, test data, environment configuration, reporting, and execution strategies**.
+The framework brings together:
+
+- **Page Object Model** for maintainable UI interactions
+- **Fixtures & authentication** for reusable test setup and session management
+- **Cross-browser & parallel execution** for scalable test execution
+- **Test data & environment configuration** for repeatable automation
+- **Visual, accessibility & performance testing** for broader quality coverage
+- **Failure diagnostics & reporting** for faster investigation
+- **Docker, GitHub Actions & Jenkins** for CI/CD execution
+
+> **Portfolio note:** This repository is an engineering demonstration of automation architecture and quality practices. It is not a representation of any specific employer's production test framework.
+
+
 
 ## 🎯 What This Project Demonstrates
 
-- 🧩 **Framework Architecture** — separation of tests, pages, fixtures, helpers, configuration, and test data
-- 🔐 **Authentication & Session Management** — reusable authentication setup and storage-state based sessions
-- 🌐 **Cross-Browser Automation** — configurable browser execution across supported Playwright browsers
-- ⚡ **Parallel Test Execution** — configurable workers for faster feedback while considering test-data and environment constraints
-- 🧪 **Multiple Test Strategies** — smoke, regression, authentication, accessibility, performance, and visual testing
-- 📊 **Test Reporting & Artifacts** — HTML, JSON, JUnit, screenshots, traces, and other execution artifacts
-- 🐳 **Containerized Execution** — Docker-based test execution
-- 🔄 **CI/CD Integration** — automated execution through GitHub Actions and Jenkins
-- 🔍 **Reliability Engineering** — investigation and handling of synchronization, test-data, environment, and flaky-test issues
+This framework focuses on the engineering practices required to build maintainable and reliable test automation systems.
+
+| Area | What It Demonstrates |
+|---|---|
+| 🧩 **Framework Architecture** | Separation of tests, Page Objects, fixtures, helpers, configuration, and test data |
+| 🔐 **Authentication & Sessions** | Reusable authentication setup and storage-state based session management |
+| 🌐 **Cross-Browser Execution** | Configurable execution across Chromium, Firefox, and WebKit |
+| ⚡ **Parallel Execution** | Configurable workers with attention to isolation, shared state, and environment capacity |
+| 🧪 **Test Strategy** | Smoke, regression, authentication, accessibility, performance, and visual testing |
+| 📊 **Diagnostics & Reporting** | HTML, JSON, JUnit, screenshots, traces, videos, logs, and other artifacts |
+| 🐳 **Containerization** | Docker-based test execution |
+| 🔄 **CI/CD** | GitHub Actions and Jenkins integration |
+| 🔍 **Reliability Engineering** | Failure investigation, synchronization, test-data, environment, and flaky-test considerations |
+
 
 
 ## 💡 Why This Framework?
@@ -32,39 +49,48 @@ The framework focuses on:
 The project is intentionally structured as a portfolio and engineering demonstration rather than representing a production system from a specific organization.
 
 
+
 ## 🏗️ Framework Architecture
 
-The framework separates test scenarios from reusable automation components and execution infrastructure.
+The framework separates **business-level test scenarios** from **UI interaction, reusable setup, supporting utilities, and execution infrastructure**.
 
 ```text
-                    ┌─────────────────────┐
-                    │     Test Suites     │
-                    │ Business Scenarios   │
-                    │     Assertions       │
-                    └──────────┬──────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │     Fixtures        │
-                    │ Auth / Context /    │
-                    │ Reusable Test Setup │
-                    └──────────┬──────────┘
-                               │
-              ┌────────────────▼────────────────┐
-              │          Page Objects           │
-              │ Locators + UI Interactions      │
-              └────────────────┬────────────────┘
-                               │
-             ┌─────────────────▼─────────────────┐
-             │       Helpers / Utilities         │
-             │ API / Data / Common Operations    │
-             └─────────────────┬─────────────────┘
-                               │
-        ┌──────────────────────▼──────────────────────┐
-        │              Execution Layer               │
-        │ Playwright Config · Browsers · Workers      │
-        │ Environment · Reporting · CI/CD             │
-        └────────────────────────────────────────────┘
-```
+                         TEST LAYER
+        ┌─────────────────────────────────────────┐
+        │ Test Suites                             │
+        │ Business Scenarios + Assertions         │
+        └────────────────────┬────────────────────┘
+                             │
+                             ▼
+                    FIXTURE / SETUP LAYER
+        ┌─────────────────────────────────────────┐
+        │ Authentication · Context · Test Setup   │
+        │ Storage State · Reusable Fixtures       │
+        └────────────────────┬────────────────────┘
+                             │
+                             ▼
+                       PAGE OBJECT LAYER
+        ┌─────────────────────────────────────────┐
+        │ Page Objects                            │
+        │ Locators + UI Interactions              │
+        └────────────────────┬────────────────────┘
+                             │
+                             ▼
+                     SUPPORTING LAYER
+        ┌─────────────────────────────────────────┐
+        │ Helpers · API Utilities · Test Data     │
+        │ Common Operations · Environment Values  │
+        └────────────────────┬────────────────────┘
+                             │
+                             ▼
+                      EXECUTION LAYER
+        ┌─────────────────────────────────────────┐
+        │ Playwright Config                       │
+        │ Browsers · Workers · Retries · Reports  │
+        │ Docker · GitHub Actions · Jenkins       │
+        └─────────────────────────────────────────┘
+
+
 
 ### Architectural Principles
 
