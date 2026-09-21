@@ -93,9 +93,10 @@ The framework separates **business-level test scenarios** from **UI interaction,
 
 ```
 
-Then leave a blank line and continue with:
 
 ```markdown
+
+```
 ### Architectural Principles
 
 - **Tests** describe business scenarios and assertions rather than low-level UI implementation.
