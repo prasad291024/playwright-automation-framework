@@ -284,6 +284,8 @@ The repository includes workflows for automated validation and test execution, i
 
 Pull-request and push workflows can use different execution scopes so that faster feedback can be obtained during development while broader suites can be executed when required.
 
+
+
 ### Jenkins
 
 Jenkins execution is supported through the repository's Jenkins configuration and Docker-based execution flow.
@@ -311,24 +313,6 @@ Parallel execution can reduce feedback time, but the optimal worker count depend
 The goal is therefore not simply to maximize the number of workers, but to balance **execution speed with test reliability**.
 
 
-
-## 🔄 CI/CD & Execution
-
-The framework supports automated test execution through both **GitHub Actions** and **Jenkins**.
-
-### GitHub Actions
-
-The repository includes workflows for automated validation and test execution, including:
-
-- Dependency installation
-- Code quality checks
-- Type checking
-- Test execution
-- Configurable test scopes
-- Test reporting
-- Artifact collection
-
-Pull-request and push workflows can use different execution scopes so that faster feedback can be obtained during development while broader suites can be executed when required.
 
 ### Jenkins
 
