@@ -223,10 +223,10 @@ await page.getByTestId('submit-order').click();
 
 // 2️⃣ EXCELLENT: ARIA Role (accessible, reflects user intent)
 await page.getByRole('button', { name: /checkout|submit/i }).click();
-await page.getByRole('textbox', { name: /username/i }).fill('admin');
+await page.getByRole('textbox', { name: /username/i }).fill('your-username');
 
 // 3️⃣ GOOD: Placeholder
-await page.getByPlaceholder('Enter your password').fill('secret');
+await page.getByPlaceholder('Enter your password').fill(process.env.PASSWORD || 'your-password');
 
 // 4️⃣ GOOD: Visible Text
 await page.getByText('Thank you for your order!').click();

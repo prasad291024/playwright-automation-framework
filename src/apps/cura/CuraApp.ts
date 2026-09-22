@@ -3,9 +3,9 @@ import { CuraLoginPage } from '../../pages/apps/cura/pages/CuraLoginPage';
 import { CuraAppointmentPage } from '../../pages/apps/cura/pages/CuraAppointmentPage';
 import { CuraConfirmationPage } from '../../pages/apps/cura/pages/CuraConfirmationPage';
 
-/** Demo credentials for the Katalon CURA Healthcare app. */
-const CURA_DEFAULT_USERNAME = 'John Doe';
-const CURA_DEFAULT_PASSWORD = 'ThisIsNotAPassword';
+/** Demo credentials for the Katalon CURA Healthcare app - resolved from environment variables. */
+const CURA_DEFAULT_USERNAME = process.env.CURA_USERNAME || 'John Doe';
+const CURA_DEFAULT_PASSWORD = process.env.CURA_PASSWORD || '';
 
 /**
  * Cura App Facade - Encapsulates all page objects and provides higher-level user flows.

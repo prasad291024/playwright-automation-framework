@@ -56,18 +56,18 @@ const resolveCredentials = (appName: AppName): LoginCredentials => {
       };
     case 'cura':
       return {
-        username: process.env.CURA_USERNAME || 'John Doe',
-        password: process.env.CURA_PASSWORD || 'ThisIsNotAPassword',
+        username: process.env.CURA_USERNAME || '',
+        password: process.env.CURA_PASSWORD || '',
       };
     case 'saucedemo':
       return {
-        username: process.env.SAUCEDEMO_USERNAME || 'standard_user',
-        password: process.env.SAUCEDEMO_PASSWORD || 'secret_sauce',
+        username: process.env.SAUCEDEMO_USERNAME || '',
+        password: process.env.SAUCEDEMO_PASSWORD || '',
       };
     case 'orangehrm':
       return {
-        username: process.env.ORANGEHRM_USERNAME || 'Admin',
-        password: process.env.ORANGEHRM_PASSWORD || 'admin123',
+        username: process.env.ORANGEHRM_USERNAME || '',
+        password: process.env.ORANGEHRM_PASSWORD || '',
       };
     default:
       return {};
