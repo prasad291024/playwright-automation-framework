@@ -250,6 +250,43 @@ npm run pre-push
 
 ---
 
+## 🔒 Security Practices
+
+Security is a critical aspect of maintaining this framework, especially since it's designed as a public engineering demonstration. All contributors must follow these security practices:
+
+### Secret Management
+
+- **Never** hardcode credentials, API keys, or tokens in source code
+- Use environment variables for all application credentials:
+  - `SAUCEDEMO_USERNAME`, `SAUCEDEMO_PASSWORD`
+  - `CURA_USERNAME`, `CURA_PASSWORD`
+  - `ORANGEHRM_USERNAME`, `ORANGEHRM_PASSWORD`
+- Document required variables in `.env.example` without real values
+- The framework includes a pre-commit secret detection script that scans for potential secrets
+
+### Pre-commit Protection
+
+- Husky and `lint-staged` automatically run the secret detection script on staged files
+- The script detects patterns indicating passwords, API keys, tokens, etc.
+- Commits will be rejected if potential secrets are detected
+- To run secret detection manually: `node scripts/secret-detection.js`
+
+### Test Data & Artifacts
+
+- Use synthetic test data only - never real user information or production data
+- Ensure test outputs (logs, reports, screenshots) don't contain sensitive information
+- Storage state files (`storage-state/*.json`) are gitignored and should never be committed
+
+### Dependency Security
+
+- Regularly check for dependency vulnerabilities with `npm audit`
+- Do not introduce new dependencies without reviewing their security posture
+- Report any discovered vulnerabilities in dependencies
+
+These security practices are integrated throughout the contribution process to ensure the framework remains suitable for public repository hosting.
+
+---
+
 ## 🔀 Git Workflow & Commit Guidelines
 
 ### Conventional Commits

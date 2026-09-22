@@ -11,15 +11,14 @@ The framework brings together:
 - **Visual, accessibility & performance testing** for broader quality coverage
 - **Failure diagnostics & reporting** for faster investigation
 - **Docker, GitHub Actions & Jenkins** for CI/CD execution
+- **Security hardening & secret management** for secure test automation practices
 
 > **Portfolio note:** This repository is an engineering demonstration of automation architecture and quality practices. It is not a representation of any specific employer's production test framework.
-
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev/)
 [![CI](https://github.com/prasad291024/playwright-automation-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/prasad291024/playwright-automation-framework/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/prasad291024/playwright-automation-framework/actions/workflows/codeql.yml/badge.svg)](https://github.com/prasad291024/playwright-automation-framework/actions/workflows/codeql.yml)
-
 
 ## 📚 Contents
 
@@ -34,11 +33,9 @@ The framework brings together:
 - [Quality & Reliability](#-quality--reliability)
 - [Technology Stack](#️-technology-stack)
 
-
-
 ## 📌 Project Status
 
-**Active engineering portfolio project**
+**Active engineering portfolio project - Security audit and hardening complete**
 
 This repository is continuously refined to demonstrate practical approaches to:
 
@@ -50,30 +47,26 @@ This repository is continuously refined to demonstrate practical approaches to:
 - Visual, accessibility, and performance testing
 - CI/CD execution with GitHub Actions and Jenkins
 - Containerized test execution
+- **Security best practices and secret management**
 
-> The framework is intended as a public engineering demonstration and learning/reference project. It does not represent the internal automation framework or proprietary implementation of any employer.
-
-
-
-
+> The framework is intended as a public engineering demonstration and learning/reference project. It implements security hardening practices including secret management via environment variables, pre-commit secret detection hooks, and comprehensive security documentation.
 
 ## 🎯 What This Project Demonstrates
 
 This framework focuses on the engineering practices required to build maintainable and reliable test automation systems.
 
-| Area | What It Demonstrates |
-|---|---|
-| 🧩 **Framework Architecture** | Separation of tests, Page Objects, fixtures, helpers, configuration, and test data |
-| 🔐 **Authentication & Sessions** | Reusable authentication setup and storage-state based session management |
-| 🌐 **Cross-Browser Execution** | Configurable execution across Chromium, Firefox, and WebKit |
-| ⚡ **Parallel Execution** | Configurable workers with attention to isolation, shared state, and environment capacity |
-| 🧪 **Test Strategy** | Smoke, regression, authentication, accessibility, performance, and visual testing |
-| 📊 **Diagnostics & Reporting** | HTML, JSON, JUnit, screenshots, traces, videos, logs, and other artifacts |
-| 🐳 **Containerization** | Docker-based test execution |
-| 🔄 **CI/CD** | GitHub Actions and Jenkins integration |
-| 🔍 **Reliability Engineering** | Failure investigation, synchronization, test-data, environment, and flaky-test considerations |
-
-
+| Area                             | What It Demonstrates                                                                                 |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 🧩 **Framework Architecture**    | Separation of tests, Page Objects, fixtures, helpers, configuration, and test data                   |
+| 🔐 **Authentication & Sessions** | Reusable authentication setup and storage-state based session management                             |
+| 🌐 **Cross-Browser Execution**   | Configurable execution across Chromium, Firefox, and WebKit                                          |
+| ⚡ **Parallel Execution**        | Configurable workers with attention to isolation, shared state, and environment capacity             |
+| 🧪 **Test Strategy**             | Smoke, regression, authentication, accessibility, performance, and visual testing                    |
+| 📊 **Diagnostics & Reporting**   | HTML, JSON, JUnit, screenshots, traces, videos, logs, and other artifacts                            |
+| 🐳 **Containerization**          | Docker-based test execution                                                                          |
+| 🔄 **CI/CD**                     | GitHub Actions and Jenkins integration                                                               |
+| 🔍 **Reliability Engineering**   | Failure investigation, synchronization, test-data, environment, and flaky-test considerations        |
+| 🔒 **Security Practices**        | Secret management via environment variables, pre-commit secret detection, and security documentation |
 
 ## 💡 Why This Framework?
 
@@ -89,13 +82,9 @@ This project demonstrates an approach to managing that complexity through clear 
 - **Fast Feedback** — use appropriate execution strategies, reporting, and CI integration to shorten the feedback loop.
 - **Reusability** — centralize authentication, session management, common utilities, and test-data handling.
 - **Continuous Testing** — integrate automated execution into GitHub Actions and Jenkins workflows.
+- **Security** — implement secret management best practices, prevent accidental secret commits, and maintain security documentation.
 
-The project is intentionally structured as a **public engineering demonstration** rather than representing a production system from a specific organization.
-
-
-
-
-
+The project is intentionally structured as a **public engineering demonstration** rather than representing a production system from a specific organization. It demonstrates security-hardened practices suitable for public repositories.
 
 ## 🏗️ Framework Architecture
 
@@ -135,11 +124,10 @@ The framework separates **business-level test scenarios** from **UI interaction,
         │ Playwright Config                       │
         │ Browsers · Workers · Retries · Reports  │
         │ Docker · GitHub Actions · Jenkins       │
+        │ Secret Management · Security Hooks      │
         └─────────────────────────────────────────┘
-
-
-
 ```
+
 ### Architectural Principles
 
 - **Tests** describe business scenarios and assertions rather than low-level UI implementation.
@@ -149,28 +137,27 @@ The framework separates **business-level test scenarios** from **UI interaction,
 - **Environment configuration** keeps environment-specific values separate from test logic.
 - **Playwright configuration** controls browsers, workers, retries, timeouts, reporters, and execution behavior.
 - **CI/CD** provides repeatable automated execution and preserves useful test artifacts for investigation.
-
-
+- **Security practices** include secret management via environment variables and pre-commit secret detection hooks.
 
 ## 🚀 Framework Capabilities
 
-| Engineering Area | Implementation |
-|---|---|
-| **UI Automation** | Playwright with reusable Page Objects and configurable browser projects |
-| **Test Architecture** | Page Object Model, fixtures, shared helpers, test-data separation, and application-specific suites |
-| **Authentication & Sessions** | Reusable authentication setup and storage-state based session reuse |
-| **Execution Engineering** | Configurable workers, retries, timeouts, browser projects, and execution scopes |
-| **Cross-Browser Testing** | Chromium, Firefox, and WebKit support |
-| **API Validation** | Shared API utilities and API health-check coverage |
-| **Visual Testing** | Screenshot-based visual regression with baseline management |
-| **Accessibility Testing** | Dedicated accessibility-oriented test suites |
-| **Performance Testing** | Dedicated performance-oriented test suites |
-| **Failure Diagnostics** | Screenshots, traces, videos, logs, and structured test reports |
-| **Test Reporting** | HTML, JSON, and JUnit reports |
-| **Containerized Execution** | Docker-based test execution |
-| **CI/CD Integration** | GitHub Actions and Jenkins execution |
-| **Multi-Application Architecture** | SauceDemo, CURA Healthcare, and OrangeHRM test suites |
-
+| Engineering Area                   | Implementation                                                                                                  |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **UI Automation**                  | Playwright with reusable Page Objects and configurable browser projects                                         |
+| **Test Architecture**              | Page Object Model, fixtures, shared helpers, test-data separation, and application-specific suites              |
+| **Authentication & Sessions**      | Reusable authentication setup and storage-state based session reuse                                             |
+| **Execution Engineering**          | Configurable workers, retries, timeouts, browser projects, and execution scopes                                 |
+| **Cross-Browser Testing**          | Chromium, Firefox, and WebKit support                                                                           |
+| **API Validation**                 | Shared API utilities and API health-check coverage                                                              |
+| **Visual Testing**                 | Screenshot-based visual regression with baseline management                                                     |
+| **Accessibility Testing**          | Dedicated accessibility-oriented test suites                                                                    |
+| **Performance Testing**            | Dedicated performance-oriented test suites                                                                      |
+| **Failure Diagnostics**            | Screenshots, traces, videos, logs, and structured test reports                                                  |
+| **Test Reporting**                 | HTML, JSON, and JUnit reports                                                                                   |
+| **Containerized Execution**        | Docker-based test execution                                                                                     |
+| **CI/CD Integration**              | GitHub Actions and Jenkins execution                                                                            |
+| **Multi-Application Architecture** | SauceDemo, CURA Healthcare, and OrangeHRM test suites                                                           |
+| **Security Hardening**             | Environment variable-based credential management, pre-commit secret detection hooks, and security documentation |
 
 ## 📁 Project Structure
 
@@ -180,32 +167,42 @@ The repository is organized around framework components, execution infrastructur
 playwright-automation-framework/
 │
 ├── .github/                  # GitHub Actions workflows
-├── .husky/                   # Git hooks
+├── .husky/                   # Git hooks (including pre-commit secret detection)
 │
 ├── config/                   # Environment and execution configuration
 ├── docs/                     # Framework and testing documentation
+│   └── SECURITY.md          # Comprehensive security policy and best practices
 ├── globals/                  # Shared global definitions
 ├── helpers/                  # Reusable helper utilities
 ├── jenkins/                 # Jenkins configuration
 ├── schemas/                 # Data and schema definitions
 ├── scripts/                 # Test execution and utility scripts
+│   └── secret-detection.js  # Pre-commit secret detection script
 ├── selectors/               # Shared selectors
 │
 ├── src/
 │   ├── pages/               # Page Object implementations
 │   ├── fixtures/            # Reusable Playwright fixtures
 │   ├── helpers/             # Framework-level helpers
-│   ├── environment/         # Environment-specific configuration
+│   ├── environment/         # Environment-specific configuration loaders
 │   └── tests/               # Application test suites
 │
-├── test-data/               # Test data
+├── test-data/               # Test data (uses environment variables for credentials)
 ├── tests/                   # Executable suites and template/reference tests
+│   ├── saucedemo/
+│   ├── cura/
+│   ├── orangehrm/
+│   ├── shared/
+│   └── templates/           # Reusable suite templates (.template.ts)
+│
+├── storage-state/           # Persisted session state ({app}.json, gitignored)
 │
 ├── Dockerfile               # Containerized execution
 ├── docker-compose.yml       # Docker orchestration
 ├── Jenkinsfile.docker      # Jenkins pipeline definition
 ├── playwright.config.ts     # Playwright execution configuration
 ├── package.json             # Project dependencies and scripts
+│   └── lint-staged config   # Integrates secret detection into pre-commit workflow
 └── README.md
 ```
 
@@ -248,17 +245,13 @@ tests/
     ├── fundamentals/
     ├── interactions/
     ├── test-organization/
-    ├── advanced-features/
     ├── page-object-model/
     ├── api-testing/
     ├── smoke-testing/
     ├── performance-testing/
     ├── accessibility-testing/
     └── visual-regression/
-
 ```
-
-
 
 ## 🚀 Getting Started
 
@@ -270,7 +263,7 @@ Install the following before running the framework:
 - npm
 - Git
 - Playwright browser dependencies
-- Docker *(optional, for containerized execution)*
+- Docker _(optional, for containerized execution)_
 
 ### 1. Clone the Repository
 
@@ -301,7 +294,12 @@ cp .env.example .env
 
 Update the required environment-specific values.
 
-> ⚠️ Never commit credentials, tokens, or other secrets to the repository.
+> ⚠️ **Never commit credentials, tokens, or other secrets to the repository.**  
+> The framework uses environment variables for all application credentials:
+>
+> - `SAUCEDEMO_USERNAME`, `SAUCEDEMO_PASSWORD`
+> - `CURA_USERNAME`, `CURA_PASSWORD`
+> - `ORANGEHRM_USERNAME`, `ORANGEHRM_PASSWORD`
 
 ### 5. Run Tests
 
@@ -345,17 +343,30 @@ Replace the application and suite values according to the supported test suites.
 npx playwright show-report
 ```
 
+### 8. Security Validation
+
+The framework includes a pre-commit secret detection hook that automatically scans for potential secrets:
+
+```bash
+# This runs automatically on git commit via husky/lint-staged
+# To run manually:
+npm run lint
+
+# Or directly:
+node scripts/secret-detection.js
+```
+
 ### Execution Examples
 
-| Use Case | Command |
-|---|---|
-| Full/default suite | `npx playwright test` |
-| Interactive debugging | `npx playwright test --ui` |
-| Chromium | `npx playwright test --project=chromium` |
-| Controlled parallelism | `npx playwright test --workers=1` |
+| Use Case                | Command                                                        |
+| ----------------------- | -------------------------------------------------------------- |
+| Full/default suite      | `npx playwright test`                                          |
+| Interactive debugging   | `npx playwright test --ui`                                     |
+| Chromium                | `npx playwright test --project=chromium`                       |
+| Controlled parallelism  | `npx playwright test --workers=1`                              |
 | Application smoke suite | `node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke` |
-| HTML report | `npx playwright show-report` |
-
+| HTML report             | `npx playwright show-report`                                   |
+| Secret detection check  | `node scripts/secret-detection.js`                             |
 
 ## 🔄 CI/CD & Execution
 
@@ -374,6 +385,7 @@ The CI workflow can include:
 - Configurable test scopes
 - Test reporting
 - Artifact collection
+- **Secret validation** (uses GitHub Secrets without logging values)
 
 Pull-request and push workflows can use different execution scopes, allowing faster feedback during development while broader suites can be executed when required.
 
@@ -383,13 +395,13 @@ Jenkins execution is supported through the repository's Jenkins configuration an
 
 The pipeline supports configurable parameters such as:
 
-| Parameter | Purpose |
-|---|---|
-| **Application** | Select the application under test |
-| **Browser** | Select the Playwright browser project |
-| **Test Scope** | Control which test suite or scope is executed |
-| **Execution Timeout** | Control pipeline execution limits |
-| **Reports & Artifacts** | Preserve execution results for investigation |
+| Parameter               | Purpose                                       |
+| ----------------------- | --------------------------------------------- |
+| **Application**         | Select the application under test             |
+| **Browser**             | Select the Playwright browser project         |
+| **Test Scope**          | Control which test suite or scope is executed |
+| **Execution Timeout**   | Control pipeline execution limits             |
+| **Reports & Artifacts** | Preserve execution results for investigation  |
 
 ### Execution Strategy
 
@@ -418,20 +430,17 @@ CI Validation
        │
        ├── Code Quality
        ├── Type Checking
+       ├── Secret Detection (pre-commit)
        └── Automated Tests
-                    │
-                    ▼
+                │
+                ▼
           Reports & Artifacts
-                    │
-                    ▼
-             Failure Analysis
+                │
+                ▼
+           Failure Analysis
 ```
 
 > **Engineering principle:** Faster test execution is valuable only when the resulting feedback remains reliable and actionable.
-
-
-
-
 
 ## 🧪 Test Strategy & Suite Organization
 
@@ -441,15 +450,15 @@ See `docs/TEST_STRATEGY.md` for additional details on CI scope, suite ownership,
 
 ### Test Layers
 
-| Test Layer | Purpose |
-|---|---|
-| **Shared** | Reusable authentication and API-oriented coverage |
-| **Smoke** | Fast happy-path checks for rapid feedback |
-| **Regression** | Broader application workflow coverage |
-| **Accessibility** | Accessibility-oriented validation |
-| **Performance** | Performance-oriented test scenarios |
-| **Visual Regression** | Screenshot-based UI consistency checks |
-| **Templates** | Reusable learning and reference examples |
+| Test Layer            | Purpose                                           |
+| --------------------- | ------------------------------------------------- |
+| **Shared**            | Reusable authentication and API-oriented coverage |
+| **Smoke**             | Fast happy-path checks for rapid feedback         |
+| **Regression**        | Broader application workflow coverage             |
+| **Accessibility**     | Accessibility-oriented validation                 |
+| **Performance**       | Performance-oriented test scenarios               |
+| **Visual Regression** | Screenshot-based UI consistency checks            |
+| **Templates**         | Reusable learning and reference examples          |
 
 ### Suite Organization
 
@@ -506,24 +515,19 @@ node scripts/run-app-suite.cjs --app=<application> --suite=<suite>
 
 Execution artifacts are organized by application and suite:
 
-| Artifact | Location |
-|---|---|
-| **HTML Reports** | `playwright-report/<app>/<suite>` |
-| **JSON Reports** | `test-results/json/<app>-<suite>.json` |
-| **JUnit Reports** | `test-results/junit/<app>-<suite>.xml` |
-| **Playwright Attachments** | `test-results/artifacts/<app>/<suite>` |
-| **Visual Snapshots** | `*-snapshots/` alongside the owning visual suite |
+| Artifact                   | Location                                         |
+| -------------------------- | ------------------------------------------------ |
+| **HTML Reports**           | `playwright-report/<app>/<suite>`                |
+| **JSON Reports**           | `test-results/json/<app>-<suite>.json`           |
+| **JUnit Reports**          | `test-results/junit/<app>-<suite>.xml`           |
+| **Playwright Attachments** | `test-results/artifacts/<app>/<suite>`           |
+| **Visual Snapshots**       | `*-snapshots/` alongside the owning visual suite |
 
 Visual baselines can be refreshed using the application-specific suite runner when required.
 
-
-
-
-
-
 ## 🔍 Quality & Reliability
 
-The framework treats test reliability as an engineering concern rather than simply a test-execution problem.
+The framework treats test reliability as an engineering concern rather than simply a test-execution problem. Security practices are integrated throughout the quality gates.
 
 ### Failure Diagnostics
 
@@ -590,23 +594,33 @@ The framework therefore treats parallelism as a balance between:
 
 > **Reliability principle:** Increasing execution speed is useful only when test results remain trustworthy and actionable.
 
+### Security Practices
 
+The framework implements security hardening practices throughout the development lifecycle:
+
+- **Secret Management**: All application credentials are managed via environment variables (see `.env.example`)
+- **Pre-commit Protection**: Custom secret detection script prevents accidental commitment of secrets
+- **Secure Defaults**: Test data files use environment variables with safe fallbacks for local development
+- **Documentation**: Comprehensive security policy in `docs/SECURITY.md` covers best practices
+- **CI/CD Security**: GitHub Actions workflows use platform secrets without logging values
+- **Dependency Maintenance**: Regular vulnerability scanning and removal of unused/high-risk dependencies
+
+These practices ensure the framework remains suitable for public repository hosting while maintaining engineering excellence.
 
 ## 🛠️ Technology Stack
 
-| Category | Technologies |
-|---|---|
-| **Language** | TypeScript / JavaScript |
-| **UI Automation** | Playwright |
-| **Test Architecture** | Page Object Model, Fixtures |
-| **API Testing** | Playwright API utilities |
-| **Test Execution** | Playwright Test |
-| **Browsers** | Chromium, Firefox, WebKit |
-| **Test Data** | Environment-driven and reusable test data |
-| **Reporting** | HTML, JSON, JUnit |
-| **Containerization** | Docker, Docker Compose |
-| **CI/CD** | GitHub Actions, Jenkins |
-| **Version Control** | Git, GitHub |
-| **Code Quality** | ESLint, TypeScript checks, Git hooks |
-
-
+| Category              | Technologies                                                               |
+| --------------------- | -------------------------------------------------------------------------- |
+| **Language**          | TypeScript / JavaScript                                                    |
+| **UI Automation**     | Playwright                                                                 |
+| **Test Architecture** | Page Object Model, Fixtures                                                |
+| **API Testing**       | Playwright API utilities                                                   |
+| **Test Execution**    | Playwright Test                                                            |
+| **Browsers**          | Chromium, Firefox, WebKit                                                  |
+| **Test Data**         | Environment-driven and reusable test data                                  |
+| **Reporting**         | HTML, JSON, JUnit                                                          |
+| **Containerization**  | Docker, Docker Compose                                                     |
+| **CI/CD**             | GitHub Actions, Jenkins                                                    |
+| **Version Control**   | Git, GitHub                                                                |
+| **Code Quality**      | ESLint, TypeScript checks, Git hooks (including secret detection)          |
+| **Security**          | Environment variables, pre-commit secret detection, security documentation |

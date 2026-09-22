@@ -1,81 +1,284 @@
-# Security Policy
+# 🔒 Security Policy
 
-## Secret Management
+This document outlines the security practices and policies for the Playwright UI Automation Framework repository.
 
-This framework follows a strict secret management policy to prevent accidental exposure of credentials and sensitive data.
+## 📋 Table of Contents
 
-### Environment Variables
+- [Secret Management](#secret-management)
+- [Environment Variables](#environment-variables)
+- [Test Data Handling](#test-data-handling)
+- [Storage State Security](#storage-state-security)
+- [Logging and Reporting](#logging-and-reporting)
+- [CI/CD Security](#cicd-security)
+- [Dependency Management](#dependency-management)
+- [Pre-commit Hooks](#pre-commit-hooks)
+- [What Must Never Be Committed](#what-must-never-be-committed)
+- [Security Best Practices](#security-best-practices)
+- [Reporting Security Issues](#reporting-security-issues)
 
-All secrets must be provided via environment variables. The framework supports the following environment variables:
+## 🔐 Secret Management
 
-- `SAUCEDEMO_USERNAME`, `SAUCEDEMO_PASSWORD` - Credentials for SauceDemo
-- `CURA_USERNAME`, `CURA_PASSWORD` - Credentials for CURA Healthcare
-- `ORANGEHRM_USERNAME`, `ORANGEHRM_PASSWORD` - Credentials for OrangeHRM
-- `USERNAME`, `PASSWORD` - Generic credentials (used as fallbacks)
-- `TEST_EXECUTION_ENV` - Test execution environment (e.g., QA, staging)
-- `BASE_URL` - Web UI base URL
-- `API_BASE_URL` - API base URL
-- `REALTIME_EMIT_PATH` - Realtime server endpoint
+All application credentials and sensitive information must be managed through environment variables, never hardcoded in source code.
 
-### Configuration Files
+### Approved Methods:
 
-- `.env.example` contains example configuration with placeholders only. Never commit real secrets to this file.
-- Real environment variables should be stored in `.env` (or `.env.local`) which is ignored by git via `.gitignore`.
-- The `config/apps.json` file contains only non-sensitive configuration (URLs, timeouts, selectors). No secrets are stored here.
+- Environment variables (`.env` file, CI/CD platform secrets)
+- Framework's secret management system
+- Encrypted secrets in CI/CD platforms (GitHub Secrets, Jenkins Credentials)
 
-### Test Data
+### Prohibited Practices:
 
-- Test data files (e.g., `src/apps/*/test-data/users.ts`) have been updated to read credentials from environment variables.
-- Hardcoded secrets have been removed from all test data files.
+- Hardcoding passwords, API keys, or tokens in source files
+- Committing `.env` files with real credentials
+- Using real production credentials in test environments
+- Storing secrets in logs, reports, or test artifacts
 
-### Storage State
+## 🌐 Environment Variables
 
-- Browser storage state (cookies, localStorage) is saved to `storage-state/{app}.json` files.
-- These files are ignored by git via `.gitignore` to prevent leaking session data.
-- Storage state is generated automatically by the global setup hook and should never be committed.
+The framework uses environment variables for all configuration and credentials:
 
-### Logging and Reporting
+### Application Credentials:
 
-- The framework avoids logging sensitive information.
-- Console logs should never include passwords, tokens, or other secrets.
-- Test artifacts (traces, videos, screenshots) are stored in `test-results/` and ignored by git.
+```
+SAUCEDEMO_USERNAME
+SAUCEDEMO_PASSWORD
+CURA_USERNAME
+CURA_PASSWORD
+ORANGEHRM_USERNAME
+ORANGEHRM_PASSWORD
+```
 
-### CI/CD Security
+### Configuration Overrides:
 
-- In CI environments, secrets must be injected via the CI platform's secret management system (e.g., GitHub Secrets, Jenkins Credentials).
-- The CI pipeline (`Jenkinsfile.docker` and `.github/workflows/ci.yml`) passes environment variables to containers without logging them.
-- The `CI` environment variable is set to `true` in CI to adjust test retries and workers.
+```
+APP_NAME          # saucedemo, cura, orangehrm, local
+ENVIRONMENT       # local, dev, staging, prod
+HEADLESS          # true / false
+SKIP_GLOBAL_AUTH_SETUP # Set to 1 to bypass pre-test global auth bootstrap
+CI                # Set to true in CI environments
+```
 
-## What Must Never Be Committed
+### Best Practices:
 
-- Real credentials or passwords
-- API keys, tokens, or client secrets
-- Private keys or certificates
-- `.env` files containing real values
-- Storage state files (`storage-state/*.json`)
-- Test data containing real user information
-- Logs or reports containing sensitive data
+- Never commit `.env` files - use `.env.example` as template
+- Use different credentials for different environments
+- Rotate credentials regularly
+- Use least-privilege principles for test accounts
+- Document required variables in `.env.example` without real values
 
-## Local Development Setup
+## 🧪 Test Data Handling
 
-1. Copy `.env.example` to `.env`
-2. Fill in the required environment variables with test credentials (never use production credentials)
-3. Never commit the `.env` file
+Test data should be synthetic and never contain real user information or production data.
 
-## Handling Accidental Commits
+### Guidelines:
 
-If a secret is accidentally committed:
+- Use synthetic test data generators for realistic but fake data
+- Never use real customer/user data in tests
+- Mask or redact any sensitive data in test outputs
+- Store test data in version-controlled files only if non-sensitive
+- Use environment variables for credential-based test data
+- Implement data cleanup routines where applicable
 
-1. Immediately consider the secret compromised and rotate it.
-2. Remove the secret from the repository history using appropriate tools (e.g., `git filter-branch` or BFG Repo-Cleaner).
-3. Update any affected services.
+### Examples:
 
-## Dependencies
+```typescript
+// Good - using environment variables
+const username = process.env.SAUCEDEMO_USERNAME || 'standard_user';
+const password = process.env.SAUCEDEMO_PASSWORD || 'secret_sauce';
 
-- Dependencies are managed via `package.json` and `package-lock.json`.
-- Run `npm audit` regularly to check for known vulnerabilities.
-- Keep dependencies up to date to minimize security risks.
+// Bad - hardcoded credentials
+const username = 'standard_user';
+const password = 'secret_sauce'; // NEVER DO THIS
+```
 
-## Reporting Security Issues
+## 💾 Storage State Security
 
-If you discover a security issue in this framework, please report it immediately by opening an issue or contacting the maintainers.
+Storage state (session cookies, localStorage) can contain sensitive authentication information.
+
+### Practices:
+
+- Storage state files are automatically gitignored (`storage-state/*.json`)
+- Never commit storage state files to the repository
+- Encrypt storage state if storing for extended periods
+- Implement storage state rotation policies
+- Consider storage state expiration and refresh mechanisms
+- Treat storage state as sensitive as passwords
+
+### Configuration:
+
+Storage state files are stored in:
+
+```
+storage-state/
+├── saucedemo.json
+├── cura.json
+└── orangehrm.json
+```
+
+All files in this directory are gitignored.
+
+## 📝 Logging and Reporting
+
+Logs, reports, and test artifacts must not contain sensitive information.
+
+### Requirements:
+
+- Redact credentials, tokens, and PII from logs
+- Mask sensitive values in screenshots and videos when possible
+- Sanitize test data in reports and attachments
+- Review HTML reports, JSON reports, and JUnit reports for accidental secret inclusion
+- Ensure traces and videos don't capture sensitive input fields
+
+### Implementation:
+
+- Custom logging utilities that automatically redact known sensitive patterns
+- Test artifact sanitization hooks
+- Sensitive field masking in Playwright configurations
+- Regular audit of test outputs for data leakage
+
+## 🔄 CI/CD Security
+
+CI/CD pipelines must handle secrets securely without exposing them in logs or artifacts.
+
+### GitHub Actions:
+
+- Use `secrets.` context for accessing secrets (e.g., `${{ secrets.CURA_USERNAME }}`)
+- Never echo or print secrets to logs
+- Use environment variable masking in workflows
+- Limit secret permissions to minimum required
+- Use environment protection rules for production secrets
+
+### Jenkins:
+
+- Use Jenkins Credentials Binding plugin
+- Mask credentials in console output
+- Restrict credential access to specific jobs/nodes
+- Regularly audit credential usage
+
+### General:
+
+- Never log environment variables that might contain secrets
+- Use secret scanning in CI pipelines
+- Implement least-privilege access for CI/CD service accounts
+- Separate secrets for different environments (dev/staging/prod)
+
+## 📦 Dependency Management
+
+Dependencies must be regularly scanned for vulnerabilities and kept up to date.
+
+### Practices:
+
+- Regular dependency vulnerability scanning (`npm audit`)
+- Prompt updating of dependencies with known vulnerabilities
+- Removal of unused dependencies (especially those with high severity issues)
+- Use of lockfiles (`package-lock.json`) for reproducible builds
+- Peer review of new dependency additions
+- Monitoring of dependency change logs for security updates
+
+### Current Status:
+
+- Unused `xlsx` dependency removed due to high severity vulnerabilities
+- Regular vulnerability scanning integrated into CI
+- Lockfile committed for dependency integrity
+
+## 🔍 Pre-commit Hooks
+
+Pre-commit hooks prevent accidental commitment of secrets and enforce code quality.
+
+### Secret Detection:
+
+- Custom script (`scripts/secret-detection.js`) scans staged files for potential secrets
+- Detects patterns indicating passwords, API keys, tokens, etc.
+- Masks output to prevent secret leakage during detection
+- Integrates with lint-staged via `package.json`
+- Runs automatically on `git commit` through husky
+
+### What It Detects:
+
+- Password patterns (`password: "value"`)
+- API key patterns (`api_key: "value"`)
+- Token patterns (`token: "value"`)
+- Secret key patterns (`secret_key: "value"`)
+- Authorization headers (`authorization: "Bearer ..."`)
+- AWS access key IDs (`AKIA...`)
+- High-entropy strings that might be secrets
+
+### Exclusions:
+
+- Markdown files (documentation may contain examples)
+- JSON configuration files (may have legitimate values)
+- Node modules, dist, build directories
+- `.env.example` files (expected to have placeholders)
+- Test data files using environment variables with fallbacks
+
+## 🚫 What Must Never Be Committed
+
+The following items must never be committed to this repository:
+
+### Absolute Prohibitions:
+
+- Real credentials (passwords, API keys, tokens, etc.)
+- Production database connection strings
+- Private SSH keys or SSL certificates
+- `.env` files with real values
+- Storage state files with real session data
+- Logs containing sensitive information
+- Test data with real PII or credentials
+
+### Conditional Prohibitions (requires review):
+
+- Example credentials in documentation (must be clearly marked as examples)
+- Configuration files with placeholder values
+- Security-related code snippets (review for actual secrets)
+
+## 🛡️ Security Best Practices
+
+### For Developers:
+
+1. Always use environment variables for credentials
+2. Never hardcode secrets, even temporarily
+3. Use `.env.example` to document required variables
+4. Run `npm run lint` before committing to trigger secret detection
+5. Review test outputs for accidental secret inclusion
+6. Report any suspected security issues immediately
+7. Keep dependencies updated and scan regularly
+8. Treat test environments with same security rigor as production
+
+### For Reviewers:
+
+1. Verify no hardcoded secrets in code changes
+2. Check that new dependencies don't introduce vulnerabilities
+3. Ensure documentation doesn't contain real credentials
+4. Confirm test data uses synthetic or environment-driven values
+5. Validate that CI/CD workflows handle secrets properly
+6. Look for potential information leakage in test artifacts
+
+## 🚨 Reporting Security Issues
+
+If you discover a security issue in this repository:
+
+### For Public Issues:
+
+1. Do NOT open a public issue that discloses the vulnerability
+2. Contact the repository owner through secure channels
+3. Provide detailed steps to reproduce
+4. Include impact assessment and suggested fixes
+5. Allow reasonable time for remediation before public disclosure
+
+### For Framework Users:
+
+1. If using this framework in your own projects, apply the same security principles
+2. Report issues in your implementation through your standard security channels
+3. Consider contributing improvements back to this framework
+
+## 🔄 Policy Updates
+
+This security policy will be updated as new threats emerge and best practices evolve. Significant changes will be documented in the repository's changelog.
+
+### Last Updated: September 2026
+
+### Framework Version: 1.0.0
+
+---
+
+> **Remember**: Security is everyone's responsibility. When in doubt, err on the side of caution and treat information as sensitive until proven otherwise.
