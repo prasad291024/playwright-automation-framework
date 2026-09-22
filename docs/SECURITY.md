@@ -48,6 +48,12 @@ ORANGEHRM_USERNAME
 ORANGEHRM_PASSWORD
 ```
 
+> [!NOTE]
+> **Public Demo Credentials vs. Private Secrets:**
+>
+> - **Public Demo Credentials:** Pre-configured accounts for third-party public training websites (SauceDemo, CURA Healthcare, OrangeHRM). These credentials are published openly on their respective login portals and are used strictly as test fixtures for automated UI demonstrations.
+> - **Private Secrets:** Any enterprise or proprietary credentials, API keys, tokens, or private infrastructure passwords. Private secrets must NEVER be committed to Git, must NEVER have in-code string fallbacks, and must be injected exclusively via secure environment variables or repository secret managers.
+
 ### Configuration Overrides:
 
 ```
@@ -82,13 +88,18 @@ Test data should be synthetic and never contain real user information or product
 ### Examples:
 
 ```typescript
-// Good - using environment variables
-const username = process.env.SAUCEDEMO_USERNAME || 'standard_user';
-const password = process.env.SAUCEDEMO_PASSWORD || 'secret_sauce';
+// Good - using environment variables with validation
+const username = process.env.APP_USERNAME;
+const password = process.env.APP_PASSWORD;
 
-// Bad - hardcoded credentials
-const username = 'standard_user';
-const password = 'secret_sauce'; // NEVER DO THIS
+if (!username || !password) {
+  throw new Error('Missing credentials: set APP_USERNAME and APP_PASSWORD');
+}
+
+// Bad - hardcoded credentials or inline secret fallbacks
+const username = 'admin';
+const password = 'mySecretPassword123'; // NEVER DO THIS
+const token = process.env.API_TOKEN || 'hardcoded_secret_fallback'; // NEVER DO THIS
 ```
 
 ## 💾 Storage State Security

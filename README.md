@@ -131,6 +131,8 @@ The framework separates **business-level test scenarios** from **UI interaction,
 ### Architectural Principles
 
 - **Tests** describe business scenarios and assertions rather than low-level UI implementation.
+- **App Facades** (`CuraApp`, `SauceDemoApp`, `OrangeHrmApp`) provide cohesive application-level interfaces over related page objects.
+- **PageFactory** centralizes and dynamically creates the appropriate page object for an application or page context.
 - **Page Objects** encapsulate locators and reusable UI interactions.
 - **Fixtures** provide reusable authentication, browser context, and test setup.
 - **Helpers** contain reusable operations that do not belong to a specific page.
@@ -148,10 +150,10 @@ The framework separates **business-level test scenarios** from **UI interaction,
 | **Authentication & Sessions**      | Reusable authentication setup and storage-state based session reuse                                             |
 | **Execution Engineering**          | Configurable workers, retries, timeouts, browser projects, and execution scopes                                 |
 | **Cross-Browser Testing**          | Chromium, Firefox, and WebKit support                                                                           |
-| **API Validation**                 | Shared API utilities and API health-check coverage                                                              |
+| **API Validation**                 | API request/response validation with typed interfaces and Ajv JSON Schema validation.                           |
 | **Visual Testing**                 | Screenshot-based visual regression with baseline management                                                     |
-| **Accessibility Testing**          | Dedicated accessibility-oriented test suites                                                                    |
-| **Performance Testing**            | Dedicated performance-oriented test suites                                                                      |
+| **Accessibility Testing**          | Keyboard navigation (focus order) and semantic DOM element validation.                                          |
+| **Performance Testing**            | Page-load SLA threshold validation.                                                                             |
 | **Failure Diagnostics**            | Screenshots, traces, videos, logs, and structured test reports                                                  |
 | **Test Reporting**                 | HTML, JSON, and JUnit reports                                                                                   |
 | **Containerized Execution**        | Docker-based test execution                                                                                     |
@@ -173,19 +175,23 @@ playwright-automation-framework/
 ├── docs/                     # Framework and testing documentation
 │   └── SECURITY.md          # Comprehensive security policy and best practices
 ├── globals/                  # Shared global definitions
-├── helpers/                  # Reusable helper utilities
+├── helpers/                  # Reference documentation and helper templates (active code under src/)
 ├── jenkins/                 # Jenkins configuration
 ├── schemas/                 # Data and schema definitions
 ├── scripts/                 # Test execution and utility scripts
 │   └── secret-detection.js  # Pre-commit secret detection script
-├── selectors/               # Shared selectors
+├── selectors/               # Selector reference templates (active locators under src/)
 │
 ├── src/
-│   ├── pages/               # Page Object implementations
-│   ├── fixtures/            # Reusable Playwright fixtures
-│   ├── helpers/             # Framework-level helpers
-│   ├── environment/         # Environment-specific configuration loaders
-│   └── tests/               # Application test suites
+│   ├── apps/                # App Facades (CuraApp, SauceDemoApp, OrangeHrmApp)
+│   ├── config/              # App configurations and registry
+│   ├── core/
+│   │   ├── auth/            # Session management and storage state logic
+│   │   ├── fixtures/        # Reusable Playwright fixtures
+│   │   └── utils/           # Core logging and synchronization utilities
+│   ├── interface/           # TypeScript interfaces and API contracts
+│   ├── pages/               # Page Objects (base, infrastructure, app pages)
+│   └── utils/               # Schema validation, API helpers, flakiness utilities
 │
 ├── test-data/               # Test data (uses environment variables for credentials)
 ├── tests/                   # Executable suites and template/reference tests
@@ -292,6 +298,12 @@ Create the local environment configuration from the provided example:
 cp .env.example .env
 ```
 
+PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
 Update the required environment-specific values.
 
 > ⚠️ **Never commit credentials, tokens, or other secrets to the repository.**  
@@ -343,6 +355,12 @@ Replace the application and suite values according to the supported test suites.
 npx playwright show-report
 ```
 
+Reports may be partitioned by application and suite. When needed, open the specific generated report directory, for example:
+
+```bash
+npx playwright show-report playwright-report/cura/all
+```
+
 ### 8. Security Validation
 
 The framework includes a pre-commit secret detection hook that automatically scans for potential secrets:
@@ -358,15 +376,15 @@ node scripts/secret-detection.js
 
 ### Execution Examples
 
-| Use Case                | Command                                                        |
-| ----------------------- | -------------------------------------------------------------- |
-| Full/default suite      | `npx playwright test`                                          |
-| Interactive debugging   | `npx playwright test --ui`                                     |
-| Chromium                | `npx playwright test --project=chromium`                       |
-| Controlled parallelism  | `npx playwright test --workers=1`                              |
-| Application smoke suite | `node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke` |
-| HTML report             | `npx playwright show-report`                                   |
-| Secret detection check  | `node scripts/secret-detection.js`                             |
+| Use Case                | Command                                                                     |
+| ----------------------- | --------------------------------------------------------------------------- |
+| Full/default suite      | `npx playwright test`                                                       |
+| Interactive debugging   | `npx playwright test --ui`                                                  |
+| Chromium                | `npx playwright test --project=chromium`                                    |
+| Controlled parallelism  | `npx playwright test --workers=1`                                           |
+| Application smoke suite | `node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke`              |
+| HTML report             | `npx playwright show-report` (or `npx playwright show-report <report-dir>`) |
+| Secret detection check  | `node scripts/secret-detection.js`                                          |
 
 ## 🔄 CI/CD & Execution
 
