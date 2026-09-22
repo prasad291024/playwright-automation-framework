@@ -1,4 +1,4 @@
 export const user = {
-  username: 'John Doe',
-  password: 'ThisIsNotAPassword',
+  username: process.env.CURA_USERNAME || 'John Doe',
+  password: process.env.CURA_PASSWORD || '',
 };

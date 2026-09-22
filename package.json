@@ -38,6 +38,7 @@
   "type": "commonjs",
   "lint-staged": {
     "*.ts": [
+      "node scripts/secret-detection.js",
       "eslint --fix",
       "prettier --write"
     ],
@@ -66,7 +67,6 @@
     "papaparse": "^5.5.3",
     "prettier": "^3.0.0",
     "ts-node": "^10.9.2",
-    "typescript-eslint": "^8.70.0",
-    "xlsx": "^0.18.5"
+    "typescript-eslint": "^8.70.0"
   }
 }

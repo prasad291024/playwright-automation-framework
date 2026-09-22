@@ -139,7 +139,7 @@ jobs:
         env:
           CI: 'true'
           CURA_USERNAME: ${{ secrets.CURA_USERNAME || 'John Doe' }}
-          CURA_PASSWORD: ${{ secrets.CURA_PASSWORD || 'ThisIsNotAPassword' }}
+          CURA_PASSWORD: ${{ secrets.CURA_PASSWORD || '' }}
         run: |
           failures=0
 
