@@ -44,11 +44,28 @@ fi
 echo "${GREEN}✅ No test debug markers found${NC}"
 
 # Check 5: Verify no credentials in code
-echo "${YELLOW}[5/5]${NC} Scanning for exposed credentials..."
+echo "${YELLOW}[5/5]${NC} Scanning for exposed credentials in outgoing commits..."
 DANGEROUS_PATTERNS="password.*=|api_key|secret.*=|aws_secret"
-if git diff --cached | grep -iE "${DANGEROUS_PATTERNS}" > /dev/null 2>&1; then
-  echo "${RED}❌ Potential credentials detected in staged changes.${NC}"
-  echo "   Please verify no secrets are being committed."
+
+# Resolve base revision for outgoing commits
+BASE_REV=""
+if git rev-parse --verify "@{upstream}" > /dev/null 2>&1; then
+  BASE_REV="@{upstream}"
+elif git rev-parse --verify "origin/main" > /dev/null 2>&1; then
+  BASE_REV="origin/main"
+elif git rev-parse --verify "HEAD~1" > /dev/null 2>&1; then
+  BASE_REV="HEAD~1"
+fi
+
+if [ -n "$BASE_REV" ]; then
+  DIFF_OUTPUT=$(git diff "$BASE_REV"..HEAD 2>/dev/null || true)
+else
+  DIFF_OUTPUT=$(git diff HEAD 2>/dev/null || true)
+fi
+
+if echo "$DIFF_OUTPUT" | grep -iE "${DANGEROUS_PATTERNS}" > /dev/null 2>&1; then
+  echo "${RED}❌ Potential credentials detected in outgoing commits.${NC}"
+  echo "   Please verify no secrets are being pushed."
   exit 1
 fi
 echo "${GREEN}✅ No obvious credential exposure${NC}"

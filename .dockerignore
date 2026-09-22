@@ -6,8 +6,11 @@ build
 .gitignore
 .DS_Store
 *.md
-.env
-.env.local
+.env*
+!.env.example
+storage-state/
+test-data/storage-state/
+Documents/
 .vscode
 .idea
 *.swp
