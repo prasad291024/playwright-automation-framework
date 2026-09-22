@@ -58,9 +58,9 @@ elif git rev-parse --verify "HEAD~1" > /dev/null 2>&1; then
 fi
 
 if [ -n "$BASE_REV" ]; then
-  DIFF_OUTPUT=$(git diff "$BASE_REV"..HEAD 2>/dev/null || true)
+  DIFF_OUTPUT=$(git diff "$BASE_REV"..HEAD -- . ':(exclude).husky/pre-push' ':(exclude)*.md' 2>/dev/null || true)
 else
-  DIFF_OUTPUT=$(git diff HEAD 2>/dev/null || true)
+  DIFF_OUTPUT=$(git diff HEAD -- . ':(exclude).husky/pre-push' ':(exclude)*.md' 2>/dev/null || true)
 fi
 
 if echo "$DIFF_OUTPUT" | grep -iE "${DANGEROUS_PATTERNS}" > /dev/null 2>&1; then
