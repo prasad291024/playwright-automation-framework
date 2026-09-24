@@ -138,17 +138,23 @@ export async function waitForConditions(
  */
 export async function stableClick(
   locator: Locator,
-  options: { timeout?: number; force?: boolean } = {},
+  options: {
+    timeout?: number;
+    force?: boolean;
+    noWaitAfter?: boolean;
+    maxAttempts?: number;
+  } = {},
 ): Promise<void> {
   return retryWithBackoff(
     async () => {
       await locator.click({
         timeout: options.timeout || 8000,
         force: options.force,
+        noWaitAfter: options.noWaitAfter,
       });
     },
     {
-      maxAttempts: 3,
+      maxAttempts: options.maxAttempts ?? 3,
       delayMs: 300,
       onAttempt: (attempt) => {
         if (attempt > 1) {

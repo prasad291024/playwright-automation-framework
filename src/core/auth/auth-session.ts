@@ -5,6 +5,7 @@ import { AppName, AppRegistry } from '../../config/app.config';
 import { PageFactory } from '../../pages/infrastructure/PageFactory';
 import { CuraLoginPage, OrangeHrmLoginPage, SauceDemoLoginPage } from '../../pages/infrastructure';
 import { isValidEmail } from '../../utils/vwoAuth';
+import { retryWithBackoff } from '../../utils/flakeHelper';
 
 export interface AuthSessionResult {
   context: BrowserContext;
@@ -186,10 +187,23 @@ export const loginForApp = async (page: Page, appName: AppName): Promise<boolean
       }
 
       const loginPage = PageFactory.create<OrangeHrmLoginPage>(page, 'orangehrm', 'LoginPage');
-      await loginPage.goto();
-      await loginPage.login(username, password);
-      await loginPage.assertLoginSuccess();
-      return true;
+      return await retryWithBackoff(
+        async () => {
+          await loginPage.goto();
+          await loginPage.login(username, password);
+          await loginPage.assertLoginSuccess();
+          return true;
+        },
+        {
+          maxAttempts: 2,
+          delayMs: 1000,
+          onAttempt: (attempt, error) => {
+            console.warn(
+              `OrangeHRM login attempt ${attempt} failed (${error.message}). Retrying fresh login...`,
+            );
+          },
+        },
+      );
     }
 
     default:
@@ -283,7 +297,10 @@ export const createAuthenticatedSession = async (
   if (reusedStorageState) {
     // When storage state is reused, navigate to the authenticated route
     // so tests don't start on about:blank or an unauthenticated root URL
-    await page.goto(resolveAuthenticatedRoute(appName));
+    await page.goto(resolveAuthenticatedRoute(appName), {
+      waitUntil: 'domcontentloaded',
+      timeout: appConfig.timeouts.navigation,
+    });
     const valid = await isSessionValid(page, appName);
     if (!valid) {
       console.log(`Saved session for ${appName} is expired on server. Performing fresh login...`);

@@ -142,8 +142,15 @@ export abstract class BasePage {
    * Stable click with retry logic
    * Use this instead of locator.click() for flaky elements
    */
-  protected async stableClick(locator: ReturnType<typeof this.getByRole>, force = false) {
-    await stableClick(locator, { force });
+  protected async stableClick(
+    locator: ReturnType<typeof this.getByRole>,
+    optionsOrForce:
+      | { force?: boolean; timeout?: number; noWaitAfter?: boolean; maxAttempts?: number }
+      | boolean = {},
+  ) {
+    const options =
+      typeof optionsOrForce === 'boolean' ? { force: optionsOrForce } : optionsOrForce;
+    await stableClick(locator, options);
   }
 
   /**

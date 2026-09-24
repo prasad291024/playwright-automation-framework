@@ -31,9 +31,17 @@ test.describe('Performance: OrangeHRM', () => {
       return;
     }
 
+    // Ensure starting state has PIM link not active
+    const pimLink = authenticatedPage.getByRole('link', { name: /pim/i });
+    const isPimActive = (await pimLink.getAttribute('class'))?.includes('active');
+    if (isPimActive) {
+      await orangeHrmApp!.dashboardPage.navigateToMenu('Dashboard');
+    }
+    await expect(pimLink).not.toHaveClass(/active/);
+
     // Measure time to navigate to PIM module
     const startTime = Date.now();
-    await orangeHrmApp!.dashboardPage.navigateToMenu('PIM');
+    await orangeHrmApp!.dashboardPage.navigateToMenu('PIM', { skipIfAlreadyActive: false });
     await authenticatedPage.waitForLoadState('networkidle');
     const endTime = Date.now();
 

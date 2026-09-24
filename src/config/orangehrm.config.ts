@@ -11,7 +11,7 @@ export const orangehrmConfig = {
   timeouts: {
     page: 15000,
     action: 8000,
-    navigation: 20000,
+    navigation: 45000,
   },
   selectors: {
     login: {
