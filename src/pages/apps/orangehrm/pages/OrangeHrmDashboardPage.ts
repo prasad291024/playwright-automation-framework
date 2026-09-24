@@ -35,10 +35,22 @@ export class OrangeHrmDashboardPage extends BasePage {
   /**
    * Navigate to a menu item in the sidebar
    * @param menuItem - The menu item to navigate to (e.g., 'Admin', 'PIM', 'Leave')
+   * @param options - Navigation options including skipIfAlreadyActive (defaults to true)
    */
-  async navigateToMenu(menuItem: string): Promise<void> {
-    await this.stableClick(this.page.getByRole('link', { name: new RegExp(menuItem, 'i') }));
-    await this.page.waitForLoadState('networkidle');
+  async navigateToMenu(
+    menuItem: string,
+    options?: { skipIfAlreadyActive?: boolean },
+  ): Promise<void> {
+    const skipIfAlreadyActive = options?.skipIfAlreadyActive ?? true;
+    const link = this.page.getByRole('link', { name: new RegExp(menuItem, 'i') });
+    const isActive = (await link.getAttribute('class'))?.includes('active');
+    if (!isActive || !skipIfAlreadyActive) {
+      await this.stableClick(link, {
+        timeout: this.appConfig.timeouts.navigation,
+        maxAttempts: 2,
+      });
+    }
+    await this.waitForPageLoad();
   }
 
   /**
@@ -73,8 +85,15 @@ export class OrangeHrmDashboardPage extends BasePage {
    * Navigate to the Users module under Admin.
    */
   async navigateToUsers(): Promise<void> {
-    await this.stableClick(this.page.getByRole('link', { name: /admin/i }));
-    await this.page.waitForLoadState('networkidle');
+    const link = this.page.getByRole('link', { name: /admin/i });
+    const isActive = (await link.getAttribute('class'))?.includes('active');
+    if (!isActive) {
+      await this.stableClick(link, {
+        timeout: this.appConfig.timeouts.navigation,
+        maxAttempts: 2,
+      });
+    }
+    await this.waitForPageLoad();
     await expect(this.page.getByRole('heading', { name: /users/i })).toBeVisible({
       timeout: this.appConfig.timeouts.navigation,
     });
