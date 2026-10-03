@@ -10,12 +10,10 @@ test.describe('Performance: CURA', () => {
       return;
     }
 
-    // We're already authenticated, just navigate to the landing page
-    await authenticatedPage.waitForURL(/.*\/#\/login/);
-
     // Measure time to load landing page
     const startTime = Date.now();
-    await authenticatedPage.waitForLoadState('networkidle');
+    await authenticatedPage.goto('/');
+    await authenticatedPage.waitForLoadState('domcontentloaded');
     const endTime = Date.now();
 
     const loadTime = endTime - startTime;

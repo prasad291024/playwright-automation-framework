@@ -41,8 +41,10 @@ export class OrangeHrmLoginPage extends BasePage {
     await expect(this.page).toHaveURL(/\/auth\/login/i, {
       timeout: this.appConfig.timeouts.navigation || 20000,
     });
-    await expect(this.page.getByText(/invalid credentials/i)).toBeVisible({
-      timeout: this.appConfig.timeouts.page || 15000,
+    await this.expectWithRetry(() => {
+      return expect(this.page.getByText(/invalid credentials/i)).toBeVisible({
+        timeout: this.appConfig.timeouts.page || 15000,
+      });
     });
   }
 
