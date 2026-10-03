@@ -9,8 +9,6 @@ test.describe('Visual Regression: OrangeHRM', () => {
   });
 
   test('dashboard visual regression @orangehrm @visual', async ({ authenticatedPage }) => {
-    await expect(authenticatedPage.locator('body')).toHaveScreenshot(
-      'orangehrm-dashboard-chromium.png',
-    );
+    await expect(authenticatedPage.locator('body')).toHaveScreenshot('orangehrm-dashboard.png');
   });
 });
