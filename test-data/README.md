@@ -31,7 +31,7 @@ Use `dev/` or `qa/` for environment-specific test data:
 // test-data/dev/login.json
 {
   "username": "dev@example.com",
-  "password": "devpass123"
+  "password": "REDACTED"
 }
 ```
 
