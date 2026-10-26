@@ -32,4 +32,17 @@ todo.txt
 .vscode/
 Documentations/
 Documents/
-CLAUDE.md
+CLAUDE.md
+
+# Codex local configuration
+.codex/
+# Claude Flow runtime data
+.claude-flow/data/
+.claude-flow/logs/
+.claude-flow/sessions/
+.swarm/
+.claude/settings.local.json
+.claude/*.bak-*
+.env
+.env.local
+.env.*.local
