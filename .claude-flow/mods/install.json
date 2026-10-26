@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "installedAt": "2026-10-03T09:23:54.025Z",
+  "files": {
+    "C:\\Users\\Prasad\\Projects\\Playwright_Projects\\UI_Automation_Framework\\.claude\\settings.json": {
+      "plugins": ["ruflo-mods@ruflo", "ruflo-swarm@ruflo", "ruflo-console@ruflo"],
+      "marketplace": true,
+      "env": true,
+      "claudeInstalled": ["ruflo-mods@ruflo", "ruflo-swarm@ruflo", "ruflo-console@ruflo"]
+    }
+  }
+}

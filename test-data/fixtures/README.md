@@ -22,7 +22,7 @@ Keep test data well-structured:
 
 ```json
 {
-  "validUsers": [{ "username": "user1", "password": "pass1" }],
-  "invalidUsers": [{ "username": "bad", "password": "wrong" }]
+  "validUsers": [{ "username": "user1", "password": "REDACTED" }],
+  "invalidUsers": [{ "username": "bad", "password": "REDACTED" }]
 }
 ```
