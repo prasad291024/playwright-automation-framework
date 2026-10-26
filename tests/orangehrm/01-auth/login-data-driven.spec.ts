@@ -6,7 +6,7 @@ test.use({ storageState: { cookies: [], origins: [] } });
 
 const validScenario = {
   username: process.env.ORANGEHRM_USERNAME || 'Admin',
-  password: process.env.ORANGEHRM_PASSWORD || 'admin123',
+  password: process.env.ORANGEHRM_PASSWORD || '',
 };
 
 const invalidScenarios = [

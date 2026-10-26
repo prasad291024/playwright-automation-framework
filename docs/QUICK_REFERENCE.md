@@ -254,7 +254,7 @@ await expect(locator).toBeDisabled();
 await expect(locator).toBeChecked();
 
 // Input Values
-await expect(locator).toHaveValue('admin123');
+await expect(locator).toHaveValue('REDACTED');
 
 // Element Counts
 await expect(page.locator('.cart_item')).toHaveCount(3);
