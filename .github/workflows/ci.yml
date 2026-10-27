@@ -44,7 +44,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ steps.meta.outputs.node-version }}
+          node-version: 22.12
           cache: npm
 
       - name: Install dependencies
@@ -251,3 +251,5 @@ jobs:
           path: collected-artifacts/
           if-no-files-found: warn
           retention-days: 30
+
+
