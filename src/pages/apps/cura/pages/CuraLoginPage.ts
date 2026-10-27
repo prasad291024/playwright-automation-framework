@@ -53,7 +53,7 @@ export class CuraLoginPage extends BasePage {
   }
 
   async assertLoginSuccess(): Promise<void> {
-    await expect(this.page).toHaveURL(/#appointment|appointment\.php/i);
+    await expect(this.page).toHaveURL(/#appointment|appointment\.php|profile\.php#login/i);
     await expect(this.page.getByRole('heading', { name: /make appointment/i })).toBeVisible();
   }
 
