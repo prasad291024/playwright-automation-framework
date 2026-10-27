@@ -6,3 +6,5 @@ storage-state
 .idea
 .vscode
 *.log
+.claude
+.claude-flow
