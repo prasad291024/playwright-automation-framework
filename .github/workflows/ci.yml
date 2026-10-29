@@ -142,12 +142,12 @@ jobs:
           # demonstration applications with published credentials. Repository secrets can
           # override them if private instances are used, but fallbacks allow public demo
           # test execution to succeed on fork PRs without exposing any private secrets.
-          CURA_USERNAME: ${{ secrets.CURA_USERNAME || 'John Doe' }}
-          CURA_PASSWORD: ${{ secrets.CURA_PASSWORD || 'ThisIsNotAPassword' }}
-          SAUCEDEMO_USERNAME: ${{ secrets.SAUCEDEMO_USERNAME || 'standard_user' }}
-          SAUCEDEMO_PASSWORD: ${{ secrets.SAUCEDEMO_PASSWORD || 'secret_sauce' }}
-          ORANGEHRM_USERNAME: ${{ secrets.ORANGEHRM_USERNAME || 'Admin' }}
-          ORANGEHRM_PASSWORD: ${{ secrets.ORANGEHRM_PASSWORD || 'admin123' }}
+          CURA_USERNAME: ${{ secrets['CURA_USERNAME'] || 'John Doe' }}
+          CURA_PASSWORD: ${{ secrets['CURA_PASSWORD'] || 'ThisIsNotAPassword' }}
+          SAUCEDEMO_USERNAME: ${{ secrets['SAUCEDEMO_USERNAME'] || 'standard_user' }}
+          SAUCEDEMO_PASSWORD: ${{ secrets['SAUCEDEMO_PASSWORD'] || 'secret_sauce' }}
+          ORANGEHRM_USERNAME: ${{ secrets['ORANGEHRM_USERNAME'] || 'Admin' }}
+          ORANGEHRM_PASSWORD: ${{ secrets['ORANGEHRM_PASSWORD'] || 'admin123' }}
         run: |
           failures=0
 
