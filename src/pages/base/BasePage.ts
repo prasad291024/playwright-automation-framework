@@ -61,14 +61,7 @@ export abstract class BasePage {
   ) {
     return this.page.getByRole(
       role as
-        | 'button'
-        | 'link'
-        | 'textbox'
-        | 'heading'
-        | 'article'
-        | 'searchbox'
-        | 'status'
-        | 'list',
+        'button' | 'link' | 'textbox' | 'heading' | 'article' | 'searchbox' | 'status' | 'list',
       options,
     );
   }
