@@ -12,9 +12,9 @@ const options = args.reduce((acc, arg) => {
   return acc;
 }, {});
 
-const app = options.app;
-const suite = options.suite || 'all';
-const project = options.project;
+const app = options.app || process.env.APP || process.env.APP_NAME;
+const suite = options.suite || process.env.TEST_SUITE || 'all';
+const project = options.project || process.env.PLAYWRIGHT_PROJECT;
 
 if (!app) {
   console.error('Missing required argument: --app=<app-name>');

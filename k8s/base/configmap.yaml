@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: playwright-config
+  labels:
+    app.kubernetes.io/name: ui-automation-framework
+    app.kubernetes.io/part-of: ui-automation-framework
+data:
+  CI: 'true'
+  APP: saucedemo
+  TEST_SUITE: smoke
+  PLAYWRIGHT_PROJECT: chromium
+  PLAYWRIGHT_WORKERS: '1'
+  PLAYWRIGHT_RETRIES: '2'
+  # Optional override for config/apps.json baseUrl. Leave empty to use the app profile.
+  APP_BASE_URL: ''
+  BASE_API_URL: https://jsonplaceholder.typicode.com
+  PLAYWRIGHT_HTML_REPORT: playwright-report/k8s
+  PLAYWRIGHT_JSON_OUTPUT_FILE: test-results/json/k8s.json
+  PLAYWRIGHT_JUNIT_OUTPUT_FILE: test-results/junit/k8s.xml

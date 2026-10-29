@@ -1,25 +1,53 @@
+# Dependencies and build output
 node_modules
-npm-debug.log
 dist
 build
+coverage
+.nyc_output
+*.log
+tsc2.log
+package-lock.json.bak
+
+# VCS and local agent/tooling state
 .git
 .gitignore
-.DS_Store
-*.md
-.env*
-!.env.example
-storage-state/
-test-data/storage-state/
-Documents/
+.husky
+.github
 .vscode
 .idea
+.DS_Store
+Thumbs.db
 *.swp
 *.swo
 *~
-.husky
-.github
+.agents
+.claude
+.claude-flow
+.codex
+.swarm
+skills-lock.json
+.mcp.json
+
+# Secrets and local environment files
+.env*
+*.secret.yaml
+k8s/**/secret.yaml
+
+# Test artifacts and runtime state (created inside the container/volumes)
 test-results
 playwright-report
+blob-report
 screenshots
-coverage
-.nyc_output
+storage-state
+test-data/storage-state
+playwright/.cache
+
+# Documentation and container definitions not needed by the test image
+*.md
+docs
+Documents
+Dockerfile
+Dockerfile.*
+docker-compose*.yml
+Jenkinsfile*
+k8s

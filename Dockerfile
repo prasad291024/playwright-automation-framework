@@ -1,34 +1,48 @@
-# Use official Playwright image as base
-FROM mcr.microsoft.com/playwright:v1.56.1-noble
+# Playwright image tag must match the @playwright/test version resolved in package-lock.json.
+# Browsers are baked into this image, so the version cannot drift from the test runner.
+FROM mcr.microsoft.com/playwright:v1.64.1-noble AS deps
 
-# Set working directory
 WORKDIR /app
 
-# Install Node.js (Playwright image includes this, but ensure it's available)
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+# Husky hooks are not needed in an image build, and browsers already exist in the base image.
+ENV HUSKY=0 \
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
-# Copy package files
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci
+RUN npm ci --no-audit --no-fund
 
-# Install Playwright browsers
-RUN npx playwright install --with-deps chromium firefox webkit
+FROM mcr.microsoft.com/playwright:v1.64.1-noble AS runtime
 
-# Copy application code
-COPY . .
+LABEL org.opencontainers.image.title="UI Automation Framework" \
+      org.opencontainers.image.description="Playwright test runner for the UI automation framework" \
+      org.opencontainers.image.version="1.64.1"
 
-# Set environment variables
-ENV CI=true
-ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV CI=true \
+    HOME=/home/pwuser \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
-# Default command: run tests
-CMD ["npm", "test"]
+# tini reaps zombie browser processes and forwards SIGTERM so interrupted runs stop cleanly.
+# The base image tag pins the Ubuntu suite; pinning tini's apt version would break when
+# Microsoft republishes the image with a security update for that package.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tini \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /app/test-results /app/playwright-report /app/storage-state /app/screenshots \
+    && chown -R pwuser:pwuser /app /home/pwuser
 
-# Healthcheck for container (optional)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD npm run typecheck || exit 1
+WORKDIR /app
+
+COPY --from=deps --chown=pwuser:pwuser /app/node_modules ./node_modules
+COPY --chown=pwuser:pwuser . .
+
+# Defense in depth: .dockerignore excludes these, but a build must never ship local secrets.
+RUN test ! -e /app/.env && test ! -e /app/.env.local && test ! -e /app/.env.backup
+
+# Browser sandboxing is governed by Playwright/container isolation; the runner never runs as root.
+USER pwuser
+
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["npx", "playwright", "test"]

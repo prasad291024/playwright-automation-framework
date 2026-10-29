@@ -734,20 +734,38 @@ _(Note: Visual and performance testing suites are run on-demand rather than as b
 
 The Jenkinsfile provides a reproducible, containerized pipeline:
 
-- Pulls `mcr.microsoft.com/playwright:v1.56.1-noble`.
+- Pulls `mcr.microsoft.com/playwright:v1.64.1-noble`.
 - Mounts the workspace to `/workspace`.
 - Supports parameter choices: `TEST_SCOPE` (`smoke` vs. `full`), `PLAYWRIGHT_PROJECT` (`chromium`, `firefox`, `webkit`, `saucedemo`, `cura`), and `APP`.
 - Publishes HTML reports and archives artifacts automatically.
 
-### Docker & Docker Compose
+### Docker, Docker Compose & Kubernetes
+
+The `Dockerfile` builds a hardened image on the Playwright base tag that matches the lockfile (`v1.64.1-noble`), installs dependencies with `npm ci`, and runs as the non-root `pwuser` with `tini` as PID 1. It supports a read-only root filesystem when `/tmp`, `/home/pwuser`, and the artifact directories are writable.
 
 ```bash
-# Build and run tests headlessly via Docker Compose
-docker compose run test
+# Build the image
+docker build -t ui-automation-framework:1.64.1 .
 
-# Run tests in headed container with display passthrough
-docker compose run test-headed
+# Run tests headlessly via Docker Compose
+docker compose run --rm test
+
+# Run a specific app suite inside the container
+docker compose run --rm test node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
+
+# Headed run under Xvfb (the service uses the headed profile)
+docker compose --profile headed run --rm test-headed
 ```
+
+Kubernetes runs the suite as a finite Job in the `playwright-tests` namespace with a restricted Pod Security profile, no ServiceAccount token, and a default-deny NetworkPolicy:
+
+```bash
+docker build -t ui-automation-framework:1.64.1 .
+kubectl apply -k k8s/overlays/local
+kubectl -n playwright-tests wait --for=condition=complete job/playwright-suite --timeout=900s
+```
+
+See [CONTAINERIZATION.md](CONTAINERIZATION.md) for image details, configuration, security controls, validation, and rollback, and [../k8s/README.md](../k8s/README.md) for the cluster runbook and artifact collection.
 
 ---
 

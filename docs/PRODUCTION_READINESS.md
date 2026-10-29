@@ -91,16 +91,20 @@ Active application suites must be verified across their designated test scopes:
 
 ### Jenkins Pipeline (`Jenkinsfile.docker`)
 
-- [ ] Pipeline passes using `mcr.microsoft.com/playwright:v1.56.1-noble`.
+- [ ] Pipeline passes using `mcr.microsoft.com/playwright:v1.64.1-noble`.
 - [ ] Parameterized execution (`TEST_SCOPE`, `PLAYWRIGHT_PROJECT`, `APP`) verified.
 - [ ] HTML reports and JUnit XML results are published.
 - [ ] Slack notifications trigger on success and failure.
 
-### Docker Environment
+### Docker & Kubernetes Environment
 
-- [ ] `Dockerfile` builds successfully without warnings.
-- [ ] `docker compose run test` executes tests headlessly in container.
+- [ ] `Dockerfile` builds successfully without warnings (hadolint clean).
+- [ ] Image runs as non-root (UID 1001) with `tini` as PID 1 and a read-only root filesystem.
+- [ ] `docker compose run --rm test` executes tests headlessly in the container.
 - [ ] Output directories (`test-results/`, `playwright-report/`) mount correctly without permission errors.
+- [ ] Kubernetes manifests render (`kubectl kustomize k8s/overlays/local`) and pass schema validation.
+- [ ] The Job completes, propagates failures, and artifacts are copied before `ttlSecondsAfterFinished`.
+- [ ] No `.env` file or credential is present in the image layers.
 
 ---
 

@@ -40,6 +40,11 @@ try {
   appConfig = AppRegistry.get('local');
 }
 
+const appBaseUrlOverride = process.env.APP_BASE_URL?.trim();
+if (appBaseUrlOverride) {
+  appConfig = { ...appConfig, baseUrl: appBaseUrlOverride };
+}
+
 // Propagate app-specific settings into environment
 process.env.BASE_URL = appConfig.baseUrl;
 process.env.STORAGE_STATE = appConfig.storageState || `storage-state/${selectedApp}.json`;

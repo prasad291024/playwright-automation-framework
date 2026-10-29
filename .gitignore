@@ -46,3 +46,12 @@ CLAUDE.md
 .env
 .env.local
 .env.*.local
+
+# Kubernetes secrets, rendered manifests, and local scan output
+k8s/**/secret.yaml
+*.secret.yaml
+k8s/**/rendered/
+rendered-*.yaml
+trivy-results.sarif
+sbom.spdx.json
+package-lock.json.bak

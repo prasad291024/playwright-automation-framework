@@ -327,7 +327,8 @@ Use this checklist to self-evaluate your mastery of the framework:
 
 - [ ] Understand the PR smoke scope vs. Full push scope in `.github/workflows/ci.yml`.
 - [ ] Understand how Jenkins runs containerized builds using `Jenkinsfile.docker`.
-- [ ] Know how to run tests locally in Docker via `docker compose run test`.
+- [ ] Can build the runner image and run tests via `docker compose run --rm test`.
+- [ ] Understand the Kubernetes Job path and know where the runbook lives (`k8s/README.md`).
 - [ ] Comply with Husky pre-commit hooks and conventional commit messages.
 
 ---

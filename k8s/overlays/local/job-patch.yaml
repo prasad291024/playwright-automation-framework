@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: playwright-suite
+spec:
+  activeDeadlineSeconds: 900
+  ttlSecondsAfterFinished: 900
+  template:
+    spec:
+      containers:
+        - name: playwright
+          imagePullPolicy: IfNotPresent

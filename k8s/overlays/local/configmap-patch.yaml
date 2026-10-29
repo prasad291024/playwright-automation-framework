@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: playwright-config
+data:
+  APP: local
+  TEST_SUITE: shared-api
+  PLAYWRIGHT_PROJECT: chromium
+  APP_BASE_URL: ''

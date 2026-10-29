@@ -86,7 +86,7 @@ This document defines the multi-tiered quality gates implemented in the Playwrig
 ### Gate 5: Enterprise Container Gate (Jenkins & Docker)
 
 - **Trigger**: Jenkins webhook on GitHub push or scheduled build.
-- **Implementation**: `Jenkinsfile.docker` running inside `mcr.microsoft.com/playwright:v1.56.1-noble`.
+- **Implementation**: `Jenkinsfile.docker` running inside `mcr.microsoft.com/playwright:v1.64.1-noble`.
 - **Validates**: Tests run reliably in isolated Linux container environments without host-dependent quirks.
 
 ---

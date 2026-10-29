@@ -153,7 +153,7 @@ The framework includes a production-grade Jenkins pipeline using Playwright's of
 
 ### Container Specifications
 
-- **Image**: `mcr.microsoft.com/playwright:v1.56.1-noble`
+- **Image**: `mcr.microsoft.com/playwright:v1.64.1-noble`
 - **Volume Mount**: Workspace mounted dynamically to `/workspace`
 - **Execution**: Cross-platform compatible (`sh` on Linux/macOS, `bat` on Windows)
 
@@ -174,6 +174,8 @@ The framework includes a production-grade Jenkins pipeline using Playwright's of
 
 ## 5. Docker & Containerized Execution
 
+> For the hardened image, read-only runtime, Compose overrides, Kubernetes Job, and artifact-collection runbook, see [CONTAINERIZATION.md](CONTAINERIZATION.md) and [k8s/README.md](../k8s/README.md).
+
 ### Local Docker Compose
 
 Run tests locally using Docker Compose to replicate CI container conditions:
@@ -183,7 +185,7 @@ Run tests locally using Docker Compose to replicate CI container conditions:
 docker compose run test
 
 # Run tests in headed container (X11 / VNC forwarding)
-docker compose run test-headed
+docker compose --profile headed run test-headed
 
 # Run a specific app suite in container
 docker compose run test node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
@@ -193,13 +195,13 @@ docker compose run test node scripts/run-app-suite.cjs --app=saucedemo --suite=s
 
 ```bash
 # Build custom image
-docker build -t playwright-framework:v1.56.1 .
+docker build -t ui-automation-framework:1.64.1 .
 
 # Run tests headlessly
 docker run --rm --ipc=host \
   -v "$(pwd)/test-results:/app/test-results" \
   -v "$(pwd)/playwright-report:/app/playwright-report" \
-  playwright-framework:v1.56.1 npm test
+  ui-automation-framework:1.64.1 npm test
 ```
 
 ---

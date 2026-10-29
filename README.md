@@ -10,7 +10,7 @@ The framework brings together:
 - **Test data & environment configuration** for repeatable automation
 - **Visual, accessibility & performance testing** for broader quality coverage
 - **Failure diagnostics & reporting** for faster investigation
-- **Docker, GitHub Actions & Jenkins** for CI/CD execution
+- **Docker, Kubernetes, GitHub Actions & Jenkins** for CI/CD execution
 - **Security hardening & secret management** for secure test automation practices
 
 > **Portfolio note:** This repository is an engineering demonstration of automation architecture and quality practices. It is not a representation of any specific employer's production test framework.
@@ -63,7 +63,7 @@ This framework focuses on the engineering practices required to build maintainab
 | ⚡ **Parallel Execution**        | Configurable workers with attention to isolation, shared state, and environment capacity                 |
 | 🧪 **Test Strategy**             | Smoke, regression, authentication, accessibility, performance, and visual testing                        |
 | 📊 **Diagnostics & Reporting**   | HTML, JSON, JUnit, screenshots, traces, videos, logs, and other artifacts                                |
-| 🐳 **Containerization**          | Docker-based test execution                                                                              |
+| 🐳 **Containerization**          | Docker image and Kubernetes Job-based test execution                                                     |
 | 🔄 **CI/CD**                     | GitHub Actions and Jenkins integration                                                                   |
 | 🔍 **Reliability Engineering**   | Failure investigation, synchronization, test-data, environment, and flaky-test considerations            |
 | 🔒 **Security Practices**        | Secret management via environment variables, Git-hook-based secret detection, and security documentation |
@@ -156,8 +156,8 @@ The framework separates **business-level test scenarios** from **UI interaction,
 | **Performance Testing**            | Page-load SLA threshold validation.                                                                           |
 | **Failure Diagnostics**            | Screenshots, traces, videos, logs, and structured test reports                                                |
 | **Test Reporting**                 | HTML, JSON, and JUnit reports                                                                                 |
-| **Containerized Execution**        | Docker-based test execution                                                                                   |
-| **CI/CD Integration**              | GitHub Actions and Jenkins execution                                                                          |
+| **Containerized Execution**        | Docker image and Kubernetes Job-based test execution                                                          |
+| **CI/CD Integration**              | GitHub Actions, container image scanning, Kubernetes manifest validation, and Jenkins execution               |
 | **Multi-Application Architecture** | SauceDemo, CURA Healthcare, and OrangeHRM test suites                                                         |
 | **Security Hardening**             | Environment variable-based credential management, Git-hook-based secret detection, and security documentation |
 
@@ -206,6 +206,8 @@ playwright-automation-framework/
 ├── Dockerfile               # Containerized execution
 ├── docker-compose.yml       # Docker orchestration
 ├── Jenkinsfile.docker      # Jenkins pipeline definition
+├── k8s/                     # Kubernetes Job, NetworkPolicy, and Kustomize overlays
+├── docs/CONTAINERIZATION.md # Docker and Kubernetes execution guide
 ├── playwright.config.ts     # Playwright execution configuration
 ├── package.json             # Project dependencies and scripts
 │   └── lint-staged config   # Integrates secret detection into pre-commit workflow
@@ -420,6 +422,18 @@ The pipeline supports configurable parameters such as:
 | **Test Scope**          | Control which test suite or scope is executed |
 | **Execution Timeout**   | Control pipeline execution limits             |
 | **Reports & Artifacts** | Preserve execution results for investigation  |
+
+### Container and Kubernetes Execution
+
+The repository includes a hardened Docker image and a Kubernetes Job-based execution path. The image runs as a non-root user with an init process, supports a read-only root filesystem, and pins the Playwright base image to the lockfile version. Kubernetes runs the suite as a finite Job with a restricted Pod Security profile, no cluster credentials, and a default-deny NetworkPolicy.
+
+```bash
+docker build -t ui-automation-framework:1.64.1 .
+docker compose run --rm test node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
+kubectl apply -k k8s/overlays/local
+```
+
+See [docs/CONTAINERIZATION.md](docs/CONTAINERIZATION.md) and [k8s/README.md](k8s/README.md) for build, deployment, artifact collection, security controls, and rollback instructions.
 
 ### Execution Strategy
 
@@ -638,7 +652,7 @@ These practices ensure the framework remains suitable for public repository host
 | **Browsers**          | Chromium, Firefox, WebKit                                                      |
 | **Test Data**         | Environment-driven and reusable test data                                      |
 | **Reporting**         | HTML, JSON, JUnit                                                              |
-| **Containerization**  | Docker, Docker Compose                                                         |
+| **Containerization**  | Docker, Docker Compose, Kubernetes Job                                         |
 | **CI/CD**             | GitHub Actions, Jenkins                                                        |
 | **Version Control**   | Git, GitHub                                                                    |
 | **Code Quality**      | ESLint, TypeScript checks, Git hooks (including secret detection)              |
