@@ -451,7 +451,7 @@ playwright.config.ts
 ```
 Commit Code → GitHub
         ↓
-.github/workflows/test.yml triggered
+.github/workflows/ci.yml triggered
         ↓
 Runner starts (Ubuntu/Windows/Mac)
         ↓
@@ -481,6 +481,32 @@ npm test (Playwright tests)
                 Logs attached
                 Video/Screenshots available
 ```
+
+### Container & Kubernetes Pipeline
+
+```
+Dockerfile change / push to main
+        ↓
+.github/workflows/container.yml
+        ↓
+Build hardened image (non-root pwuser, tini, read-only compatible)
+        ↓
+Verify UID 1001 → launch Chromium → run shared API suite
+        ↓
+Trivy scan + artifact upload
+        ↓
+Publish to GHCR on main (provenance + SBOM)
+        ↓
+kubectl apply -k k8s/overlays/local
+        ↓
+Job (restricted PSS, no SA token, default-deny NetworkPolicy)
+        ↓
+Pod runs scripts/run-app-suite.cjs with ConfigMap env
+        ↓
+Copy reports before ttlSecondsAfterFinished cleanup
+```
+
+See [CONTAINERIZATION.md](CONTAINERIZATION.md) and [../k8s/README.md](../k8s/README.md).
 
 ---
 

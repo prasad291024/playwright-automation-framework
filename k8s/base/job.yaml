@@ -1,0 +1,101 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: playwright-suite
+  labels:
+    app.kubernetes.io/name: ui-automation-framework
+    app.kubernetes.io/component: test-runner
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 0
+  activeDeadlineSeconds: 3600
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ui-automation-framework
+        app.kubernetes.io/component: test-runner
+    spec:
+      restartPolicy: Never
+      serviceAccountName: playwright-runner
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 60
+      # imagePullSecrets:
+      #   - name: ghcr-pull-secret
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: playwright
+          image: ui-automation-framework:1.64.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - node
+            - scripts/run-app-suite.cjs
+          envFrom:
+            - configMapRef:
+                name: playwright-config
+            - secretRef:
+                name: playwright-credentials
+                optional: true
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+              ephemeral-storage: 2Gi
+            limits:
+              cpu: '2'
+              memory: 3Gi
+              ephemeral-storage: 8Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: home
+              mountPath: /home/pwuser
+            - name: dshm
+              mountPath: /dev/shm
+            - name: test-results
+              mountPath: /app/test-results
+            - name: playwright-report
+              mountPath: /app/playwright-report
+            - name: storage-state
+              mountPath: /app/storage-state
+            - name: screenshots
+              mountPath: /app/screenshots
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 512Mi
+        - name: home
+          emptyDir:
+            sizeLimit: 128Mi
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi
+        - name: test-results
+          emptyDir:
+            sizeLimit: 4Gi
+        - name: playwright-report
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: storage-state
+          emptyDir:
+            sizeLimit: 64Mi
+        - name: screenshots
+          emptyDir:
+            sizeLimit: 256Mi

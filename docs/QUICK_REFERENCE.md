@@ -64,6 +64,21 @@ npm run format            # Prettier auto-formatting
 npm run pre-push          # Combined pre-push quality check
 ```
 
+### Container & Kubernetes Execution
+
+```bash
+docker build -t ui-automation-framework:1.64.1 .        # Build the hardened runner image
+docker compose run --rm test                            # Run tests headlessly via Compose
+docker compose run --rm test node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
+docker compose --profile headed run --rm test-headed    # Headed run under Xvfb
+
+kubectl apply -k k8s/overlays/local                     # Apply Job, ConfigMap, NetworkPolicy
+kubectl -n playwright-tests wait --for=condition=complete job/playwright-suite --timeout=900s
+kubectl -n playwright-tests logs job/playwright-suite
+```
+
+Container and cluster configuration is environment-driven (`APP`, `TEST_SUITE`, `PLAYWRIGHT_PROJECT`, `APP_BASE_URL`). See [CONTAINERIZATION.md](CONTAINERIZATION.md) and [../k8s/README.md](../k8s/README.md).
+
 ---
 
 ## 2. Test Authoring Patterns

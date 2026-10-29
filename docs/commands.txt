@@ -107,9 +107,35 @@ $env:SKIP_GLOBAL_AUTH_SETUP='1'; node scripts/run-app-suite.cjs --app=cura --sui
 
 6. Docker & Containerized Execution
 ------------------------------------------------------------
-docker compose run test
-  Runs tests headlessly inside the official Playwright Docker container.
+docker build -t ui-automation-framework:1.64.1 .
+  Builds the hardened runner image (non-root, tini, read-only compatible).
 
-docker compose run test-headed
-  Runs tests in container with display forwarding.
+docker compose run --rm test
+  Runs tests headlessly inside the Playwright container.
+
+docker compose run --rm test node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke
+  Runs a specific app suite inside the container.
+
+docker compose --profile headed run --rm test-headed
+  Runs tests headed under Xvfb (the service is behind the "headed" profile).
+
+
+7. Kubernetes Execution
+------------------------------------------------------------
+docker build -t ui-automation-framework:1.64.1 .
+  Build or load the image into the cluster before applying the Job.
+
+kubectl apply -k k8s/overlays/local
+  Creates the namespace, ServiceAccount, ConfigMap, Job, and NetworkPolicy.
+
+kubectl -n playwright-tests wait --for=condition=complete job/playwright-suite --timeout=900s
+  Waits for the finite Job; a failing suite makes this command exit non-zero.
+
+kubectl -n playwright-tests logs job/playwright-suite
+  Streams the Playwright output.
+
+kubectl -n playwright-tests get pod -l job-name=playwright-suite
+  Finds the pod to copy artifacts from before the TTL cleanup runs.
+
+See docs/CONTAINERIZATION.md and k8s/README.md for configuration, security, and rollback.
 ============================================================

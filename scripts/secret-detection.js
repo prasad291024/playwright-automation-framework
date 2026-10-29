@@ -34,6 +34,7 @@ const excludePatterns = [
   /\/dist\//,
   /\/build\//,
   /\.env\.example$/, // example files are expected to have placeholders
+  /\/secret\.example\.ya?ml$/, // placeholder-only Kubernetes Secret example
   /test-data\/users\.ts$/, // Our test data files now use env vars with fallbacks
 ];
 

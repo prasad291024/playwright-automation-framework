@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: playwright-egress
+  labels:
+    app.kubernetes.io/name: ui-automation-framework
+    app.kubernetes.io/part-of: ui-automation-framework
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: ui-automation-framework
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress: []
+  egress:
+    # Cluster DNS. Adjust the namespace selector if your cluster runs DNS elsewhere.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # HTTPS to the public demo applications and API fixtures.
+    # Add HTTP/80 or an in-cluster namespace rule if the application under test requires it.
+    - ports:
+        - protocol: TCP
+          port: 443

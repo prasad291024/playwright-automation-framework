@@ -1,0 +1,203 @@
+name: Container and Kubernetes
+
+on:
+  pull_request:
+    paths:
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'docker-compose.yml'
+      - 'k8s/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright.config.ts'
+      - 'scripts/run-app-suite.cjs'
+      - 'config/**'
+      - 'globals/**'
+      - 'tests/shared/api/**'
+      - '.github/workflows/container.yml'
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: container-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: ui-automation-framework
+  IMAGE_TAG: '1.64.1'
+
+jobs:
+  manifests:
+    name: Validate Kubernetes manifests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.34.1
+
+      - name: Render Kustomize overlays
+        shell: bash
+        run: |
+          kubectl kustomize k8s/base > rendered-base.yaml
+          kubectl kustomize k8s/overlays/local > rendered-local.yaml
+
+      - name: Validate Kubernetes schemas with kubeconform
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            ghcr.io/yannh/kubeconform:v0.6.7 \
+            -strict -summary \
+            /work/rendered-base.yaml \
+            /work/rendered-local.yaml \
+            /work/k8s/base/secret.example.yaml
+
+      - name: Lint manifests with kube-linter (advisory)
+        shell: bash
+        run: |
+          for manifest in rendered-base.yaml rendered-local.yaml; do
+            echo "Linting ${manifest}"
+            docker run --rm -v "$PWD:/work" \
+              stackrox/kube-linter:v0.7.2 lint "/work/${manifest}" || true
+          done
+
+  docker:
+    name: Build, scan, and smoke test image
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate Compose file
+        run: docker compose config --quiet
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: ${{ env.IMAGE_NAME }}:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify non-root execution
+        shell: bash
+        run: |
+          uid="$(docker run --rm --entrypoint id ${{ env.IMAGE_NAME }}:ci -u)"
+          test "$uid" = "1001"
+          echo "Running as UID ${uid}"
+
+      - name: Verify Chromium launches with a read-only root filesystem
+        shell: bash
+        run: |
+          docker run --rm \
+            --read-only \
+            --tmpfs /tmp \
+            --tmpfs /home/pwuser \
+            --shm-size=1g \
+            --cap-drop=ALL \
+            --security-opt no-new-privileges \
+            --entrypoint node \
+            ${{ env.IMAGE_NAME }}:ci \
+            -e "const { chromium } = require('@playwright/test'); (async () => { const browser = await chromium.launch(); console.log('chromium launched'); await browser.close(); })().catch((error) => { console.error(error); process.exit(1); });"
+
+      - name: Run shared API suite in the container
+        shell: bash
+        run: |
+          mkdir -p test-results playwright-report storage-state screenshots
+          chmod -R 0777 test-results playwright-report storage-state screenshots
+
+          docker run --rm \
+            --read-only \
+            --tmpfs /tmp \
+            --tmpfs /home/pwuser \
+            --shm-size=1g \
+            --cap-drop=ALL \
+            --security-opt no-new-privileges \
+            -e CI=true \
+            -v "$PWD/test-results:/app/test-results" \
+            -v "$PWD/playwright-report:/app/playwright-report" \
+            -v "$PWD/storage-state:/app/storage-state" \
+            -v "$PWD/screenshots:/app/screenshots" \
+            ${{ env.IMAGE_NAME }}:ci \
+            node scripts/run-app-suite.cjs --app=local --suite=shared-api
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-test-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:ci
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: '0'
+
+      - name: Upload Trivy SARIF
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+      - name: Log in to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=${{ env.IMAGE_TAG }}
+            type=raw,value=latest
+
+      - name: Publish image to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: true
+          sbom: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
