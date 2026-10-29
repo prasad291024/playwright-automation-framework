@@ -83,7 +83,7 @@ In continuous integration (GitHub Actions, Jenkins), configure these secrets:
 | `PLAYWRIGHT_RETRIES`                        | Retry override                                            | `2` (in CI)                               |
 | `CURA_USERNAME` / `CURA_PASSWORD`           | CURA test credentials                                     | `John Doe` / `ThisIsNotAPassword`         |
 | `ORANGEHRM_USERNAME` / `ORANGEHRM_PASSWORD` | OrangeHRM test credentials                                | `Admin` / `REDACTED`                      |
-| `SAUCEDEMO_USERNAME` / `SAUCEDEMO_PASSWORD` | SauceDemo test credentials                                | `standard_user` / `REDACTED`          |
+| `SAUCEDEMO_USERNAME` / `SAUCEDEMO_PASSWORD` | SauceDemo test credentials                                | `standard_user` / `REDACTED`              |
 
 ---
 

@@ -34,7 +34,7 @@ jobs:
         id: meta
         shell: bash
         run: |
-          echo "node-version=22.12" >> "$GITHUB_OUTPUT"
+          echo "node-version=24" >> "$GITHUB_OUTPUT"
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "test-scope=smoke" >> "$GITHUB_OUTPUT"
           else
@@ -44,7 +44,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.12
+          node-version: ${{ steps.meta.outputs.node-version }}
           cache: npm
 
       - name: Install dependencies
@@ -142,12 +142,12 @@ jobs:
           # demonstration applications with published credentials. Repository secrets can
           # override them if private instances are used, but fallbacks allow public demo
           # test execution to succeed on fork PRs without exposing any private secrets.
-          CURA_USERNAME: ${{ secrets.CURA_USERNAME || 'John Doe' }}
-          CURA_PASSWORD: ${{ secrets.CURA_PASSWORD || 'ThisIsNotAPassword' }}
-          SAUCEDEMO_USERNAME: ${{ secrets.SAUCEDEMO_USERNAME || 'standard_user' }}
-          SAUCEDEMO_PASSWORD: ${{ secrets.SAUCEDEMO_PASSWORD || 'secret_sauce' }}
-          ORANGEHRM_USERNAME: ${{ secrets.ORANGEHRM_USERNAME || 'Admin' }}
-          ORANGEHRM_PASSWORD: ${{ secrets.ORANGEHRM_PASSWORD || 'admin123' }}
+          CURA_USERNAME: ${{ secrets['CURA_USERNAME'] || 'John Doe' }}
+          CURA_PASSWORD: ${{ secrets['CURA_PASSWORD'] || 'ThisIsNotAPassword' }}
+          SAUCEDEMO_USERNAME: ${{ secrets['SAUCEDEMO_USERNAME'] || 'standard_user' }}
+          SAUCEDEMO_PASSWORD: ${{ secrets['SAUCEDEMO_PASSWORD'] || 'secret_sauce' }}
+          ORANGEHRM_USERNAME: ${{ secrets['ORANGEHRM_USERNAME'] || 'Admin' }}
+          ORANGEHRM_PASSWORD: ${{ secrets['ORANGEHRM_PASSWORD'] || 'admin123' }}
         run: |
           failures=0
 
@@ -251,5 +251,3 @@ jobs:
           path: collected-artifacts/
           if-no-files-found: warn
           retention-days: 30
-
-

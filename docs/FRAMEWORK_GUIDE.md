@@ -264,7 +264,7 @@ Copy `.env.example` to `.env` to customize settings locally:
 | `PLAYWRIGHT_RETRIES`                        | Overrides test retry count                                     | `undefined` (2 in CI, 0 in debug) |
 | `CURA_USERNAME` / `CURA_PASSWORD`           | Credentials for CURA                                           | `John Doe` / `ThisIsNotAPassword` |
 | `ORANGEHRM_USERNAME` / `ORANGEHRM_PASSWORD` | Credentials for OrangeHRM                                      | `Admin` / `REDACTED`              |
-| `SAUCEDEMO_USERNAME` / `SAUCEDEMO_PASSWORD` | Credentials for SauceDemo                                      | `standard_user` / `REDACTED`  |
+| `SAUCEDEMO_USERNAME` / `SAUCEDEMO_PASSWORD` | Credentials for SauceDemo                                      | `standard_user` / `REDACTED`      |
 
 ---
 
