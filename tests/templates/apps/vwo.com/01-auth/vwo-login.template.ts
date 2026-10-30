@@ -1,8 +1,8 @@
 import { test } from '../../../../../src/core/fixtures/auth.fixture';
 import { VwoLoginPage } from '../../../../../src/pages/infrastructure';
 
-const VWO_EMAIL = process.env.VWO_EMAIL || process.env.USERNAME || '';
-const VWO_PASSWORD = process.env.VWO_PASSWORD || process.env.PASSWORD || '';
+const VWO_EMAIL = process.env.VWO_EMAIL || '';
+const VWO_PASSWORD = process.env.VWO_PASSWORD || '';
 
 test.describe('VWO Login', () => {
   test.skip(

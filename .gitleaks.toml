@@ -8,3 +8,15 @@ description = "Maintainer-confirmed public demo values and placeholders only; no
 paths = [
   '''^test-data/fixtures/login\.env\.json$''',
 ]
+
+[[allowlists]]
+description = "Exact public demo credential values used by the explicitly named public-demo constants."
+regexes = [
+  '''^John Doe$''',
+  '''^ThisIsNotAPassword$''',
+  '''^standard_user$''',
+  '''^locked_out_user$''',
+  '''^secret_sauce$''',
+  '''^Admin$''',
+  '''^admin123$''',
+]

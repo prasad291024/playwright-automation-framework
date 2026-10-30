@@ -44,8 +44,11 @@ test('@smoke - Login and see dashboard', async ({ page }) => {
 
   // Otherwise perform login flow (fallbacks in LoginPage will try multiple locators)
   await loginPage.goto();
-  const username = process.env.USERNAME || 'testuser';
-  const password = process.env.PASSWORD || 'securepass123';
+  const username = process.env.TEMPLATE_APP_USERNAME;
+  const password = process.env.TEMPLATE_APP_PASSWORD;
+  if (!username || !password) {
+    throw new Error('Set TEMPLATE_APP_USERNAME and TEMPLATE_APP_PASSWORD for this template.');
+  }
 
   await loginPage.login(username, password);
   await dashboard.verifyWelcomeMessage();

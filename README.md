@@ -308,14 +308,21 @@ PowerShell:
 Copy-Item .env.example .env
 ```
 
-Update the required environment-specific values.
+Set the app-specific variables for private or alternate targets. For the public demo targets,
+documented public demo credentials are available as defaults in
+[`src/config/public-demo-credentials.ts`](src/config/public-demo-credentials.ts). VWO has no
+public demo default; its archived tests require organization-owned `VWO_EMAIL` and `VWO_PASSWORD`.
 
 > ⚠️ **Never commit credentials, tokens, or other secrets to the repository.**  
-> The framework uses environment variables for all application credentials:
+> Use app-specific environment variables for private or alternate environments:
 >
 > - `SAUCEDEMO_USERNAME`, `SAUCEDEMO_PASSWORD`
 > - `CURA_USERNAME`, `CURA_PASSWORD`
 > - `ORANGEHRM_USERNAME`, `ORANGEHRM_PASSWORD`
+>
+> Do not use generic `USERNAME` or `PASSWORD` variables. On Windows, `USERNAME` may be the
+> operating-system account name. Public demo defaults are explicitly named in the source;
+> they are not private credentials.
 
 ### 5. Run Tests
 

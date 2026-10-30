@@ -1,12 +1,13 @@
 import { test } from '../../../src/core/fixtures/test.fixture';
 import { resolveAppNameFromEnv } from '../../../src/core/auth/auth-session';
+import { PUBLIC_DEMO_CREDENTIALS } from '../../../src/config/public-demo-credentials';
 
 // Override storageState to ensure we start fresh for login validation tests
 test.use({ storageState: { cookies: [], origins: [] } });
 
 const validScenario = {
-  username: process.env.ORANGEHRM_USERNAME || 'Admin',
-  password: process.env.ORANGEHRM_PASSWORD || '',
+  username: process.env.ORANGEHRM_USERNAME || PUBLIC_DEMO_CREDENTIALS.orangehrm.username,
+  password: process.env.ORANGEHRM_PASSWORD || PUBLIC_DEMO_CREDENTIALS.orangehrm.password,
 };
 
 const invalidScenarios = [
