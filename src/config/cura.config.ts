@@ -19,12 +19,6 @@ export const curaConfig = {
       passwordInput: '#txt-password',
       loginButton: '#btn-login',
     },
-    appointment: {
-      facilityDropdown: '#combo_facility',
-      visitDate: '#txt_visit_date',
-      comment: '#txt_comment',
-      bookAppointmentButton: '#btn-book-appointment',
-    },
     confirmation: {
       confirmationSection: '#summary',
     },
