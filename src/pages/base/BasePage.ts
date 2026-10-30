@@ -104,8 +104,7 @@ export abstract class BasePage {
   }
 
   /**
-   * Wait for page to reach a stable state (network idle + animations)
-   * Uses fallback strategy if network never fully idles
+   * Wait for the document to be parsed without requiring network idle.
    */
   async waitForPageLoad(): Promise<void> {
     await waitForNetworkStable(this.page, { maxWaitMs: this.appConfig.timeouts.page });
