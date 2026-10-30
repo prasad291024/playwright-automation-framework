@@ -88,6 +88,8 @@ This document defines the multi-tiered quality gates implemented in the Playwrig
 - **Trigger**: Jenkins webhook on GitHub push or scheduled build.
 - **Implementation**: `Jenkinsfile.docker` running inside `mcr.microsoft.com/playwright:v1.64.1-noble`.
 - **Validates**: Tests run reliably in isolated Linux container environments without host-dependent quirks.
+- **Container workflow**: `.github/workflows/container.yml` builds the image, verifies non-root UID 1001 and a read-only Chromium launch, runs `local:shared-api` in-container, scans with Trivy, and validates rendered manifests with kubeconform.
+- **Kubernetes Job**: `kubectl apply -k k8s/overlays/local` runs the suite as a finite Job under the `restricted` Pod Security profile with no ServiceAccount token and a default-deny NetworkPolicy.
 
 ---
 

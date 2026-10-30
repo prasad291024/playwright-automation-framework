@@ -236,6 +236,7 @@ Residual risks:
 | Kube-linter checks                     | Passed: no lint errors                                                                      |
 | Dockerfile lint (hadolint)             | Passed: no findings                                                                         |
 | Workflow lint (actionlint)             | New workflow clean; only pre-existing ShellCheck notes in `ci.yml` (SC2129, SC2016)         |
+| GitHub container workflow (PR #59)     | Passed on pull request: build, non-root/read-only smoke, shared API suite, Trivy, manifests |
 | Final typecheck / lint / Prettier      | Passed after all changes                                                                    |
 | Live Kubernetes Job execution          | Not run: no cluster is configured in this workspace                                         |
 | Full cross-application container suite | Not run: targets public demo applications; existing CI covers those suites                  |

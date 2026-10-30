@@ -166,6 +166,15 @@ CI/CD pipelines must handle secrets securely without exposing them in logs or ar
 - Restrict credential access to specific jobs/nodes
 - Regularly audit credential usage
 
+### Containers and Kubernetes:
+
+- Run the test image as a non-root user with dropped capabilities and no privilege escalation
+- Keep `.env`, storage state, reports, and tooling state out of the build context; the build fails if `.env` reaches the image
+- Run Kubernetes workloads as a finite Job under the `restricted` Pod Security profile with a read-only root filesystem
+- Disable ServiceAccount token automount and grant no RBAC permissions
+- Apply a default-deny NetworkPolicy and allow only required egress
+- Inject credentials through a Kubernetes Secret or the CI secret store, never through the image or plain manifests
+
 ### General:
 
 - Never log environment variables that might contain secrets

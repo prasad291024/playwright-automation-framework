@@ -79,6 +79,8 @@ Archived template location:
 
 The staged CI workflow is defined in `.github/workflows/ci.yml`.
 
+The container and Kubernetes path is defined separately in `.github/workflows/container.yml`. It is path-filtered to container-related changes and validates the image build, non-root and read-only Chromium execution, the in-container shared API suite, Trivy scanning, and rendered Kubernetes manifests. It does not change the suite matrix below.
+
 ### Pull Requests
 
 Pull requests run the `smoke` scope only.

@@ -47,6 +47,8 @@ This repository is continuously refined to demonstrate practical approaches to:
 - Visual, accessibility, and performance testing
 - CI/CD execution with GitHub Actions and Jenkins
 - Containerized test execution
+- Kubernetes Job execution with restricted pod security
+- Container image scanning and Kubernetes manifest validation in CI
 - **Security best practices and secret management**
 
 > The framework is intended as a public engineering demonstration and learning/reference project. It implements security hardening practices including secret management via environment variables, Git-hook-based secret detection, and comprehensive security documentation.
@@ -378,15 +380,18 @@ node scripts/secret-detection.js
 
 ### Execution Examples
 
-| Use Case                | Command                                                                     |
-| ----------------------- | --------------------------------------------------------------------------- |
-| Full/default suite      | `npx playwright test`                                                       |
-| Interactive debugging   | `npx playwright test --ui`                                                  |
-| Chromium                | `npx playwright test --project=chromium`                                    |
-| Controlled parallelism  | `npx playwright test --workers=1`                                           |
-| Application smoke suite | `node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke`              |
-| HTML report             | `npx playwright show-report` (or `npx playwright show-report <report-dir>`) |
-| Secret detection check  | `node scripts/secret-detection.js`                                          |
+| Use Case                | Command                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| Full/default suite      | `npx playwright test`                                                                        |
+| Interactive debugging   | `npx playwright test --ui`                                                                   |
+| Chromium                | `npx playwright test --project=chromium`                                                     |
+| Controlled parallelism  | `npx playwright test --workers=1`                                                            |
+| Application smoke suite | `node scripts/run-app-suite.cjs --app=saucedemo --suite=smoke`                               |
+| Container image build   | `docker build -t ui-automation-framework:1.64.1 .`                                           |
+| Container suite run     | `docker compose run --rm test node scripts/run-app-suite.cjs --app=local --suite=shared-api` |
+| Kubernetes Job          | `kubectl apply -k k8s/overlays/local`                                                        |
+| HTML report             | `npx playwright show-report` (or `npx playwright show-report <report-dir>`)                  |
+| Secret detection check  | `node scripts/secret-detection.js`                                                           |
 
 ## 🔄 CI/CD & Execution
 
@@ -406,6 +411,8 @@ The CI workflow can include:
 - Test reporting
 - Artifact collection
 - **Secret validation** (uses GitHub Secrets without logging values)
+- **Container image build** with non-root and read-only smoke validation
+- **Image scanning** with Trivy and Kubernetes manifest schema validation
 
 Pull-request and push workflows can use different execution scopes, allowing faster feedback during development while broader suites can be executed when required.
 

@@ -59,8 +59,8 @@ All project documentation lives in the `docs/` directory:
 | [`docs/playwright-best-practices.md`](./playwright-best-practices.md)       | Playwright-specific coding standards and patterns                                                |
 | [`docs/QUALITY_GATES.md`](./QUALITY_GATES.md)                               | Pre-commit hooks, CI gates, and pull request verification rules                                  |
 | [`docs/DEPLOYMENT.md`](./DEPLOYMENT.md)                                     | Pipeline deployment, containerized execution, and environment setup                              |
-| [`docs/docker-desktop-guide.md`](./docker-desktop-guide.md)                 | Docker Desktop setup and container execution guide                                               |
-| [`docs/jenkins-docker-setup.md`](./jenkins-docker-setup.md)                 | Jenkins declarative pipeline configuration with Docker agent                                     |
+| [`docs/CONTAINERIZATION.md`](./CONTAINERIZATION.md)                         | Hardened Docker image, Compose profiles, Kubernetes Job, and artifact runbook                    |
+| [`k8s/README.md`](../k8s/README.md)                                         | Kubernetes apply, wait, log, artifact collection, and cleanup runbook                            |
 | [`docs/CODE_REVIEW.md`](./CODE_REVIEW.md)                                   | PR code review checklist and quality criteria                                                    |
 | [`docs/CONTRIBUTING.md`](./CONTRIBUTING.md)                                 | Contribution guidelines, branching strategies, and workflow                                      |
 | [`docs/SECURITY.md`](./SECURITY.md)                                         | Security policies and secret management                                                          |
