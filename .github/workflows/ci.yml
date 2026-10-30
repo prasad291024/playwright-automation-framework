@@ -182,16 +182,14 @@ jobs:
         shell: bash
         env:
           CI: 'true'
-          # Public Demo Credentials: These targets (CURA, SauceDemo, OrangeHRM) are public
-          # demonstration applications with published credentials. Repository secrets can
-          # override them if private instances are used, but fallbacks allow public demo
-          # test execution to succeed on fork PRs without exposing any private secrets.
-          CURA_USERNAME: ${{ secrets['CURA_USERNAME'] || 'John Doe' }}
-          CURA_PASSWORD: ${{ secrets['CURA_PASSWORD'] || 'ThisIsNotAPassword' }}
-          SAUCEDEMO_USERNAME: ${{ secrets['SAUCEDEMO_USERNAME'] || 'standard_user' }}
-          SAUCEDEMO_PASSWORD: ${{ secrets['SAUCEDEMO_PASSWORD'] || 'secret_sauce' }}
-          ORANGEHRM_USERNAME: ${{ secrets['ORANGEHRM_USERNAME'] || 'Admin' }}
-          ORANGEHRM_PASSWORD: ${{ secrets['ORANGEHRM_PASSWORD'] || 'admin123' }}
+          # Optional private-instance overrides. Unset or empty values use the documented
+          # public demo defaults in src/config/public-demo-credentials.ts.
+          CURA_USERNAME: ${{ secrets.CURA_USERNAME }}
+          CURA_PASSWORD: ${{ secrets.CURA_PASSWORD }}
+          SAUCEDEMO_USERNAME: ${{ secrets.SAUCEDEMO_USERNAME }}
+          SAUCEDEMO_PASSWORD: ${{ secrets.SAUCEDEMO_PASSWORD }}
+          ORANGEHRM_USERNAME: ${{ secrets.ORANGEHRM_USERNAME }}
+          ORANGEHRM_PASSWORD: ${{ secrets.ORANGEHRM_PASSWORD }}
         run: |
           failures=0
 
