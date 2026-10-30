@@ -36,6 +36,9 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
   "lint-staged": {
     "*.ts": [
       "node scripts/secret-detection.js",
