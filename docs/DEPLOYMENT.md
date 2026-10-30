@@ -91,6 +91,8 @@ In continuous integration (GitHub Actions, Jenkins), configure these secrets:
 
 The repository provides a robust, phased CI workflow in `.github/workflows/ci.yml`.
 
+A separate container workflow in `.github/workflows/container.yml` builds the hardened image, validates non-root and read-only browser execution, runs the shared API suite in-container, scans the image with Trivy, and validates rendered Kubernetes manifests.
+
 ### Pipeline Architecture
 
 ```
