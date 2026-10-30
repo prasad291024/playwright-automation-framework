@@ -86,7 +86,7 @@ test.describe('User API Tests', () => {
     expect(user.username).toBeDefined();
   });
 
-  test('Test batch user creation with validation', async ({ request }) => {
+  test('creates multiple users with validation', async ({ request }) => {
     const apiHelper = new ApiHelper(request, BASE_API_URL);
 
     const testUsers: CreateUserRequest[] = [
