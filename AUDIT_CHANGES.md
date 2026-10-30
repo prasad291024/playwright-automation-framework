@@ -188,3 +188,59 @@ Priority is CSS/XPath `locator()` plus positional calls; ties are alphabetical.
 - Should the explicitly public demo credentials remain the default for local runs, or should all credentials be supplied through app-specific environment variables?
 - Should test discovery continue to load `.env` and inspect configured storage state, or should configuration make those checks opt-in for read-only discovery?
 - Which CI environment can safely run the CURA/SauceDemo integration tests and validate the new accessible-name locators?
+
+## Dependency audit and CI follow-up
+
+### Phase A — Verify and commit the lockfile
+
+- Confirmed `package.json` had no diff; only the lockfile and dependency report were committed.
+- `npm ci`, typecheck, lint, and safe Playwright discovery passed; discovery found 184 tests. `npm audit --omit=dev` reported zero vulnerabilities. Full `npm audit` reported 65 findings (47 moderate, 17 high, 1 critical).
+- Files: `package-lock.json`, `AUDIT_DEPENDENCIES.md`.
+- Commit: `8b892f6 chore(deps): apply non-breaking npm audit fixes`.
+- `npm ci` emitted a Windows optional-package cleanup warning, but completed successfully.
+
+### Phase B — Critical/high reachability analysis
+
+- Documented all 18 critical/high package findings and dependency paths. They are in the development dependency tree rooted at direct dependency `ruflo`; no vulnerable-package API usage was found in executable project code. Production audit remained clean.
+- No overrides or major upgrades were applied. Several proposed fixes are outside current dependency ranges or require major/out-of-range changes; these remain for maintainer decision.
+- Files: `AUDIT_DEPENDENCIES.md`.
+- Commit: `78b9459 docs(deps): add reachability analysis for critical and high advisories`.
+
+### Phase C — CI production audit gate
+
+- Added a blocking production-only high/critical audit and a separate non-blocking full audit visibility step. The test job waits for the production audit job.
+- Files: `.github/workflows/ci.yml`.
+- Commit: `468a6d6 ci: gate on production dependency audit`.
+- Verification: YAML parsed; all 8 jobs have timeouts; all 17 third-party action references are full-SHA pinned; Prettier passed; local production audit reported zero vulnerabilities.
+
+### Phase D — Optional CI credential overrides
+
+- Replaced six inline public-demo fallbacks with optional `secrets.NAME` environment mappings. Source readers use `||` with documented code defaults, so an unset or empty secret still selects the public demo value. No public credential literals remain in the CI workflow.
+- All six mappings were category (1) before the change: secret override with a public demo fallback. Public demo values should not be stored as secrets; only actual private-instance overrides belong there. Whitespace-only env values remain non-empty and therefore override defaults.
+- Files: `.github/workflows/ci.yml`.
+- Commit: `ab3ff53 ci: clarify optional credential overrides`.
+- Verification: YAML parse passed; all 8 jobs have timeouts; all actions remain SHA-pinned; Prettier and `git diff --check` passed; a targeted check confirmed the six optional secret expressions and absence of demo credential literals. No behavioral code changes were made.
+
+### Commands and outcomes
+
+| Command/check                                             | Outcome                                                                                                                                 |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `git diff --quiet -- package.json` (Phase A precondition) | Passed; manifest unchanged.                                                                                                             |
+| `npm ci`                                                  | Passed; Windows optional-package cleanup warning noted above.                                                                           |
+| `npm run typecheck`                                       | Passed.                                                                                                                                 |
+| `npm run lint`                                            | Passed; 0 errors and 105 warnings.                                                                                                      |
+| Safe `npx playwright test --list`                         | Passed; 184 tests in 27 files. A temporary preload prevented dotenv loading and storage-state checks. No full Playwright suite was run. |
+| `npm audit --omit=dev`                                    | Passed; 0 vulnerabilities.                                                                                                              |
+| `npm audit`                                               | 65 findings: 47 moderate, 17 high, 1 critical; remaining findings are in the development dependency tree.                               |
+| `npm ls <package>` and source usage searches              | Reachability paths documented in `AUDIT_DEPENDENCIES.md`; no vulnerable API usage found in executable source/test/config code.          |
+| CI YAML parse, action pin and job-timeout checks          | Passed; 8 jobs, all timed out, all actions SHA-pinned.                                                                                  |
+| `npx prettier --check .github/workflows/ci.yml`           | Passed.                                                                                                                                 |
+| `git diff --check`                                        | Passed for the Phase D workflow change.                                                                                                 |
+
+### Decisions and manual follow-ups
+
+- Maintainer decision required before upgrading `ruflo` or other dependencies outside their current compatible ranges; do not apply major/out-of-range upgrades without approval.
+- Configure the six GitHub Secrets only when CI targets private demo instances. For public demos, leave them unset so the documented source defaults apply. Confirm repository/organization secret availability if the VS Code context-access warning persists; the workflow no longer embeds demo credential values.
+- Confirm hosted CI succeeds for the new production dependency gate and the full-history Gitleaks scan. Neither hosted workflow result was available locally.
+- Maintain the prior manual follow-ups above: verify whether any non-demo credential was ever committed and rotate externally if necessary; no secrets were displayed or rotated during this work.
+- `.claude-flow/mods/session.json` was an unrelated pre-existing modified file and was intentionally not staged or committed.
