@@ -8,7 +8,7 @@
  * - Network stability checks
  */
 
-import { Page, Locator } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 /**
  * Retry configuration
@@ -25,6 +25,7 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   delayMs: 200,
   backoffMultiplier: 1.5,
 };
+const MAX_RETRY_DELAY_MS = 2000;
 
 /**
  * Retry a function with exponential backoff
@@ -41,7 +42,7 @@ export async function retryWithBackoff<T>(
 ): Promise<T> {
   const opts = { ...DEFAULT_RETRY_CONFIG, ...config };
   let lastError: Error | null = null;
-  let delay = opts.delayMs || 200;
+  let delay = Math.min(opts.delayMs || 200, MAX_RETRY_DELAY_MS);
 
   for (let attempt = 1; attempt <= (opts.maxAttempts || 3); attempt++) {
     try {
@@ -51,8 +52,9 @@ export async function retryWithBackoff<T>(
       opts.onAttempt?.(attempt, lastError);
 
       if (attempt < (opts.maxAttempts || 3)) {
+        // This bounded delay is exponential backoff between explicit retries, not UI synchronization.
         await new Promise((resolve) => setTimeout(resolve, delay));
-        delay *= opts.backoffMultiplier || 1.5;
+        delay = Math.min(delay * (opts.backoffMultiplier || 1.5), MAX_RETRY_DELAY_MS);
       }
     }
   }
@@ -61,33 +63,16 @@ export async function retryWithBackoff<T>(
 }
 
 /**
- * Wait for network to become idle, with fallback strategy
- * If networkidle times out, falls back to a short delay
- *
- * Useful when:
- * - Network is slow but predictable
- * - App doesn't fully stabilize on networkidle
- * - We need to wait for animations to complete
+ * Wait for the document to be parsed without requiring network idle.
  */
 export async function waitForNetworkStable(
   page: Page,
   options: {
-    minNetworkIdleMs?: number; // how long page must be quiet
     maxWaitMs?: number; // max total wait
   } = {},
 ): Promise<void> {
-  const minNetworkIdleMs = options.minNetworkIdleMs || 2000;
   const maxWaitMs = options.maxWaitMs || 15000;
-
-  try {
-    await page.waitForLoadState('networkidle', { timeout: maxWaitMs });
-  } catch {
-    // Fallback: page might not reach perfect network idle, just wait a bit
-    console.warn(
-      `Network idle timeout after ${maxWaitMs}ms, falling back to ${minNetworkIdleMs}ms delay`,
-    );
-    await page.waitForTimeout(minNetworkIdleMs);
-  }
+  await page.waitForLoadState('domcontentloaded', { timeout: maxWaitMs });
 }
 
 /**
@@ -101,35 +86,27 @@ export async function waitForNetworkStable(
  * ]);
  */
 export async function waitForConditions(
-  page: Page,
+  _page: Page,
   conditions: (() => Promise<boolean>)[],
   timeout: number = 10000,
 ): Promise<void> {
-  const startTime = Date.now();
-
-  while (Date.now() - startTime < timeout) {
-    let allMet = true;
-
-    for (const condition of conditions) {
-      try {
-        if (!(await condition())) {
-          allMet = false;
-          break;
+  await expect
+    .poll(
+      async () => {
+        for (const condition of conditions) {
+          try {
+            if (!(await condition())) {
+              return false;
+            }
+          } catch {
+            return false;
+          }
         }
-      } catch {
-        allMet = false;
-        break;
-      }
-    }
-
-    if (allMet) {
-      return;
-    }
-
-    await page.waitForTimeout(100);
-  }
-
-  throw new Error(`Conditions not met within ${timeout}ms`);
+        return true;
+      },
+      { timeout, message: `Conditions not met within ${timeout}ms` },
+    )
+    .toBe(true);
 }
 
 /**
@@ -186,7 +163,7 @@ export async function stableFill(
       delayMs: 300,
       onAttempt: (attempt) => {
         if (attempt > 1) {
-          console.warn(`Fill attempt ${attempt} for "${text.substring(0, 20)}...", retrying...`);
+          console.warn(`Fill attempt ${attempt} failed, retrying...`);
         }
       },
     },
@@ -202,7 +179,8 @@ export async function resilientType(
   text: string,
   options: { delayBetweenCharsMs?: number } = {},
 ): Promise<void> {
-  const delayMs = options.delayBetweenCharsMs || 50;
+  // Delayed typing emulates a slower user; cap it to avoid unbounded per-character waits.
+  const delayMs = Math.min(Math.max(options.delayBetweenCharsMs ?? 50, 0), 250);
   await locator.focus();
 
   for (const char of text) {
@@ -218,28 +196,7 @@ export async function waitForStableVisibility(
   locator: Locator,
   timeout: number = 8000,
 ): Promise<void> {
-  const startTime = Date.now();
-
-  while (Date.now() - startTime < timeout) {
-    try {
-      // Check if visible
-      if (await locator.isVisible()) {
-        // Wait a bit to ensure animation is complete
-        await new Promise((resolve) => setTimeout(resolve, 300));
-
-        // Double-check it's still visible after animation
-        if (await locator.isVisible()) {
-          return;
-        }
-      }
-    } catch {
-      // Element not yet attached, continue waiting
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-
-  throw new Error(`Element did not become stably visible within ${timeout}ms`);
+  await expect(locator).toBeVisible({ timeout });
 }
 
 /**
@@ -273,8 +230,6 @@ export async function scrollIntoViewStable(locator: Locator): Promise<void> {
   return retryWithBackoff(
     async () => {
       await locator.scrollIntoViewIfNeeded({ timeout: 8000 });
-      // Brief wait for scroll to complete
-      await new Promise((resolve) => setTimeout(resolve, 200));
     },
     { maxAttempts: 2, delayMs: 100 },
   );
@@ -337,10 +292,9 @@ export async function debugPageState(
   page: Page,
   reason: string = 'Debug checkpoint',
 ): Promise<void> {
-  const url = page.url();
   const title = await page.title();
   console.log(`\n📸 [${reason}]`);
-  console.log(`   URL: ${url}`);
+  console.log('   URL: [redacted]');
   console.log(`   Title: ${title}`);
 
   try {

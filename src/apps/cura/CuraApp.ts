@@ -2,10 +2,7 @@ import { Page } from '@playwright/test';
 import { CuraLoginPage } from '../../pages/apps/cura/pages/CuraLoginPage';
 import { CuraAppointmentPage } from '../../pages/apps/cura/pages/CuraAppointmentPage';
 import { CuraConfirmationPage } from '../../pages/apps/cura/pages/CuraConfirmationPage';
-
-/** Demo credentials for the Katalon CURA Healthcare app - resolved from environment variables. */
-const CURA_DEFAULT_USERNAME = process.env.CURA_USERNAME || 'John Doe';
-const CURA_DEFAULT_PASSWORD = process.env.CURA_PASSWORD || '';
+import { PUBLIC_DEMO_CREDENTIALS } from '../../config/public-demo-credentials';
 
 /**
  * Cura App Facade - Encapsulates all page objects and provides higher-level user flows.
@@ -29,16 +26,22 @@ export class CuraApp {
    * Login to the CURA application.
    *
    * When called with no arguments, credentials are resolved from environment variables
-   * (`CURA_USERNAME` / `CURA_PASSWORD`) with fallback to the public demo credentials.
+   * (`CURA_USERNAME` / `CURA_PASSWORD`) with fallback to the documented public demo credentials.
    *
    * @param username - Optional username override
    * @param password - Optional password override
    */
   async login(username?: string, password?: string): Promise<void> {
     const resolvedUsername =
-      username ?? process.env.CURA_USERNAME ?? process.env.USERNAME ?? CURA_DEFAULT_USERNAME;
+      username || process.env.CURA_USERNAME || PUBLIC_DEMO_CREDENTIALS.cura.username;
     const resolvedPassword =
-      password ?? process.env.CURA_PASSWORD ?? process.env.PASSWORD ?? CURA_DEFAULT_PASSWORD;
+      password || process.env.CURA_PASSWORD || PUBLIC_DEMO_CREDENTIALS.cura.password;
+
+    if (!resolvedUsername || !resolvedPassword) {
+      throw new Error(
+        'CURA login requires CURA_USERNAME and CURA_PASSWORD or the documented public demo defaults.',
+      );
+    }
 
     // Check if we are already logged in to avoid unnecessary login steps
     const currentUrl = this.page.url();

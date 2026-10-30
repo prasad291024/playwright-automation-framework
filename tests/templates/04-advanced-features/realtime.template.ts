@@ -78,7 +78,8 @@ test('Realtime: Client reconnects and receives messages after network flaps', as
 
   // Simulate offline
   await page.context().setOffline(true);
-  // Wait a moment
+  // Keep the offline interval bounded so the generic template can trigger the browser offline event.
+  // eslint-disable-next-line playwright/no-wait-for-timeout -- No app-specific reconnect signal exists in this template.
   await page.waitForTimeout(500);
 
   // Simulate back online

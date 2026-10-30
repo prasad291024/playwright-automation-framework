@@ -28,14 +28,15 @@ All application credentials and sensitive information must be managed through en
 
 ### Prohibited Practices:
 
-- Hardcoding passwords, API keys, or tokens in source files
+- Hardcoding private passwords, API keys, or tokens in source files
 - Committing `.env` files with real credentials
 - Using real production credentials in test environments
 - Storing secrets in logs, reports, or test artifacts
 
 ## 🌐 Environment Variables
 
-The framework uses environment variables for all configuration and credentials:
+The framework uses environment variables for configuration and app-specific credential overrides.
+Public demo credentials are explicit defaults, not private secrets:
 
 ### Application Credentials:
 
@@ -53,6 +54,10 @@ ORANGEHRM_PASSWORD
 >
 > - **Public Demo Credentials:** Pre-configured accounts for third-party public training websites (SauceDemo, CURA Healthcare, OrangeHRM). These credentials are published openly on their respective login portals and are used strictly as test fixtures for automated UI demonstrations.
 > - **Private Secrets:** Any enterprise or proprietary credentials, API keys, tokens, or private infrastructure passwords. Private secrets must NEVER be committed to Git, must NEVER have in-code string fallbacks, and must be injected exclusively via secure environment variables or repository secret managers.
+>
+> The explicitly named public demo defaults are centralized in
+> `src/config/public-demo-credentials.ts`. Only app-specific variables are accepted for
+> overrides; generic `USERNAME` and `PASSWORD` variables are intentionally not used.
 
 ### Configuration Overrides:
 

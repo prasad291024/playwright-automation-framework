@@ -39,7 +39,7 @@ export class CuraAppointmentPage extends BasePage {
   async verifyAppointmentPageVisible(): Promise<void> {
     if (
       !/#appointment|appointment\.php/.test(this.page.url()) ||
-      (await this.page.locator('#combo_facility').count()) === 0
+      (await this.facilityDropdown().count()) === 0
     ) {
       await this.goto();
     }
@@ -48,22 +48,18 @@ export class CuraAppointmentPage extends BasePage {
   }
 
   private facilityDropdown(): Locator {
-    const selector = this.getAppSelector('appointment', 'facilityDropdown');
-    return selector ? this.locator(selector) : this.page.locator('#combo_facility');
+    return this.page.getByLabel('Facility');
   }
 
   private visitDate(): Locator {
-    const selector = this.getAppSelector('appointment', 'visitDate');
-    return selector ? this.locator(selector) : this.page.locator('#txt_visit_date');
+    return this.page.getByLabel('Visit Date');
   }
 
   private comment(): Locator {
-    const selector = this.getAppSelector('appointment', 'comment');
-    return selector ? this.locator(selector) : this.page.locator('#txt_comment');
+    return this.page.getByLabel('Comment');
   }
 
   private bookAppointmentButton(): Locator {
-    const selector = this.getAppSelector('appointment', 'bookAppointmentButton');
-    return selector ? this.locator(selector) : this.page.locator('#btn-book-appointment');
+    return this.page.getByRole('button', { name: 'Book Appointment', exact: true });
   }
 }

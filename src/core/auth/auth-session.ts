@@ -4,6 +4,7 @@ import * as path from 'path';
 import { AppName, AppRegistry } from '../../config/app.config';
 import { PageFactory } from '../../pages/infrastructure/PageFactory';
 import { CuraLoginPage, OrangeHrmLoginPage, SauceDemoLoginPage } from '../../pages/infrastructure';
+import { PUBLIC_DEMO_CREDENTIALS } from '../../config/public-demo-credentials';
 import { isValidEmail } from '../../utils/vwoAuth';
 import { retryWithBackoff } from '../../utils/flakeHelper';
 
@@ -57,18 +58,20 @@ const resolveCredentials = (appName: AppName): LoginCredentials => {
       };
     case 'cura':
       return {
-        username: process.env.CURA_USERNAME || '',
-        password: process.env.CURA_PASSWORD || '',
+        username: process.env.CURA_USERNAME || PUBLIC_DEMO_CREDENTIALS.cura.username,
+        password: process.env.CURA_PASSWORD || PUBLIC_DEMO_CREDENTIALS.cura.password,
       };
     case 'saucedemo':
       return {
-        username: process.env.SAUCEDEMO_USERNAME || '',
-        password: process.env.SAUCEDEMO_PASSWORD || '',
+        username:
+          process.env.SAUCEDEMO_USERNAME || PUBLIC_DEMO_CREDENTIALS.saucedemo.standardUser.username,
+        password:
+          process.env.SAUCEDEMO_PASSWORD || PUBLIC_DEMO_CREDENTIALS.saucedemo.standardUser.password,
       };
     case 'orangehrm':
       return {
-        username: process.env.ORANGEHRM_USERNAME || '',
-        password: process.env.ORANGEHRM_PASSWORD || '',
+        username: process.env.ORANGEHRM_USERNAME || PUBLIC_DEMO_CREDENTIALS.orangehrm.username,
+        password: process.env.ORANGEHRM_PASSWORD || PUBLIC_DEMO_CREDENTIALS.orangehrm.password,
       };
     default:
       return {};
@@ -132,12 +135,20 @@ export const loginForApp = async (page: Page, appName: AppName): Promise<boolean
   switch (appName) {
     case 'vwo': {
       const email = credentials.email || '';
+      const password = credentials.password || '';
+      if (!email || !password) {
+        throw new Error(
+          'VWO authentication requires VWO_EMAIL and VWO_PASSWORD; no public demo credentials are available.',
+        );
+      }
+
       const hasValidEmail = isValidEmail(email);
+      if (!hasValidEmail) {
+        throw new Error('VWO_EMAIL must be a valid email address.');
+      }
 
       console.log(
-        hasValidEmail
-          ? 'Skipping VWO auth: VWO is currently archived from active execution until organization-owned credentials are restored.'
-          : 'Skipping VWO auth: VWO is archived from active execution and valid organization-owned credentials are unavailable.',
+        'Skipping VWO auth: VWO is currently archived from active execution until organization-owned credentials are restored.',
       );
       return false;
     }
@@ -147,8 +158,9 @@ export const loginForApp = async (page: Page, appName: AppName): Promise<boolean
       const password = credentials.password || '';
 
       if (!username || !password) {
-        console.log('Skipping CURA auth: set CURA_USERNAME and CURA_PASSWORD credentials.');
-        return false;
+        throw new Error(
+          'Missing CURA_USERNAME or CURA_PASSWORD and no public demo credential is configured.',
+        );
       }
 
       const loginPage = PageFactory.create<CuraLoginPage>(page, 'cura', 'LoginPage');
@@ -164,10 +176,9 @@ export const loginForApp = async (page: Page, appName: AppName): Promise<boolean
       const password = credentials.password || '';
 
       if (!username || !password) {
-        console.log(
-          'Skipping SauceDemo auth: set SAUCEDEMO_USERNAME and SAUCEDEMO_PASSWORD credentials.',
+        throw new Error(
+          'Missing SAUCEDEMO_USERNAME or SAUCEDEMO_PASSWORD and no public demo credential is configured.',
         );
-        return false;
       }
 
       const loginPage = PageFactory.create<SauceDemoLoginPage>(page, 'saucedemo', 'LoginPage');
@@ -182,8 +193,9 @@ export const loginForApp = async (page: Page, appName: AppName): Promise<boolean
       const password = credentials.password || '';
 
       if (!username || !password) {
-        console.log('Skipping OrangeHRM auth: set ORANGEHRM_USERNAME and ORANGEHRM_PASSWORD.');
-        return false;
+        throw new Error(
+          'Missing ORANGEHRM_USERNAME or ORANGEHRM_PASSWORD and no public demo credential is configured.',
+        );
       }
 
       const loginPage = PageFactory.create<OrangeHrmLoginPage>(page, 'orangehrm', 'LoginPage');

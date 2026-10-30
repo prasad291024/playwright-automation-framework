@@ -36,6 +36,9 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
   "lint-staged": {
     "*.ts": [
       "node scripts/secret-detection.js",
@@ -60,13 +63,12 @@
     "dotenv": "^17.2.3",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-playwright": "^0.5.1",
+    "eslint-plugin-playwright": "^2.12.1",
     "eslint-plugin-prettier": "^5.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "papaparse": "^5.5.3",
     "prettier": "^3.0.0",
-    "ruflo": "^3.51.0",
     "ts-node": "^10.9.2",
     "typescript-eslint": "^8.70.0"
   }
