@@ -163,7 +163,7 @@ export async function stableFill(
       delayMs: 300,
       onAttempt: (attempt) => {
         if (attempt > 1) {
-          console.warn(`Fill attempt ${attempt} for "${text.substring(0, 20)}...", retrying...`);
+          console.warn(`Fill attempt ${attempt} failed, retrying...`);
         }
       },
     },
@@ -292,10 +292,9 @@ export async function debugPageState(
   page: Page,
   reason: string = 'Debug checkpoint',
 ): Promise<void> {
-  const url = page.url();
   const title = await page.title();
   console.log(`\n📸 [${reason}]`);
-  console.log(`   URL: ${url}`);
+  console.log('   URL: [redacted]');
   console.log(`   Title: ${title}`);
 
   try {
