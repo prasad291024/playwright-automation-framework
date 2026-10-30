@@ -1,0 +1,10 @@
+title = "UI automation framework secret scan"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Maintainer-confirmed public demo values and placeholders only; not private credentials."
+paths = [
+  '''^test-data/fixtures/login\.env\.json$''',
+]

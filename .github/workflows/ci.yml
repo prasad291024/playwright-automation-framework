@@ -15,11 +15,28 @@ on:
 permissions:
   contents: read
 
+jobs:
+  gitleaks:
+    name: Secret scan (full history)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan repository secrets
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 concurrency:
   group: playwright-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:
   install:
     name: Install Dependencies
     runs-on: ubuntu-latest
