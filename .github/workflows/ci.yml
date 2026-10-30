@@ -15,6 +15,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: playwright-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gitleaks:
     name: Secret scan (full history)
@@ -32,10 +36,6 @@ jobs:
         uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-concurrency:
-  group: playwright-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
   install:
     name: Install Dependencies
