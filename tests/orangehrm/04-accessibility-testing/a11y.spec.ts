@@ -29,11 +29,10 @@ test.describe('Accessibility: OrangeHRM', () => {
     await orangeHrmApp.loginPage.login(credentials.username, credentials.password);
 
     const page = orangeHrmApp.loginPage.getPage();
-    const headings = page.getByRole('heading');
 
+    // OrangeHRM exposes the page title as an h6 and has no h1, so check that the
+    // dashboard heading is exposed with a heading role, not strict level order.
     await expect(page.getByRole('heading', { name: /dashboard/i })).toBeVisible();
-    // OrangeHRM uses h6 headings and has no h1, so check that headings exist and are exposed, not strict level order.
-    await expect(headings).not.toHaveCount(0);
-    await expect(headings.nth(1)).toBeVisible();
+    await expect(page.getByRole('heading', { level: 6, name: /dashboard/i })).toBeVisible();
   });
 });
